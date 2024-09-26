@@ -6,6 +6,8 @@ import com.onestep.business_management.DTO.OrderRequest;
 import com.onestep.business_management.DTO.OrderResponse;
 import com.onestep.business_management.Entity.Order;
 import com.onestep.business_management.Entity.OrderDetail;
+import com.onestep.business_management.Entity.Product;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -50,6 +52,10 @@ public interface OrderMapper {
             OrderDetailResponse response = new OrderDetailResponse();
             response.setQuantity(detail.getQuantity());
             response.setPrice(detail.getPrice());
+            Product product = detail.getProduct();
+            response.setBarcode(product.getBarcode());
+            response.setProductName(product.getProductName());
+            // response.setProduct(detail.getProduct());
             // Assuming you have a way to get product details (perhaps from a service or repository)
             // You need to replace the following code with your actual implementation to get product details
             // response.setProductBarcode(detail.getProduct().getBarcode());

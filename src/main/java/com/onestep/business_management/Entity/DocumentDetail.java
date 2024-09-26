@@ -28,7 +28,7 @@ public class DocumentDetail {
     private Document document;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "barcode", nullable = false)
+    @JoinColumn(name = "productId", nullable = false)
     private Product product;
 
     private int quantity;
