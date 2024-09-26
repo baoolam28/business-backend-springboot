@@ -22,8 +22,9 @@ public class User implements UserDetails{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
+    @Column(columnDefinition = "NVARCHAR(50)")
     private String username;
-    private String password;
+    private String password ;
     @Column(name = "phoneNumber")
     private String phoneNumber;
     @Column(name = "fullName")
