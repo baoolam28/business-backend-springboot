@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/origins")
+@RequestMapping("/api/origins")
 public class OriginController {
 
     @Autowired
