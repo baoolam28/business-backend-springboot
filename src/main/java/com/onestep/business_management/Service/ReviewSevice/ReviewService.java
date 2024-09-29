@@ -14,12 +14,12 @@ public class ReviewService {
 
 
     
-    public boolean deleteReview(Integer reviewId){
-        Review existingReview = reviewRepository.findById(reviewId).orElse(null);
-        if(existingReview != null){
-            reviewRepository.delete(existingReview);
-            return ReviewMapper.INSTANCE.toResponse(existingReview);
-        }
-        return null;
-    }
+    // public boolean deleteReview(Integer reviewId){
+    //     Review existingReview = reviewRepository.findById(reviewId).orElse(null);
+    //     if(existingReview != null){
+    //         reviewRepository.delete(existingReview);
+    //         return ReviewMapper.INSTANCE.toResponse(existingReview);
+    //     }
+    //     return null;
+    // }
 }

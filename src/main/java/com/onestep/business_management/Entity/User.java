@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
@@ -20,15 +21,25 @@ import java.util.stream.Collectors;
 @Table(name = "Users")
 public class User implements UserDetails{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userId;
+    @GeneratedValue()
+    private UUID userId;
+
     private String username;
+
     private String password;
+
     @Column(name = "phoneNumber")
     private String phoneNumber;
+
     @Column(name = "fullName")
     private String fullName;
+
+    @OneToOne
+    @JoinColumn(name = "imageId")
+    private Image avatarImage;
+
     private boolean disabled;
+    
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "userRoles",

@@ -18,8 +18,9 @@ public class ShippingAddress {
     @Column(name = "address_id")
     private int addressId;
 
-    @Column(name = "user_id")
-    private User userId;
+    @ManyToOne
+    @JoinColumn(name = "userId", nullable = false)
+    private User user;
 
     @Column(name = "full_name", length = 255)
     private String fullName;
@@ -28,21 +29,12 @@ public class ShippingAddress {
     private String phoneNumber;
 
     @Column(name = "address_line", length = 255)
-    private String addressLine;
+    private String address;
 
-    @Column(name = "city", length = 255)
+    @Column(name = "code", length = 25)
     private String city;
 
-    @Column(name = "state", length = 255)
-    private String state;
-
-    @Column(name = "postal_code", length = 50)
-    private String postalCode;
-
-    @Column(name = "country", length = 255)
-    private String country;
-
     @Column(name = "is_default")
-    private boolean isDefault;
+    private boolean disabled;
 
 }

@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +29,7 @@ public class StoreService {
 
     // Create or Update Store
     public StoreResponse saveStore(StoreRequest storeRequest) {
-        Integer managerId = storeRequest.getStoreManagerId();
+        UUID managerId = storeRequest.getStoreManagerId();
         User storeManager = userRepository.findById(managerId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + managerId + " not found.")
         );
@@ -54,7 +55,7 @@ public class StoreService {
     }
 
     // Get Store by ID
-    public StoreResponse getStoreById(Integer id) {
+    public StoreResponse getStoreById(UUID id) {
         Optional<Store> store = storeRepository.findById(id);
         return store.map(StoreMapper.INSTANCE::toResponse).orElse(null);
     }

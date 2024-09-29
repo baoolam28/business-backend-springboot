@@ -67,4 +67,8 @@ public class Document {
 
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<DocumentDetail> documentDetails;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "storeId")
+    private Store store;    
 }

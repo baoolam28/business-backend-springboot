@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,4 +30,8 @@ public class Image {
     @ManyToOne
     @JoinColumn(name = "productId", nullable = true)
     private Product product; 
+
+    @OneToOne
+    @JoinColumn(name = "userId", nullable = true)
+    private User user;
 }

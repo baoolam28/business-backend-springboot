@@ -28,4 +28,9 @@ public class Customer {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Order> orders = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "storeId", nullable = false) // Foreign key to Store table
+    private Store store;
+
 }

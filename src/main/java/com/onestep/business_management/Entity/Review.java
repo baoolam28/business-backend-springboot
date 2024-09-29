@@ -1,6 +1,8 @@
 package com.onestep.business_management.Entity;
 
-import java.sql.Date;
+
+
+import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

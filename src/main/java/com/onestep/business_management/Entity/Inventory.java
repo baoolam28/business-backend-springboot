@@ -1,11 +1,13 @@
 package com.onestep.business_management.Entity;
 
+import java.util.Date;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+
 
 @Entity
 @Data
@@ -15,6 +17,11 @@ public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer inventoryId;
+
+    @ManyToOne
+    @JoinColumn(name = "storeId", nullable = false)
+    private Store store;
+
     @Column(name = "productId", nullable = false)
     private String productId;
 
