@@ -11,13 +11,13 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderResponse {
- private int orderId;
+public class OrderOnlineResponse {
+
+    private int orderId;
     private Date orderDate;
     private String status;
     private Customer customer;
     private boolean paymentStatus;
     private String paymentMethod;
-    private List<OrderDetailResponse> orderDetails;
+    private List<OrderOnlineDetailResponse> orderOnlineDetails;
 }
-
