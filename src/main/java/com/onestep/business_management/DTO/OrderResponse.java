@@ -20,3 +20,4 @@ public class OrderResponse {
     private String paymentMethod;
     private List<OrderDetailResponse> orderDetails;
 }
+
