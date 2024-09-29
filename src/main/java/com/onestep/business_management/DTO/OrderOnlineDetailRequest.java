@@ -1,7 +1,5 @@
 package com.onestep.business_management.DTO;
 
-import com.onestep.business_management.Entity.Product;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,9 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderDetailResponse {
-    private int orderDetailId;
+public class OrderOnlineDetailRequest {
+
+    private Integer storeId;
     private int quantity;
     private double price;
-    private ProductResponse product;
+    private String barcode;
 }
