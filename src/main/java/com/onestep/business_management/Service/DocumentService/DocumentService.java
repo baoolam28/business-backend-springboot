@@ -45,7 +45,7 @@ public class DocumentService {
         // Set DocumentDetails
         List<DocumentDetail> documentDetails = documentRequest.getDocumentDetails().stream().map(detailRequest -> {
             DocumentDetail detail = DocumentMapper.INSTANCE.toEntity(detailRequest);
-            Product product = productRepository.findById(detailRequest.getBarcode())
+            Product product = productRepository.findByBarcode(detailRequest.getBarcode())
                     .orElseThrow(() -> new RuntimeException("Product not found"));
             detail.setProduct(product);
             detail.setDocument(document);
