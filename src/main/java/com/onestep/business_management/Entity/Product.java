@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,9 @@ import java.util.List;
 @Table(name = "Products")
 public class Product {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer productId;
+
     private String barcode;
 
     @Column(name = "productName")
@@ -44,6 +48,13 @@ public class Product {
 
     private boolean disabled;
 
+    @ManyToOne
+    @JoinColumn(name = "storeId", nullable = false)
+    private Store store;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderDetail> orderDetails;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images = new ArrayList<>();
 }

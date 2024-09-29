@@ -15,7 +15,10 @@ public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer inventoryId;
-    @Column(name = "barcode", nullable = false)
+    @Column(name = "productId", nullable = false)
+    private String productId;
+
+    @Column(name = "barcode")
     private String barcode;
 
     @Column(name = "quantityInStock")

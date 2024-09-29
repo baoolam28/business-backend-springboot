@@ -65,7 +65,7 @@ public class OrderService {
         }).collect(Collectors.toList());
 
         order.setOrderDetails(orderDetails);
-
+ 
         // Save order
         Order savedOrder = orderRepository.save(order);
         return OrderMapper.INSTANCE.toResponse(savedOrder);
