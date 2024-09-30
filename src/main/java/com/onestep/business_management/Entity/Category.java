@@ -13,8 +13,8 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer categoryId;
-    @Column(name = "categoryName")
+    @Column(name = "categoryName", length = 50, nullable = true, columnDefinition = "NVARCHAR(50)")
     private String categoryName;
-    @Column(name = "categoryDescription")
+    @Column(name = "categoryDescription", length = 100, nullable = true, columnDefinition = "NVARCHAR(100)")
     private String categoryDescription;
 }

@@ -1,7 +1,7 @@
 package com.onestep.business_management.Service.OriginService;
 
-import com.onestep.business_management.DTO.OriginRequest;
-import com.onestep.business_management.DTO.OriginResponse;
+import com.onestep.business_management.DTO.OriginDTO.OriginRequest;
+import com.onestep.business_management.DTO.OriginDTO.OriginResponse;
 import com.onestep.business_management.Entity.Origin;
 import com.onestep.business_management.Repository.OriginRepository;
 import org.springframework.beans.factory.annotation.Autowired;

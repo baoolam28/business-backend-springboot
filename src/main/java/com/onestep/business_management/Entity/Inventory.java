@@ -22,8 +22,9 @@ public class Inventory {
     @JoinColumn(name = "storeId", nullable = false)
     private Store store;
 
-    @Column(name = "productId", nullable = false)
-    private String productId;
+    @OneToOne
+    @JoinColumn(name = "productId", nullable = false)
+    private Product product;
 
     @Column(name = "barcode")
     private String barcode;

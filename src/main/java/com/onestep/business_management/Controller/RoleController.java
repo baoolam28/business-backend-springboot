@@ -1,7 +1,7 @@
 package com.onestep.business_management.Controller;
 
-import com.onestep.business_management.DTO.RoleRequest;
-import com.onestep.business_management.DTO.RoleResponse;
+import com.onestep.business_management.DTO.RoleDTO.RoleRequest;
+import com.onestep.business_management.DTO.RoleDTO.RoleResponse;
 import com.onestep.business_management.Service.RoleService.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

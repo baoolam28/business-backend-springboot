@@ -14,6 +14,6 @@ public class Origin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer originId;
-    @Column(name = "originName")
+    @Column(name = "originName", length = 50, nullable = true, columnDefinition = "NVARCHAR(50)")
     private String originName;
 }

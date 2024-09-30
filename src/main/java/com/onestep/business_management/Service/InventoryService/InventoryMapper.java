@@ -1,7 +1,7 @@
 package com.onestep.business_management.Service.InventoryService;
 
-import com.onestep.business_management.DTO.InventoryRequest;
-import com.onestep.business_management.DTO.InventoryResponse;
+import com.onestep.business_management.DTO.InventoryDTO.InventoryRequest;
+import com.onestep.business_management.DTO.InventoryDTO.InventoryResponse;
 import com.onestep.business_management.Entity.Inventory;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

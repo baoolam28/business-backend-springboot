@@ -1,7 +1,7 @@
 package com.onestep.business_management.Controller;
 
-import com.onestep.business_management.DTO.OriginRequest;
-import com.onestep.business_management.DTO.OriginResponse;
+import com.onestep.business_management.DTO.OriginDTO.OriginRequest;
+import com.onestep.business_management.DTO.OriginDTO.OriginResponse;
 import com.onestep.business_management.Service.OriginService.OriginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

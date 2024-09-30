@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.onestep.business_management.DTO.ReviewRequest;
-import com.onestep.business_management.DTO.ReviewResponse;
+import com.onestep.business_management.DTO.RiviewDTO.ReviewRequest;
+import com.onestep.business_management.DTO.RiviewDTO.ReviewResponse;
 import com.onestep.business_management.Service.ReviewSevice.ReviewService;
 
 @RestController

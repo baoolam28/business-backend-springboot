@@ -1,8 +1,8 @@
 package com.onestep.business_management.Controller;
 
-import com.onestep.business_management.DTO.OrderReportResponse;
-import com.onestep.business_management.DTO.OrderRequest;
-import com.onestep.business_management.DTO.OrderResponse;
+import com.onestep.business_management.DTO.OrderDTO.OrderReportResponse;
+import com.onestep.business_management.DTO.OrderDTO.OrderRequest;
+import com.onestep.business_management.DTO.OrderDTO.OrderResponse;
 import com.onestep.business_management.Service.OrderService.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -31,15 +31,15 @@ public class OrderController {
     }
 
 
-    @PostMapping
-    public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest orderRequest) {
-        try {
-            OrderResponse response = orderService.createOrder(orderRequest);
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    // @PostMapping
+    // public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest orderRequest) {
+    //     try {
+    //         OrderResponse response = orderService.createOrder(orderRequest);
+    //         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    //     } catch (Exception e) {
+    //         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    //     }
+    // }
 
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable Integer orderId) {

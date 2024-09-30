@@ -1,7 +1,7 @@
 package com.onestep.business_management.Service.StoreService;
 
-import com.onestep.business_management.DTO.StoreRequest;
-import com.onestep.business_management.DTO.StoreResponse;
+import com.onestep.business_management.DTO.StoreDTO.StoreRequest;
+import com.onestep.business_management.DTO.StoreDTO.StoreResponse;
 import com.onestep.business_management.Entity.Store;
 import com.onestep.business_management.Entity.User;
 import com.onestep.business_management.Repository.StoreRepository;
@@ -55,9 +55,9 @@ public class StoreService {
     }
 
     // Get Store by ID
-    public StoreResponse getStoreById(UUID id) {
-        Optional<Store> store = storeRepository.findById(id);
-        return store.map(StoreMapper.INSTANCE::toResponse).orElse(null);
+    public StoreResponse getStoreById(UUID storeId) {
+        Optional<Store> store = storeRepository.findById(storeId);
+        return store.map(StoreMapper.INSTANCE::toResponse).orElse(null);    
     }
 
     // Get All Stores

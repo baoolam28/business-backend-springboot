@@ -1,0 +1,14 @@
+package com.onestep.business_management.DTO.SupplierDTO;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class SupplierRequest {
+    private String supplierName;
+    private String email;
+    private String phone;
+    private String fax;
+    private String address;
+}

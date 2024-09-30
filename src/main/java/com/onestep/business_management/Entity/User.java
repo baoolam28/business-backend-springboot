@@ -24,6 +24,7 @@ public class User implements UserDetails{
     @GeneratedValue()
     private UUID userId;
 
+
     private String username;
 
     private String password;
@@ -31,7 +32,7 @@ public class User implements UserDetails{
     @Column(name = "phoneNumber")
     private String phoneNumber;
 
-    @Column(name = "fullName")
+    @Column(name = "fullName", length = 50, nullable = true, columnDefinition = "NVARCHAR(50)")
     private String fullName;
 
     @OneToOne

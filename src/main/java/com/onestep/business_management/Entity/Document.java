@@ -32,10 +32,10 @@ public class Document {
 
     private String companyId;
 
-    @Column(name = "representOne")
+    @Column(name = "representOne", length = 50, nullable = true, columnDefinition = "NVARCHAR(50)")
     private String representOne;
 
-    @Column(name = "representTwo")
+    @Column(name = "representTwo", length = 50, nullable = true, columnDefinition = "NVARCHAR(50)")
     private String representTwo;
 
     private Float totalAmount;

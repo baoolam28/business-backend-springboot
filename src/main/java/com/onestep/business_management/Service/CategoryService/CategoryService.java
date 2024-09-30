@@ -1,7 +1,7 @@
 package com.onestep.business_management.Service.CategoryService;
 
-import com.onestep.business_management.DTO.CategoryRequest;
-import com.onestep.business_management.DTO.CategoryResponse;
+import com.onestep.business_management.DTO.CategoryDTO.CategoryRequest;
+import com.onestep.business_management.DTO.CategoryDTO.CategoryResponse;
 import com.onestep.business_management.Entity.Category;
 import com.onestep.business_management.Repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;

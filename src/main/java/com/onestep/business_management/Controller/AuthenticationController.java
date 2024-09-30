@@ -1,7 +1,7 @@
 package com.onestep.business_management.Controller;
 
-import com.onestep.business_management.DTO.LoginRequest;
-import com.onestep.business_management.DTO.LoginResponse;
+import com.onestep.business_management.DTO.AuthDTO.LoginRequest;
+import com.onestep.business_management.DTO.AuthDTO.LoginResponse;
 import com.onestep.business_management.Entity.User;
 import com.onestep.business_management.Scurity.JWTService;
 import com.onestep.business_management.Service.AuthenticationService;

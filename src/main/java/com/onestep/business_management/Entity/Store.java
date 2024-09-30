@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -32,17 +33,22 @@ public class Store {
     private String storeName;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "avatar_image_id", referencedColumnName = "imageId")
+    @JoinColumn(name = "imageId", nullable = true)
     private Image storeAvatar;   
 
+    @Column(name = "storeLocation", length = 255, nullable = true, columnDefinition = "NVARCHAR(255)")
     private String storeLocation;
 
+    @Column(name = "storeDescription", length = 255, nullable = true, columnDefinition = "NVARCHAR(255)")
     private String storeDescription;
 
+    @Column(name = "storeEmail", length = 50, nullable = true, columnDefinition = "NVARCHAR(50)")
     private String storeEmail;
 
+    @Column(name = "storeBankAccount", length = 30, nullable = true, columnDefinition = "NVARCHAR(30)")
     private String storeBankAccount;
 
+    @Column(name = "pickupAddress", length = 255, nullable = true, columnDefinition = "NVARCHAR(255)")
     private String pickupAddress;
 
     private String storeTaxCode;

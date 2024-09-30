@@ -1,7 +1,7 @@
 package com.onestep.business_management.Controller;
 
-import com.onestep.business_management.DTO.DocumentRequest;
-import com.onestep.business_management.DTO.DocumentResponse;
+import com.onestep.business_management.DTO.DocumentDTO.DocumentRequest;
+import com.onestep.business_management.DTO.DocumentDTO.DocumentResponse;
 import com.onestep.business_management.Service.DocumentService.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -21,15 +21,18 @@ public class Product {
 
     private String barcode;
 
-    @Column(name = "productName")
+    @Column(name = "productName", length = 100, nullable = true, columnDefinition = "NVARCHAR(100)")
     private String productName;
 
     @ManyToOne
     @JoinColumn(name = "categoryId")
     private Category category;
 
+    @Column(name = "abbreviations", length = 50, nullable = true, columnDefinition = "NVARCHAR(50)")
     private String abbreviations;
+    @Column(name = "unit", length = 20, nullable = true, columnDefinition = "NVARCHAR(20)")
     private String unit;
+    @Column(name = "price", precision = 12, scale = 2, nullable = false)
     private Float price;
 
     @ManyToOne
@@ -53,7 +56,7 @@ public class Product {
     private Store store;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<OrderDetail> orderDetails;
+    private List<OrderOfflineDetail> orderDetails;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();

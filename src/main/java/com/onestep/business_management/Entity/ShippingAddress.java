@@ -22,19 +22,19 @@ public class ShippingAddress {
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    @Column(name = "full_name", length = 255)
+    @Column(name = "fullName", length = 50, nullable = true, columnDefinition = "NVARCHAR(50)")
     private String fullName;
 
-    @Column(name = "phone_number", length = 50)
+    @Column(name = "phoneNumber", length = 14, nullable = true, columnDefinition = "NVARCHAR(20)")
     private String phoneNumber;
 
-    @Column(name = "address_line", length = 255)
+    @Column(name = "address", length = 255, nullable = true, columnDefinition = "NVARCHAR(255)")
     private String address;
 
-    @Column(name = "code", length = 25)
-    private String city;
+    @Column(name = "wardCode", length = 10, nullable = true, columnDefinition = "NVARCHAR(10)")
+    private String wardCode;
 
-    @Column(name = "is_default")
+    @Column(name = "disabled")
     private boolean disabled;
 
 }

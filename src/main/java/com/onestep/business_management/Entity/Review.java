@@ -37,12 +37,13 @@ public class Review {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "rating", length = 5, nullable = false)
     private Integer rating;
 
-    @Column(name = "comment", columnDefinition = "NVARCHAR(255)")
+    @Column(name = "comment", length = 255, nullable = true, columnDefinition = "NVARCHAR(255)")
     private String comment;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "review_date", nullable = false)
+    @Column(name = "reviewDate", nullable = false)
     private Date reviewDate;
 }

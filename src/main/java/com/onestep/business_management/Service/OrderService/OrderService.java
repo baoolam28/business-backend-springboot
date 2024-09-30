@@ -1,14 +1,14 @@
 package com.onestep.business_management.Service.OrderService;
 
-import com.onestep.business_management.DTO.OrderReportResponse;
-import com.onestep.business_management.DTO.OrderRequest;
-import com.onestep.business_management.DTO.OrderResponse;
-import com.onestep.business_management.Entity.Order;
-import com.onestep.business_management.Entity.OrderDetail;
+import com.onestep.business_management.Entity.OrderOffline;
+import com.onestep.business_management.Entity.OrderOfflineDetail;
+import com.onestep.business_management.DTO.OrderDTO.OrderReportResponse;
+import com.onestep.business_management.DTO.OrderDTO.OrderRequest;
+import com.onestep.business_management.DTO.OrderDTO.OrderResponse;
 import com.onestep.business_management.Entity.Customer;
 import com.onestep.business_management.Entity.Product;
-import com.onestep.business_management.Repository.OrderDetailRepository;
-import com.onestep.business_management.Repository.OrderRepository;
+import com.onestep.business_management.Repository.OrderOfflineDetailRepository;
+import com.onestep.business_management.Repository.OrderOfflineRepository;
 import com.onestep.business_management.Repository.CustomerRepository;
 import com.onestep.business_management.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class OrderService {
 
     @Autowired
-    private OrderRepository orderRepository;
+    private OrderOfflineRepository orderRepository;
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -32,50 +32,50 @@ public class OrderService {
     private ProductRepository productRepository;
 
     @Autowired
-    private OrderDetailRepository orderDetailRepository;
+    private OrderOfflineDetailRepository orderDetailRepository;
 
-    public OrderResponse createOrder(OrderRequest orderRequest) {
-        Order order = new Order();
-        order.setOrderDate(new Date());
-        order.setStatus("PENDING"); // Order is pending payment
-        order.setPaymentStatus(false); // Payment status is initially unpaid
-        order.setPaymentMethod(null); // No payment method initially
+    // public OrderResponse createOrder(OrderRequest orderRequest) {
+    //     OrderOffline order = new OrderOffline();
+    //     order.setOrderDate(new Date());
+    //     order.setStatus("PENDING"); // Order is pending payment
+    //     order.setPaymentStatus(false); // Payment status is initially unpaid
+    //     order.setPaymentMethod(null); // No payment method initially
 
-        // Find or create the customer
-        Customer existingCustomer = customerRepository.findByCustomerId(orderRequest.getCustomerId()).orElse(null);
+    //     // Find or create the customer
+    //     Customer existingCustomer = customerRepository.findByCustomerId(orderRequest.getCustomerId()).orElse(null);
 
-        if (existingCustomer == null) {
-            new RuntimeException("Customer not found");
-        }
+    //     if (existingCustomer == null) {
+    //         new RuntimeException("Customer not found");
+    //     }
         
-        order.setCustomer(existingCustomer);
+    //     order.setCustomer(existingCustomer);
 
-        // Map OrderRequest to OrderDetail
-        List<OrderDetail> orderDetails = orderRequest.getOrderDetails().stream().map(request -> {
-            OrderDetail detail = new OrderDetail();
-            detail.setQuantity(request.getQuantity());
-            detail.setPrice(request.getPrice());
+    //     // Map OrderRequest to OrderDetail
+    //     List<OrderOfflineDetail> orderDetails = orderRequest.getOrderDetails().stream().map(request -> {
+    //         OrderOfflineDetail detail = new OrderOfflineDetail();
+    //         detail.setQuantity(request.getQuantity());
+    //         detail.setPrice(request.getPrice());
 
-            Product product = productRepository.findByBarcode(request.getBarcode())
-                    .orElseThrow(() -> new RuntimeException("Product not found"));
+    //         Product product = productRepository.findByBarcode(request.getBarcode())
+    //                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-            detail.setProduct(product);
-            detail.setOrder(order);
-            return detail;
-        }).collect(Collectors.toList());
+    //         detail.setProduct(product);
+    //         detail.setOrder(order);
+    //         return detail;
+    //     }).collect(Collectors.toList());
 
-        order.setOrderDetails(orderDetails);
+    //     order.setOrderDetails(orderDetails);
  
-        // Save order
-        Order savedOrder = orderRepository.save(order);
-        return OrderMapper.INSTANCE.toResponse(savedOrder);
-    }
+    //     // Save order
+    //     OrderOffline savedOrder = orderRepository.save(order);
+    //     return OrderMapper.INSTANCE.toResponse(savedOrder);
+    // }
 
 
 
     @Transactional
     public OrderResponse updateOrderPayment(Integer orderId, String paymentMethod, boolean paymentStatus) {
-        Order order = orderRepository.findById(orderId)
+        OrderOffline order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
         // Update payment details
@@ -83,7 +83,7 @@ public class OrderService {
         order.setPaymentStatus(paymentStatus);
         order.setStatus("COMPLETED"); // Update order status as needed
 
-        Order updatedOrder = orderRepository.save(order);
+        OrderOffline updatedOrder = orderRepository.save(order);
         return OrderMapper.INSTANCE.toResponse(updatedOrder);
     }
 

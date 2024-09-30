@@ -4,8 +4,8 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.onestep.business_management.Entity.Order;
-import com.onestep.business_management.Repository.OrderRepository;
+import com.onestep.business_management.Entity.OrderOffline;
+import com.onestep.business_management.Repository.OrderOfflineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,10 +22,10 @@ import java.nio.file.Files;
 public class InvoicePDF {
 
     @Autowired
-    private OrderRepository orderRepository;
+    private OrderOfflineRepository orderRepository;
 
     public void printAndDeleteInvoicePDF(Integer orderId) throws IOException, PrintException {
-        Order order = getOrder(orderId);
+        OrderOffline order = getOrder(orderId);
         if (order == null) {
             throw new IOException("Order not found");
         }
@@ -85,7 +85,7 @@ public class InvoicePDF {
         return String.format("%,.0f VND", price);
     }
 
-    private Order getOrder(Integer orderId) {
+    private OrderOffline getOrder(Integer orderId) {
         return orderRepository.findById(orderId).orElse(null);
     }
 }

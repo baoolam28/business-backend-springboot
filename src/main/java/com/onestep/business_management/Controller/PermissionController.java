@@ -1,7 +1,7 @@
 package com.onestep.business_management.Controller;
 
-import com.onestep.business_management.DTO.PermissionRequest;
-import com.onestep.business_management.DTO.PermissionResponse;
+import com.onestep.business_management.DTO.PermissionDTO.PermissionRequest;
+import com.onestep.business_management.DTO.PermissionDTO.PermissionResponse;
 import com.onestep.business_management.Service.PermissionService.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
