@@ -21,6 +21,7 @@ public class OrderOffline {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "orderOfflineId")
     private UUID orderOfflineId;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -38,7 +39,8 @@ public class OrderOffline {
     @JoinColumn(name = "customerId", nullable = true)
     private Customer customer;
 
-    @OneToMany(mappedBy = "OrderOffline", cascade = CascadeType.ALL, orphanRemoval = true)
+    // Sửa 'OrderOffline' thành 'orderOffline'
+    @OneToMany(mappedBy = "orderOffline", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderOfflineDetail> orderDetails = new ArrayList<>();
 
     // Phương thức tiện ích có thể thêm vào

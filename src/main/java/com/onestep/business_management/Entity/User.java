@@ -26,6 +26,7 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "userId")
     private UUID userId;
 
     @Column(nullable = false, unique = true)

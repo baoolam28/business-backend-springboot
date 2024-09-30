@@ -1,5 +1,7 @@
 package com.onestep.business_management.Entity;
 
+import java.util.UUID;
+
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -18,7 +20,7 @@ public class OrderOnlineDetail {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    private Integer orderDetailId;
+    private UUID orderDetailId;
 
     @Column(nullable = false)
     private int quantity;
@@ -27,7 +29,7 @@ public class OrderOnlineDetail {
     private Double price; // Sử dụng Double để có thể là null
 
     @ManyToOne
-    @JoinColumn(name = "orderOnlineId") // Chỉnh sửa ở đây
+    @JoinColumn(name = "orderOnlineId") 
     @JsonBackReference
     private OrderOnline orderOnline;
 

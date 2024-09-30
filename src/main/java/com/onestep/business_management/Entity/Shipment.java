@@ -19,7 +19,7 @@ public class Shipment {
     private Integer shipmentId;
 
     @OneToOne
-    @JoinColumn(name = "orderId", referencedColumnName = "orderId")
+    @JoinColumn(name = "orderOnlineId", referencedColumnName = "orderOnlineId")
     private OrderOnline orderOnline;
 
     @OneToOne

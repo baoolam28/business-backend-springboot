@@ -1,5 +1,7 @@
 package com.onestep.business_management.Entity;
 
+import java.util.UUID;
+
 import org.hibernate.annotations.GenericGenerator;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -16,7 +18,8 @@ public class OrderOfflineDetail {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    private Integer orderDetailId;
+    @Column(name = "orderDetailId")
+    private UUID orderDetailId;
 
     @Column(nullable = false, length = 50) 
     private String barcode;
@@ -28,7 +31,8 @@ public class OrderOfflineDetail {
     private double price;
 
     @ManyToOne
-    @JoinColumn(name = "orderOfflineId", nullable = false)
+    @JoinColumn(name = "orderOfflineId") 
+    @JsonBackReference
     private OrderOffline orderOffline;
 
     @ManyToOne(fetch = FetchType.LAZY)

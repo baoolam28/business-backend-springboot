@@ -34,8 +34,8 @@ public class Product {
     @Column(name = "unit", length = 20, nullable = true, columnDefinition = "NVARCHAR(20)")
     private String unit;
 
-    @Column(name = "price", precision = 12, scale = 2, nullable = false)
-    private Float price;
+    @Column(name = "price", nullable = false)
+    private Double price;
 
     @ManyToOne
     @JoinColumn(name = "supplierId")
