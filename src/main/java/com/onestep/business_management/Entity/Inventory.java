@@ -1,13 +1,11 @@
 package com.onestep.business_management.Entity;
 
-import java.util.Date;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
+import java.util.Date;
 
 @Entity
 @Data
@@ -22,11 +20,11 @@ public class Inventory {
     @JoinColumn(name = "storeId", nullable = false)
     private Store store;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "productId", nullable = false)
     private Product product;
 
-    @Column(name = "barcode")
+    @Column(name = "barcode", length = 100, nullable = false) // Cập nhật chiều dài và nullable
     private String barcode;
 
     @Column(name = "quantityInStock")
@@ -36,4 +34,9 @@ public class Inventory {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUpdated;
 
+    // Phương thức tiện ích có thể thêm vào
+    public String getInventoryDetails() {
+        return String.format("Inventory [ID=%d, Product=%s, Quantity=%d, LastUpdated=%s]",
+                inventoryId, product.getProductName(), quantityInStock, lastUpdated);
+    }
 }

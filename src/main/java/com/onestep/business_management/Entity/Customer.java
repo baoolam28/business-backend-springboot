@@ -22,19 +22,21 @@ public class Customer {
 
     @Column(name = "name", length = 50, nullable = true, columnDefinition = "NVARCHAR(50)")
     private String name;
+
     @Column(name = "email", length = 50, nullable = true, columnDefinition = "NVARCHAR(50)")
     private String email;
+
     @Column(name = "phone", length = 13, nullable = true, columnDefinition = "NVARCHAR(13)")
     private String phone;
+
     @Column(name = "address", length = 100, nullable = true, columnDefinition = "NVARCHAR(100)")
     private String address;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
+    @JsonManagedReference
     private List<OrderOffline> orders = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "storeId", nullable = false) // Foreign key to Store table
     private Store store;
-
 }

@@ -9,8 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 @Repository
-public interface OrderOfflineRepository extends JpaRepository<OrderOffline, Integer> {
+public interface OrderOfflineRepository extends JpaRepository<OrderOffline, UUID> {
 
     @Query(value = "SELECT YEAR(o.order_date) AS year, DATEPART(WEEK, o.order_date) AS week, COUNT(DISTINCT o.customer_id) AS customer_count " +
             "FROM orders o " +

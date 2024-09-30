@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "ShippingAddresses")
-
 public class ShippingAddress {
 
     @Id
@@ -18,7 +17,7 @@ public class ShippingAddress {
     @Column(name = "address_id")
     private int addressId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
@@ -34,7 +33,7 @@ public class ShippingAddress {
     @Column(name = "wardCode", length = 10, nullable = true, columnDefinition = "NVARCHAR(10)")
     private String wardCode;
 
-    @Column(name = "disabled")
+    @Column(name = "disabled", nullable = false)
     private boolean disabled;
 
 }

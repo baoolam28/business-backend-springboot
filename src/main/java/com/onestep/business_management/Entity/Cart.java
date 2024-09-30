@@ -28,11 +28,10 @@ public class Cart {
     private Integer cartId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CartItems> cartIteams;
+    private List<CartItems> cartItems;
 
-    private float totalAmount;
 }

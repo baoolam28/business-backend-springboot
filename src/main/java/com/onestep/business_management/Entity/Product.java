@@ -30,8 +30,10 @@ public class Product {
 
     @Column(name = "abbreviations", length = 50, nullable = true, columnDefinition = "NVARCHAR(50)")
     private String abbreviations;
+
     @Column(name = "unit", length = 20, nullable = true, columnDefinition = "NVARCHAR(20)")
     private String unit;
+
     @Column(name = "price", precision = 12, scale = 2, nullable = false)
     private Float price;
 
@@ -40,7 +42,7 @@ public class Product {
     private Supplier supplier;
 
     @ManyToOne
-    @JoinColumn(name= "originId")
+    @JoinColumn(name = "originId")
     private Origin origin;
 
     @Column(name = "createdDate")
@@ -56,8 +58,21 @@ public class Product {
     private Store store;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<OrderOfflineDetail> orderDetails;
+    private List<OrderOfflineDetail> orderDetails = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product")
+    private List<Inventory> inventories = new ArrayList<>();
+
+    public void addImage(Image image) {
+        images.add(image);
+        image.setProduct(this);
+    }
+
+    public void removeImage(Image image) {
+        images.remove(image);
+        image.setProduct(null); 
+    }
 }

@@ -74,7 +74,7 @@ public class OrderService {
 
 
     @Transactional
-    public OrderResponse updateOrderPayment(Integer orderId, String paymentMethod, boolean paymentStatus) {
+    public OrderResponse updateOrderPayment(UUID orderId, String paymentMethod, boolean paymentStatus) {
         OrderOffline order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
@@ -88,7 +88,7 @@ public class OrderService {
     }
 
 
-    public OrderResponse getOrderById(Integer orderId) {
+    public OrderResponse getOrderById(UUID orderId) {
         return orderRepository.findById(orderId)
                 .map(OrderMapper.INSTANCE::toResponse)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
@@ -133,7 +133,7 @@ public class OrderService {
 //        return OrderMapper.INSTANCE.toResponse(updatedOrder);
 //    }
 
-    public boolean deleteOrder(Integer orderId) {
+    public boolean deleteOrder(UUID orderId) {
         if (orderRepository.existsById(orderId)) {
             orderRepository.deleteById(orderId);
             return true;

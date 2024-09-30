@@ -5,11 +5,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -29,8 +31,10 @@ import lombok.NoArgsConstructor;
 public class OrderOnline {
 
     @Id
-    @GeneratedValue()
-    private UUID orderId;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "OrderOnlineId")
+    private UUID OrderOnlineId;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date orderDate;
@@ -44,13 +48,20 @@ public class OrderOnline {
     }
 
     private Status status;
+
     private boolean paymentStatus;
+
     private String paymentMethod;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = true)
-    @JoinColumn(name = "customerId", nullable = true)
-    private Customer customer;
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "userId", nullable = true)
+    private User user;
 
-    @OneToMany(mappedBy = "orderDetailId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "orderOnline", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderOnlineDetail> orderDetails = new ArrayList<>();
+
+    // Phương thức tiện ích để lấy thông tin đơn hàng
+    public String getOrderSummary() {
+        return String.format("OrderOnline [ID=%s, Date=%s, Status=%s]", OrderOnlineId, orderDate, status);
+    }
 }

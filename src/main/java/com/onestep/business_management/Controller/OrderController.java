@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -42,9 +43,10 @@ public class OrderController {
     // }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<OrderResponse> getOrderById(@PathVariable Integer orderId) {
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable String orderId) {
+        UUID uuid = UUID.fromString(orderId);
         try {
-            OrderResponse response = orderService.getOrderById(orderId);
+            OrderResponse response = orderService.getOrderById(uuid);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -52,11 +54,13 @@ public class OrderController {
     }
 
     @PutMapping("/{orderId}/payment")
-    public ResponseEntity<OrderResponse> updateOrderPayment(@PathVariable Integer orderId,
+    public ResponseEntity<OrderResponse> updateOrderPayment(@PathVariable String orderId,
                                                             @RequestParam String paymentMethod,
                                                             @RequestParam boolean paymentStatus) {
+                                                                UUID uuid = UUID.fromString(orderId);
+              
         try {
-            OrderResponse response = orderService.updateOrderPayment(orderId, paymentMethod, paymentStatus);
+            OrderResponse response = orderService.updateOrderPayment(uuid, paymentMethod, paymentStatus);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

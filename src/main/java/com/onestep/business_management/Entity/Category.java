@@ -17,4 +17,5 @@ public class Category {
     private String categoryName;
     @Column(name = "categoryDescription", length = 100, nullable = true, columnDefinition = "NVARCHAR(100)")
     private String categoryDescription;
+    private boolean disabled;
 }

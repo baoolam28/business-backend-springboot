@@ -1,5 +1,7 @@
 package com.onestep.business_management.Entity;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,19 +14,30 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "orderOnlineDetails")
 public class OrderOnlineDetail {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private Integer orderDetailId;
 
+    @Column(nullable = false)
     private int quantity;
-    private double price;
+
+    @Column(nullable = false)
+    private Double price; // Sử dụng Double để có thể là null
 
     @ManyToOne
-    @JoinColumn(name = "orderId")
+    @JoinColumn(name = "orderOnlineId") // Chỉnh sửa ở đây
     @JsonBackReference
     private OrderOnline orderOnline;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productId")
     private Product product;
+
+    // Phương thức tiện ích để tính toán tổng giá
+    public double calculateTotalPrice() {
+        return quantity * (price != null ? price : 0); // Đảm bảo giá không null
+    }
 }

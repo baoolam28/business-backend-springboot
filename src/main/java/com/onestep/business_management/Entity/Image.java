@@ -1,16 +1,11 @@
 package com.onestep.business_management.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 @Entity
 @Data
@@ -29,9 +24,14 @@ public class Image {
 
     @ManyToOne
     @JoinColumn(name = "productId", nullable = true)
-    private Product product; 
+    private Product product;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "userId", nullable = true)
     private User user;
+
+    // Phương thức tiện ích có thể thêm vào
+    public String getImageDetails() {
+        return String.format("Image [ID=%d, Name=%s, Type=%s]", imageId, fileName, fileType);
+    }
 }

@@ -25,6 +25,7 @@ public class Document {
     @Column(name = "docNumberOne")
     private String docNumberOne;
 
+    @Temporal(TemporalType.DATE)
     private Date date;
 
     @Column(name = "docNumberTwo")
@@ -39,26 +40,27 @@ public class Document {
     private String representTwo;
 
     private Float totalAmount;
-
     private Float paidAmount;
-
     private Float paymentPercentage;
 
     @Column(name = "paymentStatus")
     private boolean paymentStatus;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "createdDate")
     private Date createdDate;
 
     @Column(name = "createdBy")
     private int createdBy;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updatedDate")
     private Date updatedDate;
 
     @Column(name = "updatedBy")
     private int updatedBy;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "deletedDate")
     private Date deletedDate;
 
@@ -70,5 +72,5 @@ public class Document {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "storeId")
-    private Store store;    
+    private Store store;
 }

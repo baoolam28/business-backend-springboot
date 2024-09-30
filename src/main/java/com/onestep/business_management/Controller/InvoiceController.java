@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import javax.print.PrintException;
 
@@ -18,9 +19,10 @@ public class InvoiceController {
     private InvoicePDF invoicePDF;
 
     @PostMapping("/print/{id}")
-    public ResponseEntity<String> printInvoice(@PathVariable("id") Integer orderId) throws PrintException {
+    public ResponseEntity<String> printInvoice(@PathVariable("id") String orderId) throws PrintException {
+        UUID uuid = UUID.fromString(orderId);
         try {
-            invoicePDF.printAndDeleteInvoicePDF(orderId);
+            invoicePDF.printAndDeleteInvoicePDF(uuid);
             return new ResponseEntity<>("Invoice printed and deleted successfully", HttpStatus.OK);
         } catch (IOException e) {
             return new ResponseEntity<>("Failed to print invoice: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
