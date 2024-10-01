@@ -17,5 +17,5 @@ public class ProductRequest {
     private Integer supplierId;
     private Integer originId;
     private Integer createdBy;
-    private boolean disabled;
+    private boolean disabled;   
 }
