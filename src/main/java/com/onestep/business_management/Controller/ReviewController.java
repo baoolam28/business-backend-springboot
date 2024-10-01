@@ -60,9 +60,9 @@ public class ReviewController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ReviewResponse> updateReview(@PathVariable("id") Integer reviewId, @RequestBody ReviewRequest reviewRequest){
+    public ResponseEntity<ReviewResponse> updateReview(@RequestBody ReviewRequest reviewRequest){
         try {
-            ReviewResponse response = reviewService.updateReview(reviewId, reviewRequest);
+            ReviewResponse response = reviewService.updateReview(reviewRequest);
             if(response != null){
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }else{
@@ -76,8 +76,8 @@ public class ReviewController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable("id") Integer reviewId){
         try {
-            boolean isDeleted = reviewService.deleteReview(reviewId);
-            if(isDeleted){
+            ReviewResponse response = reviewService.deleteReview(reviewId);
+            if(response != null){
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }else{
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
