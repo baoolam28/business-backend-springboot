@@ -1,9 +1,9 @@
 package com.onestep.business_management.Service.DocumentService;
 
-import com.onestep.business_management.DTO.DocumentRequest;
-import com.onestep.business_management.DTO.DocumentResponse;
-import com.onestep.business_management.DTO.DocumentDetailRequest;
-import com.onestep.business_management.DTO.DocumentDetailResponse;
+import com.onestep.business_management.DTO.DocumentDTO.DocumentDetailRequest;
+import com.onestep.business_management.DTO.DocumentDTO.DocumentDetailResponse;
+import com.onestep.business_management.DTO.DocumentDTO.DocumentRequest;
+import com.onestep.business_management.DTO.DocumentDTO.DocumentResponse;
 import com.onestep.business_management.Entity.Document;
 import com.onestep.business_management.Entity.DocumentDetail;
 import com.onestep.business_management.Entity.Product;

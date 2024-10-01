@@ -21,23 +21,28 @@ public class Product {
 
     private String barcode;
 
-    @Column(name = "productName")
+    @Column(name = "productName", length = 100, nullable = true, columnDefinition = "NVARCHAR(100)")
     private String productName;
 
     @ManyToOne
     @JoinColumn(name = "categoryId")
     private Category category;
 
+    @Column(name = "abbreviations", length = 50, nullable = true, columnDefinition = "NVARCHAR(50)")
     private String abbreviations;
+
+    @Column(name = "unit", length = 20, nullable = true, columnDefinition = "NVARCHAR(20)")
     private String unit;
-    private Float price;
+
+    @Column(name = "price", nullable = false)
+    private Double price;
 
     @ManyToOne
     @JoinColumn(name = "supplierId")
     private Supplier supplier;
 
     @ManyToOne
-    @JoinColumn(name= "originId")
+    @JoinColumn(name = "originId")
     private Origin origin;
 
     @Column(name = "createdDate")
@@ -48,13 +53,26 @@ public class Product {
 
     private boolean disabled;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "storeId", nullable = false)
     private Store store;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<OrderDetail> orderDetails;
+    private List<OrderOfflineDetail> orderDetails = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product")
+    private List<Inventory> inventories = new ArrayList<>();
+
+    public void addImage(Image image) {
+        images.add(image);
+        image.setProduct(this);
+    }
+
+    public void removeImage(Image image) {
+        images.remove(image);
+        image.setProduct(null); 
+    }
 }

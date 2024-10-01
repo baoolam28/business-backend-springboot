@@ -1,7 +1,7 @@
 package com.onestep.business_management.Service.StoreService;
 
-import com.onestep.business_management.DTO.StoreRequest;
-import com.onestep.business_management.DTO.StoreResponse;
+import com.onestep.business_management.DTO.StoreDTO.StoreRequest;
+import com.onestep.business_management.DTO.StoreDTO.StoreResponse;
 import com.onestep.business_management.Entity.Store;
 import com.onestep.business_management.Entity.User;
 import com.onestep.business_management.Repository.StoreRepository;
@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +29,7 @@ public class StoreService {
 
     // Create or Update Store
     public StoreResponse saveStore(StoreRequest storeRequest) {
-        Integer managerId = storeRequest.getStoreManagerId();
+        UUID managerId = storeRequest.getStoreManagerId();
         User storeManager = userRepository.findById(managerId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + managerId + " not found.")
         );
@@ -54,9 +55,9 @@ public class StoreService {
     }
 
     // Get Store by ID
-    public StoreResponse getStoreById(Integer id) {
-        Optional<Store> store = storeRepository.findById(id);
-        return store.map(StoreMapper.INSTANCE::toResponse).orElse(null);
+    public StoreResponse getStoreById(UUID storeId) {
+        Optional<Store> store = storeRepository.findById(storeId);
+        return store.map(StoreMapper.INSTANCE::toResponse).orElse(null);    
     }
 
     // Get All Stores

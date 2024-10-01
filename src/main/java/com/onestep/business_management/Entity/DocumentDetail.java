@@ -6,8 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
+
 
 @Entity
 @Data
@@ -17,10 +19,7 @@ import java.util.UUID;
 public class DocumentDetail {
     @Id
     @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID docDetailId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,9 +31,18 @@ public class DocumentDetail {
     private Product product;
 
     private int quantity;
+
     private float price;
+
     @Column(name = "totalPrice")
     private float totalPrice;
+
     @Column(name = "createdDate")
-    private Date createdDate;
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime createdDate;
+
+    // Phương thức để tính toán giá tổng
+    public void calculateTotalPrice() {
+        this.totalPrice = this.quantity * this.price;
+    }
 }

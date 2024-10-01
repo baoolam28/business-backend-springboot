@@ -1,7 +1,7 @@
 package com.onestep.business_management.Service.ProductService;
 
-import com.onestep.business_management.DTO.ProductRequest;
-import com.onestep.business_management.DTO.ProductResponse;
+import com.onestep.business_management.DTO.ProductDTO.ProductRequest;
+import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
 import com.onestep.business_management.Entity.Product;
 import com.onestep.business_management.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +46,14 @@ public class ProductService {
         return products.stream()
                 .map(ProductMapper.INSTANCE::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    public ProductResponse findProductById(Integer productId){
+        Product product = productRepository.findById(productId).orElse(null);
+        if(product != null){
+            ProductMapper.INSTANCE.toResponse(product);
+        }
+        return null;
     }
 
     public List<ProductResponse> findByCategory(int categoryId) {

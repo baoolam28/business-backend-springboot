@@ -4,8 +4,8 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.onestep.business_management.Entity.Order;
-import com.onestep.business_management.Repository.OrderRepository;
+import com.onestep.business_management.Entity.OrderOffline;
+import com.onestep.business_management.Repository.OrderOfflineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,15 +17,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.UUID;
 
 @Component
 public class InvoicePDF {
 
     @Autowired
-    private OrderRepository orderRepository;
+    private OrderOfflineRepository orderRepository;
 
-    public void printAndDeleteInvoicePDF(Integer orderId) throws IOException, PrintException {
-        Order order = getOrder(orderId);
+    public void printAndDeleteInvoicePDF(UUID orderId) throws IOException, PrintException {
+        OrderOffline order = getOrder(orderId);
         if (order == null) {
             throw new IOException("Order not found");
         }
@@ -38,7 +39,7 @@ public class InvoicePDF {
             document.open();
 
             // Add content to PDF
-            document.add(new Paragraph("Invoice ID: " + order.getOrderId()));
+            document.add(new Paragraph("Invoice ID: " + order.getOrderOfflineId()));
             document.add(new Paragraph("Customer: " + order.getCustomer().getName()));
             document.add(new Paragraph("Order Date: " + order.getOrderDate()));
 
@@ -85,7 +86,7 @@ public class InvoicePDF {
         return String.format("%,.0f VND", price);
     }
 
-    private Order getOrder(Integer orderId) {
+    private OrderOffline getOrder(UUID orderId) {
         return orderRepository.findById(orderId).orElse(null);
     }
 }

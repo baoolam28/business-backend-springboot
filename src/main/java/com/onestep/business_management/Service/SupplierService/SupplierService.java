@@ -1,7 +1,7 @@
 package com.onestep.business_management.Service.SupplierService;
 
-import com.onestep.business_management.DTO.SupplierRequest;
-import com.onestep.business_management.DTO.SupplierResponse;
+import com.onestep.business_management.DTO.SupplierDTO.SupplierRequest;
+import com.onestep.business_management.DTO.SupplierDTO.SupplierResponse;
 import com.onestep.business_management.Entity.Supplier;
 import com.onestep.business_management.Repository.SupplierRepository;
 import org.springframework.beans.factory.annotation.Autowired;

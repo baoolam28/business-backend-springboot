@@ -1,7 +1,7 @@
 package com.onestep.business_management.Controller;
 
-import com.onestep.business_management.DTO.CustomerRequest;
-import com.onestep.business_management.DTO.CustomerResponse;
+import com.onestep.business_management.DTO.CustomerDTO.CustomerRequest;
+import com.onestep.business_management.DTO.CustomerDTO.CustomerResponse;
 import com.onestep.business_management.Service.CustomerService.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

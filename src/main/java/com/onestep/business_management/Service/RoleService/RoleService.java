@@ -1,7 +1,7 @@
 package com.onestep.business_management.Service.RoleService;
 
-import com.onestep.business_management.DTO.RoleRequest;
-import com.onestep.business_management.DTO.RoleResponse;
+import com.onestep.business_management.DTO.RoleDTO.RoleRequest;
+import com.onestep.business_management.DTO.RoleDTO.RoleResponse;
 import com.onestep.business_management.Entity.Role;
 import com.onestep.business_management.Repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;

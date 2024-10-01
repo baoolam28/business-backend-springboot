@@ -1,7 +1,7 @@
 package com.onestep.business_management.Service.CustomerService;
 
-import com.onestep.business_management.DTO.CustomerRequest;
-import com.onestep.business_management.DTO.CustomerResponse;
+import com.onestep.business_management.DTO.CustomerDTO.CustomerRequest;
+import com.onestep.business_management.DTO.CustomerDTO.CustomerResponse;
 import com.onestep.business_management.Entity.Customer;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

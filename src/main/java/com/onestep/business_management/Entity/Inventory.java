@@ -15,10 +15,16 @@ public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer inventoryId;
-    @Column(name = "productId", nullable = false)
-    private String productId;
 
-    @Column(name = "barcode")
+    @ManyToOne
+    @JoinColumn(name = "storeId", nullable = false)
+    private Store store;
+
+    @ManyToOne
+    @JoinColumn(name = "productId", nullable = false)
+    private Product product;
+
+    @Column(name = "barcode", length = 100, nullable = false) // Cập nhật chiều dài và nullable
     private String barcode;
 
     @Column(name = "quantityInStock")
@@ -28,4 +34,9 @@ public class Inventory {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUpdated;
 
+    // Phương thức tiện ích có thể thêm vào
+    public String getInventoryDetails() {
+        return String.format("Inventory [ID=%d, Product=%s, Quantity=%d, LastUpdated=%s]",
+                inventoryId, product.getProductName(), quantityInStock, lastUpdated);
+    }
 }

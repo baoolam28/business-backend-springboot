@@ -3,8 +3,8 @@ package com.onestep.business_management.Service.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.onestep.business_management.DTO.InventoryRequest;
-import com.onestep.business_management.DTO.InventoryResponse;
+import com.onestep.business_management.DTO.InventoryDTO.InventoryRequest;
+import com.onestep.business_management.DTO.InventoryDTO.InventoryResponse;
 import com.onestep.business_management.Entity.Inventory;
 import com.onestep.business_management.Repository.InventoryRepository;
 
