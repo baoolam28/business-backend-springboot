@@ -25,6 +25,7 @@ public class ProductController {
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (Exception e) {
             // Handle exceptions
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
