@@ -4,7 +4,7 @@ import com.onestep.business_management.DTO.AuthDTO.LoginRequest;
 import com.onestep.business_management.DTO.AuthDTO.LoginResponse;
 import com.onestep.business_management.Entity.User;
 import com.onestep.business_management.Scurity.JWTService;
-import com.onestep.business_management.Service.AuthenticationService;
+import com.onestep.business_management.Service.AuthService.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationProvider;

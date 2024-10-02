@@ -47,7 +47,7 @@ public class User implements UserDetails {
     private boolean disabled;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "userRoles", joinColumns = @JoinColumn(name = "userID"), inverseJoinColumns = @JoinColumn(name = "roleID"))
+    @JoinTable(name = "userRoles", joinColumns = @JoinColumn(name = "userId"), inverseJoinColumns = @JoinColumn(name = "roleId"))
     private Set<Role> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
