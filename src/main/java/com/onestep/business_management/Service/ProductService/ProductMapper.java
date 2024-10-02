@@ -15,7 +15,8 @@ public interface ProductMapper {
     @Mappings({
             @Mapping(target = "category.categoryId", source = "categoryId"),
             @Mapping(target = "supplier.supplierId", source = "supplierId"),
-            @Mapping(target = "origin.originId", source = "originId")
+            @Mapping(target = "origin.originId", source = "originId"),
+            @Mapping(target = "createdBy.userId", source = "userId")
     })
     Product toEntity(ProductRequest productRequest);
 
@@ -25,7 +26,9 @@ public interface ProductMapper {
             @Mapping(target = "supplierId", source = "supplier.supplierId"),
             @Mapping(target = "supplierName", source = "supplier.supplierName"),
             @Mapping(target = "originId", source = "origin.originId"),
-            @Mapping(target = "originName", source = "origin.originName")
+            @Mapping(target = "originName", source = "origin.originName"),
+            @Mapping(target = "userId", source = "createdBy.userId"),
+            @Mapping(target = "fullName", source = "createdBy.fullName")
     })
     ProductResponse toResponse(Product product);
 

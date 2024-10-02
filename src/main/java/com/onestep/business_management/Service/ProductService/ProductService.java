@@ -3,7 +3,12 @@ package com.onestep.business_management.Service.ProductService;
 import com.onestep.business_management.DTO.ProductDTO.ProductRequest;
 import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
 import com.onestep.business_management.Entity.Product;
+import com.onestep.business_management.Entity.Store;
+import com.onestep.business_management.Entity.User;
 import com.onestep.business_management.Repository.ProductRepository;
+import com.onestep.business_management.Repository.StoreRepository;
+import com.onestep.business_management.Repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +22,35 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private StoreRepository storeRepository;
+
     public ProductResponse createProduct(ProductRequest productRequest) {
+        if (productRequest.getUserId() == null) {
+            throw new IllegalArgumentException("User ID cannot be null");
+        }
+
+        Store store = storeRepository.findById(productRequest.getStoreId())
+        .orElseThrow(() -> new RuntimeException("Store not found"));   
+
+
         Product newProduct = ProductMapper.INSTANCE.toEntity(productRequest);
+
+        User user = userRepository.findById(productRequest.getUserId())
+        .orElseThrow(() -> new RuntimeException("User not found"));
+        
         newProduct.setCreatedDate(new Date());
         newProduct.setDisabled(false);
+        newProduct.setStore(store);
+        newProduct.setCreatedBy(user);
+        System.out.println("Received userId: " + productRequest.getUserId());
+        
         Product savedProduct = productRepository.save(newProduct);
+        System.out.println("Saved Product: " + savedProduct);
+
         return ProductMapper.INSTANCE.toResponse(savedProduct);
     }
 
@@ -46,6 +75,14 @@ public class ProductService {
         return products.stream()
                 .map(ProductMapper.INSTANCE::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    public ProductResponse findProductById(Integer productId){
+        Product product = productRepository.findById(productId).orElse(null);
+        if(product != null){
+            return ProductMapper.INSTANCE.toResponse(product);
+        }
+        return null;
     }
 
     public List<ProductResponse> findByCategory(int categoryId) {
