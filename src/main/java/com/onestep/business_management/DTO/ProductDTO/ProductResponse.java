@@ -5,12 +5,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductResponse {
     private String barcode;
+    private UUID userId;
+    private String fullName;
     private String productName;
     private Integer categoryId;
     private String categoryName;
@@ -22,7 +25,6 @@ public class ProductResponse {
     private Integer originId;
     private String originName;
     private Date createdDate;
-    private Integer createdBy;
     private boolean disabled;
     
 }
