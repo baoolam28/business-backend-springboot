@@ -55,6 +55,19 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAlreadyExistsException(ResourceAlreadyExistsException ex) {
+        ApiResponse<Object> response = new ApiResponse<>(
+                HttpStatus.CONFLICT.value(),  // Mã lỗi 409
+                ex.getMessage(),
+                null,
+                LocalDateTime.now()
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
+
     @ExceptionHandler(InvalidAccountExeption.class)
     public ResponseEntity<ApiResponse<Object>> handleInvalidAccountExeption(InvalidAccountExeption ex) {
         ApiResponse<Object> response = new ApiResponse<>(
@@ -70,7 +83,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiResponse<Object>> handleInvalidAccountExeption(BadCredentialsException ex) {
         ApiResponse<Object> response = new ApiResponse<>(
-                HttpStatus.UNAUTHORIZED.value(),  // Mã lỗi 404
+                HttpStatus.UNAUTHORIZED.value(),  // Mã lỗi 401
                 "username or password is invalid",
                 null,
                 LocalDateTime.now()

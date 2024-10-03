@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -81,4 +82,5 @@ public class Store {
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Inventory> inventories = new ArrayList<>();
+
 }

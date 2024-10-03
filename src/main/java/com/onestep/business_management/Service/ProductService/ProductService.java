@@ -5,6 +5,8 @@ import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
 import com.onestep.business_management.Entity.Product;
 import com.onestep.business_management.Entity.Store;
 import com.onestep.business_management.Entity.User;
+import com.onestep.business_management.Exeption.ResourceAlreadyExistsException;
+import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Repository.ProductRepository;
 import com.onestep.business_management.Repository.StoreRepository;
 import com.onestep.business_management.Repository.UserRepository;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +36,18 @@ public class ProductService {
     private MapperService mapperService;
 
     public ProductResponse createProduct(ProductRequest productRequest) {
+
+
+        List<Product> products = productRepository.findProductInStore(
+                productRequest.getStoreId(), productRequest.getBarcode());
+
+        if(!products.isEmpty()){
+            throw new ResourceAlreadyExistsException("Product already exist in store :" + productRequest.getStoreId());
+        }
+
+
+
+
         Product newProduct = ProductMapper.INSTANCE.prodRequestToEntity(productRequest, mapperService);
         Product response = productRepository.save(newProduct);
         return ProductMapper.INSTANCE.productToResponse(response);
