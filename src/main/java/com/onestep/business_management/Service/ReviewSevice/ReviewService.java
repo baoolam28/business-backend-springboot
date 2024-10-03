@@ -18,8 +18,8 @@ public class ReviewService {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    public List<ReviewResponse> getAllReviews(){
-       List<Review> reviews = reviewRepository.findAll();
+    public List<ReviewResponse> getAllReviews(Integer productId){
+       List<Review> reviews = reviewRepository.findByProductId(productId);
        return reviews.stream()
                 .map(ReviewMapper.INSTANCE::toResponse)
                 .collect(Collectors.toList());
