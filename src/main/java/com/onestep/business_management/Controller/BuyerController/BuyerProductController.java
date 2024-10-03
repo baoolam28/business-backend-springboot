@@ -2,14 +2,11 @@ package com.onestep.business_management.Controller.BuyerController;
 
 import java.util.List;
 
+import com.onestep.business_management.DTO.ProductDTO.ProductRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
 import com.onestep.business_management.DTO.RiviewDTO.ReviewResponse;
@@ -25,6 +22,8 @@ public class BuyerProductController {
 
     @Autowired
     private ReviewService reviewService;
+
+
 
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getAllProducts() {
@@ -81,13 +80,6 @@ public class BuyerProductController {
         }
     }
 
-    // @GetMapping("/{id}/reviews")
-    // public ResponseEntity<List<ProductResponse>> getProductReview(@PathVariable("id") Integer productId){
-    //     try {
-            
-    //     } catch (Exception e) {
-            
-    //     }
-    // }
+
 
 }

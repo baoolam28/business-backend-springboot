@@ -9,6 +9,7 @@ import com.onestep.business_management.Repository.ProductRepository;
 import com.onestep.business_management.Repository.StoreRepository;
 import com.onestep.business_management.Repository.UserRepository;
 
+import com.onestep.business_management.Utils.MapperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,43 +29,26 @@ public class ProductService {
     @Autowired
     private StoreRepository storeRepository;
 
+    @Autowired
+    private MapperService mapperService;
+
     public ProductResponse createProduct(ProductRequest productRequest) {
-        if (productRequest.getUserId() == null) {
-            throw new IllegalArgumentException("User ID cannot be null");
-        }
-
-        Store store = storeRepository.findById(productRequest.getStoreId())
-        .orElseThrow(() -> new RuntimeException("Store not found"));   
-
-
-        Product newProduct = ProductMapper.INSTANCE.toEntity(productRequest);
-
-        User user = userRepository.findById(productRequest.getUserId())
-        .orElseThrow(() -> new RuntimeException("User not found"));
-        
-        newProduct.setCreatedDate(new Date());
-        newProduct.setDisabled(false);
-        newProduct.setStore(store);
-        newProduct.setCreatedBy(user);
-        System.out.println("Received userId: " + productRequest.getUserId());
-        
-        Product savedProduct = productRepository.save(newProduct);
-        System.out.println("Saved Product: " + savedProduct);
-
-        return ProductMapper.INSTANCE.toResponse(savedProduct);
+        Product newProduct = ProductMapper.INSTANCE.prodRequestToEntity(productRequest, mapperService);
+        Product response = productRepository.save(newProduct);
+        return ProductMapper.INSTANCE.productToResponse(response);
     }
 
     public List<ProductResponse> getAll() {
         List<Product> products = productRepository.findAll();
         return products.stream()
-                .map(ProductMapper.INSTANCE::toResponse)
+                .map(ProductMapper.INSTANCE::productToResponse)
                 .collect(Collectors.toList());
     }
 
     public ProductResponse getByBarcode(String barcode) {
         Product product = productRepository.findByBarcode(barcode).orElse(null);
 
-        if (product != null) return ProductMapper.INSTANCE.toResponse(product);
+        if (product != null) return ProductMapper.INSTANCE.productToResponse(product);
 
         return null;
     }
@@ -73,14 +57,14 @@ public class ProductService {
         List<Product> products = productRepository.searchByKeyword(keyword);
         if(products.isEmpty()) return null;
         return products.stream()
-                .map(ProductMapper.INSTANCE::toResponse)
+                .map(ProductMapper.INSTANCE::productToResponse)
                 .collect(Collectors.toList());
     }
 
     public ProductResponse findProductById(Integer productId){
         Product product = productRepository.findById(productId).orElse(null);
         if(product != null){
-            return ProductMapper.INSTANCE.toResponse(product);
+            return ProductMapper.INSTANCE.productToResponse(product);
         }
         return null;
     }
@@ -89,7 +73,7 @@ public class ProductService {
         List<Product> products = productRepository.findByCategoryCategoryId(categoryId);
         if(products.isEmpty()) return null;
         return products.stream()
-                .map(ProductMapper.INSTANCE::toResponse)
+                .map(ProductMapper.INSTANCE::productToResponse)
                 .collect(Collectors.toList());
     }
 
@@ -97,7 +81,7 @@ public class ProductService {
         List<Product> products = productRepository.findBySupplierSupplierId(supplierId);
         if(products.isEmpty()) return null;
         return products.stream()
-                .map(ProductMapper.INSTANCE::toResponse)
+                .map(ProductMapper.INSTANCE::productToResponse)
                 .collect(Collectors.toList());
     }
 
@@ -105,16 +89,16 @@ public class ProductService {
         List<Product> products = productRepository.findByOriginOriginId(originId);
         if(products.isEmpty()) return null;
         return products.stream()
-                .map(ProductMapper.INSTANCE::toResponse)
+                .map(ProductMapper.INSTANCE::productToResponse)
                 .collect(Collectors.toList());
     }
 
     public ProductResponse updateProduct(ProductRequest productRequest) {
         Product existingProduct = productRepository.findByBarcode(productRequest.getBarcode()).orElse(null);
         if (existingProduct != null) {
-            Product updatedProduct = ProductMapper.INSTANCE.toEntity(productRequest);
+            Product updatedProduct = ProductMapper.INSTANCE.prodRequestToEntity(productRequest, mapperService);
             Product savedProduct = productRepository.save(updatedProduct);
-            return ProductMapper.INSTANCE.toResponse(savedProduct);
+            return ProductMapper.INSTANCE.productToResponse(savedProduct);
         }
         return null;
     }
@@ -123,7 +107,7 @@ public class ProductService {
         Product deleteProduct = productRepository.findByBarcode(barcode).orElse(null);
         if(deleteProduct != null) {
             productRepository.delete(deleteProduct);
-            return ProductMapper.INSTANCE.toResponse(deleteProduct);
+            return ProductMapper.INSTANCE.productToResponse(deleteProduct);
         }
         return null;
     }

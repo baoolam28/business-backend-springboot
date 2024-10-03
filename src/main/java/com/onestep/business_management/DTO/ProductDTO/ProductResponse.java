@@ -11,9 +11,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductResponse {
+    private Integer productId;
     private String barcode;
-    private UUID userId;
-    private String fullName;
     private String productName;
     private Integer categoryId;
     private String categoryName;
@@ -24,6 +23,7 @@ public class ProductResponse {
     private String supplierName;
     private Integer originId;
     private String originName;
+    private UUID createdBy;
     private Date createdDate;
     private boolean disabled;
     

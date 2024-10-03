@@ -1,13 +1,18 @@
 package com.onestep.business_management.Service.AuthService;
 
-import com.onestep.business_management.DTO.AuthDTO.BuyerRegistrationRequest;
-import com.onestep.business_management.DTO.AuthDTO.BuyerRegistrationResponse;
+import com.onestep.business_management.DTO.AuthDTO.*;
 import com.onestep.business_management.Entity.Role;
 import com.onestep.business_management.Entity.User;
+import com.onestep.business_management.Exeption.InvalidAccountExeption;
+import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Repository.RoleRepository;
 import com.onestep.business_management.Repository.UserRepository;
+import com.onestep.business_management.Scurity.JWTService;
 import com.onestep.business_management.Service.StoreService.StoreMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +29,15 @@ public class AuthenticationService {
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    AuthenticationProvider authenticationProvider;
+
+    @Autowired
+    UserDetailsService userDetailsService;
+
+    @Autowired
+    JWTService jwtService;
 
     private Map<String, Integer> roleCode = new HashMap<>() {{
         put("ROLE_ADMIN", 1);
@@ -48,7 +62,7 @@ public class AuthenticationService {
         User exitsUser = userRepository.findByUsername(request.getUsername()).orElse(null);
 
         if(exitsUser != null){
-            throw new RuntimeException("Account already exists");
+            throw new IllegalArgumentException("Account already exists");
         }
 
         User newUser = new User();
@@ -83,5 +97,47 @@ public class AuthenticationService {
             System.out.println("Error: " + e.getMessage());
             throw new RuntimeException("An error occurred while registering the buyer.");
         }
+    }
+
+
+    public LoginResponse login(LoginRequest loginRequest){
+
+        System.out.println(loginRequest.toString());
+        String userName = loginRequest.getUsername();
+        String password = loginRequest.getPassword();
+
+        var authProvider = authenticationProvider.authenticate(
+                new UsernamePasswordAuthenticationToken(userName, password)
+        );
+
+        if(authProvider == null){
+            throw new InvalidAccountExeption("Invalid username or password");
+        }
+
+        var userDetails = userDetailsService.loadUserByUsername(userName);
+
+
+
+        User user = userRepository.findByUsername(userName).orElseThrow(
+                () -> new ResourceNotFoundException("User not found")
+        );
+
+        String fullName = user.getFullName();
+        Set<Role> roles = user.getRoles();
+        String roleName = roles.toString();
+        String phoneNumber = user.getPhoneNumber();
+        boolean isActive = user.isDisabled();
+
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserId(user.getUserId());
+        userInfo.setUsername(userName);
+        userInfo.setRole(roleName);
+        userInfo.setFullName(fullName);
+        userInfo.setPhoneNumber(phoneNumber);
+        userInfo.setActive(isActive);
+
+        String  accessToken = jwtService.generateToken(userDetails);
+
+        return  new LoginResponse(accessToken,userInfo);
     }
 }

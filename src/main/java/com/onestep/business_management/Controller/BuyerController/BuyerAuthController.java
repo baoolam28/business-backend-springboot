@@ -2,13 +2,10 @@ package com.onestep.business_management.Controller.BuyerController;
 
 import com.onestep.business_management.DTO.AuthDTO.BuyerRegistrationRequest;
 import com.onestep.business_management.DTO.AuthDTO.BuyerRegistrationResponse;
-import com.onestep.business_management.DTO.AuthDTO.LoginRequest;
-import com.onestep.business_management.DTO.AuthDTO.LoginResponse;
 import com.onestep.business_management.Service.AuthService.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

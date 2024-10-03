@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -39,7 +40,7 @@ public class Product {
     @Column(name = "unit", length = 20, nullable = true, columnDefinition = "NVARCHAR(20)")
     private String unit;
 
-    @Column(name = "price", nullable = false)
+    @Column(name = "price")
     private Double price;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -53,9 +54,8 @@ public class Product {
     @Column(name = "createdDate")
     private Date createdDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by", referencedColumnName = "userId")
-    private User createdBy;
+    @Column(name = "createdBy")
+    private UUID createdBy;
 
     private boolean disabled;
 

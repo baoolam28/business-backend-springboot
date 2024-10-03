@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProductRequest {
     private String barcode;
-    private UUID userId;
     private String productName;
     private Integer categoryId;
     private String abbreviations;
@@ -20,7 +19,7 @@ public class ProductRequest {
     private Double price;
     private Integer supplierId;
     private Integer originId;
-    private boolean disabled;
+    private UUID createdBy;
     private UUID storeId;
     private Date createdDate;
 }
