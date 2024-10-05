@@ -35,9 +35,13 @@ public class OrderOffline {
     @Column(length = 20) // Thêm chiều dài cho paymentMethod
     private String paymentMethod;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customerId", nullable = true)
     private Customer customer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "storeId", nullable = true)
+    private Store store;
 
     // Sửa 'OrderOffline' thành 'orderOffline'
     @OneToMany(mappedBy = "orderOffline", cascade = CascadeType.ALL, orphanRemoval = true)

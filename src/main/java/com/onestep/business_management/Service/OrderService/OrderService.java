@@ -1,16 +1,12 @@
 package com.onestep.business_management.Service.OrderService;
 
-import com.onestep.business_management.Entity.OrderOffline;
-import com.onestep.business_management.Entity.OrderOfflineDetail;
+import com.onestep.business_management.Entity.*;
 import com.onestep.business_management.DTO.OrderDTO.OrderReportResponse;
 import com.onestep.business_management.DTO.OrderDTO.OrderRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderResponse;
-import com.onestep.business_management.Entity.Customer;
-import com.onestep.business_management.Entity.Product;
-import com.onestep.business_management.Repository.OrderOfflineDetailRepository;
-import com.onestep.business_management.Repository.OrderOfflineRepository;
-import com.onestep.business_management.Repository.CustomerRepository;
-import com.onestep.business_management.Repository.ProductRepository;
+import com.onestep.business_management.Exeption.ResourceNotFoundException;
+import com.onestep.business_management.Repository.*;
+import com.onestep.business_management.Utils.MapperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,42 +30,44 @@ public class OrderService {
     @Autowired
     private OrderOfflineDetailRepository orderDetailRepository;
 
-    // public OrderResponse createOrder(OrderRequest orderRequest) {
-    //     OrderOffline order = new OrderOffline();
-    //     order.setOrderDate(new Date());
-    //     order.setStatus("PENDING"); // Order is pending payment
-    //     order.setPaymentStatus(false); // Payment status is initially unpaid
-    //     order.setPaymentMethod(null); // No payment method initially
+    @Autowired
+    private StoreRepository storeRepository;
 
-    //     // Find or create the customer
-    //     Customer existingCustomer = customerRepository.findByCustomerId(orderRequest.getCustomerId()).orElse(null);
+    @Autowired
+    private MapperService mapperService;
 
-    //     if (existingCustomer == null) {
-    //         new RuntimeException("Customer not found");
-    //     }
-        
-    //     order.setCustomer(existingCustomer);
+     public OrderResponse createOrder(OrderRequest orderRequest) {
+         try {
+             OrderOffline order = OrderMapper.INSTANCE.toEntity(orderRequest, mapperService);
+             order.setOrderDate(new Date());
+             order.setStatus("PENDING"); // Order is pending payment
+             order.setPaymentStatus(false); // Payment status is initially unpaid
+             order.setPaymentMethod(null); // No payment method initially
 
-    //     // Map OrderRequest to OrderDetail
-    //     List<OrderOfflineDetail> orderDetails = orderRequest.getOrderDetails().stream().map(request -> {
-    //         OrderOfflineDetail detail = new OrderOfflineDetail();
-    //         detail.setQuantity(request.getQuantity());
-    //         detail.setPrice(request.getPrice());
+             List<OrderOfflineDetail> OrderOfflineDetails = orderRequest.getOrderDetails().stream().map(request -> {
+                 OrderOfflineDetail detail = new OrderOfflineDetail();
+                 detail.setQuantity(request.getQuantity());
+                 detail.setPrice(request.getPrice());
+                 detail.setBarcode(request.getBarcode());
+                 Product product = mapperService.findProductInStore(request.getStoreId(), request.getBarcode());
+                 detail.setProduct(product);
+                 detail.setOrderOffline(order);
+                 // Logic to fetch product by barcode
+                 return detail;
+             }).toList();
 
-    //         Product product = productRepository.findByBarcode(request.getBarcode())
-    //                 .orElseThrow(() -> new RuntimeException("Product not found"));
+             order.setOrderDetails(OrderOfflineDetails);
 
-    //         detail.setProduct(product);
-    //         detail.setOrder(order);
-    //         return detail;
-    //     }).collect(Collectors.toList());
 
-    //     order.setOrderDetails(orderDetails);
- 
-    //     // Save order
-    //     OrderOffline savedOrder = orderRepository.save(order);
-    //     return OrderMapper.INSTANCE.toResponse(savedOrder);
-    // }
+
+             // Save order
+             OrderOffline savedOrder = orderRepository.save(order);
+             return OrderMapper.INSTANCE.toResponse(savedOrder);
+         }catch (Exception e){
+             System.out.println(e.getMessage());
+         }
+         return null;
+     }
 
 
 

@@ -16,7 +16,7 @@ public class OrderResponse {
     private UUID orderId;
     private Date orderDate;
     private String status;
-    private Customer customer;
+    private Integer customerId;
     private boolean paymentStatus;
     private String paymentMethod;
     private List<OrderDetailResponse> orderDetails;

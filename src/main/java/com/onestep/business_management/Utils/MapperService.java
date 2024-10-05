@@ -1,17 +1,12 @@
 package com.onestep.business_management.Utils;
 
-import com.onestep.business_management.Entity.Category;
-import com.onestep.business_management.Entity.Origin;
-import com.onestep.business_management.Entity.Store;
-import com.onestep.business_management.Entity.Supplier;
+import com.onestep.business_management.Entity.*;
 import com.onestep.business_management.Exeption.ResourceNotFoundException;
-import com.onestep.business_management.Repository.CategoryRepository;
-import com.onestep.business_management.Repository.OriginRepository;
-import com.onestep.business_management.Repository.StoreRepository;
-import com.onestep.business_management.Repository.SupplierRepository;
+import com.onestep.business_management.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -27,6 +22,11 @@ public class MapperService {
 
     @Autowired
     private OriginRepository originRepository;
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired ProductRepository productRepository;
 
     public Store findStoreById(UUID storeId) {
         return storeRepository.findById(storeId)
@@ -48,5 +48,19 @@ public class MapperService {
                 .orElseThrow(() -> new ResourceNotFoundException("Origin not found"));
     }
 
+    public Customer findCustomerById(Integer customerId){
+        return customerRepository.findById(customerId).orElseThrow(
+                () -> new ResourceNotFoundException("Customer with id: "+customerId+" not found")
+        );
+    }
 
+    public Product findProductInStore(UUID storeId, String barcode){
+        List<Product> exitsProds = productRepository.findProductInStore(storeId, barcode);
+
+        if(exitsProds.isEmpty()){
+            throw new ResourceNotFoundException("Not found product with barcode = "+barcode+" in store: "+storeId);
+        }
+
+        return exitsProds.get(0);
+    }
 }

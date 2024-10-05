@@ -48,6 +48,8 @@ public class ProductService {
 
 
 
+
+
         Product newProduct = ProductMapper.INSTANCE.prodRequestToEntity(productRequest, mapperService);
         Product response = productRepository.save(newProduct);
         return ProductMapper.INSTANCE.productToResponse(response);
