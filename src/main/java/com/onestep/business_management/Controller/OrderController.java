@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -30,19 +31,19 @@ public class OrderController {
         }
     }
 
-
     // @PostMapping
-    // public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest orderRequest) {
-    //     try {
-    //         OrderResponse response = orderService.createOrder(orderRequest);
-    //         return new ResponseEntity<>(response, HttpStatus.CREATED);
-    //     } catch (Exception e) {
-    //         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    //     }
+    // public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest
+    // orderRequest) {
+    // try {
+    // OrderResponse response = orderService.createOrder(orderRequest);
+    // return new ResponseEntity<>(response, HttpStatus.CREATED);
+    // } catch (Exception e) {
+    // return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    // }
     // }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<OrderResponse> getOrderById(@PathVariable Integer orderId) {
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable UUID orderId) {
         try {
             OrderResponse response = orderService.getOrderById(orderId);
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -52,9 +53,9 @@ public class OrderController {
     }
 
     @PutMapping("/{orderId}/payment")
-    public ResponseEntity<OrderResponse> updateOrderPayment(@PathVariable Integer orderId,
-                                                            @RequestParam String paymentMethod,
-                                                            @RequestParam boolean paymentStatus) {
+    public ResponseEntity<OrderResponse> updateOrderPayment(@PathVariable UUID orderId,
+            @RequestParam String paymentMethod,
+            @RequestParam boolean paymentStatus) {
         try {
             OrderResponse response = orderService.updateOrderPayment(orderId, paymentMethod, paymentStatus);
             return new ResponseEntity<>(response, HttpStatus.OK);

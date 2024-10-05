@@ -3,7 +3,8 @@ package com.onestep.business_management.Service.CustomerService;
 import com.onestep.business_management.DTO.CustomerDTO.CustomerRequest;
 import com.onestep.business_management.DTO.CustomerDTO.CustomerResponse;
 import com.onestep.business_management.Entity.Customer;
-import com.onestep.business_management.Repository.CustomerRepository;
+import com.onestep.business_management.Repository.CustomerRepositosry;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 public class CustomerService {
 
     @Autowired
-    private CustomerRepository customerRepository;
+    private CustomerRepositosry customerRepository;
 
     public CustomerResponse createCustomer(CustomerRequest customerRequest) {
         Customer newCustomer = CustomerMapper.INSTANCE.toEntity(customerRequest);

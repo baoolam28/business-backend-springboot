@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.UUID;
 
 @Component
 public class InvoicePDF {
@@ -24,7 +25,7 @@ public class InvoicePDF {
     @Autowired
     private OrderOfflineRepository orderRepository;
 
-    public void printAndDeleteInvoicePDF(Integer orderId) throws IOException, PrintException {
+    public void printAndDeleteInvoicePDF(UUID orderId) throws IOException, PrintException {
         OrderOffline order = getOrder(orderId);
         if (order == null) {
             throw new IOException("Order not found");
@@ -85,7 +86,7 @@ public class InvoicePDF {
         return String.format("%,.0f VND", price);
     }
 
-    private OrderOffline getOrder(Integer orderId) {
+    private OrderOffline getOrder(UUID orderId) {
         return orderRepository.findById(orderId).orElse(null);
     }
 }

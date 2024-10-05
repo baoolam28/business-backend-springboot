@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 import javax.print.PrintException;
-
+import java.util.UUID;
 @RestController
 @RequestMapping("/api/invoices")
 public class InvoiceController {
@@ -18,7 +18,7 @@ public class InvoiceController {
     private InvoicePDF invoicePDF;
 
     @PostMapping("/print/{id}")
-    public ResponseEntity<String> printInvoice(@PathVariable("id") Integer orderId) throws PrintException {
+    public ResponseEntity<String> printInvoice(@PathVariable("id") UUID orderId) throws PrintException {
         try {
             invoicePDF.printAndDeleteInvoicePDF(orderId);
             return new ResponseEntity<>("Invoice printed and deleted successfully", HttpStatus.OK);

@@ -8,13 +8,11 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.List;
 
-
 @Repository
-public interface CustomerRepository extends JpaRepository<Customer, Integer> {
+public interface CustomerRepositosry extends JpaRepository<Customer, Integer> {
 
-    Optional<Customer> findCustomerByPhone (String phoneNumber);
-    
+    Optional<Customer> findCustomerByPhone(String phoneNumber);
+
     Optional<Customer> findByCustomerId(Integer customerId);
-
 
 }

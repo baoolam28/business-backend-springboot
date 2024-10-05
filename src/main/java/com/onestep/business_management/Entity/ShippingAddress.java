@@ -1,5 +1,7 @@
 package com.onestep.business_management.Entity;
 
+import java.util.UUID;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,11 +18,11 @@ public class ShippingAddress {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "address_id")
-    private int addressId;
+    private UUID addressId;
 
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false)
-    private User user;
+    private User userId;
 
     @Column(name = "fullName", length = 50, nullable = true, columnDefinition = "NVARCHAR(50)")
     private String fullName;
