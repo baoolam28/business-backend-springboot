@@ -28,6 +28,8 @@ public class MapperService {
 
     @Autowired ProductRepository productRepository;
 
+    @Autowired UserRepository userRepository;
+
     public Store findStoreById(UUID storeId) {
         return storeRepository.findById(storeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Store not found"));
@@ -62,5 +64,17 @@ public class MapperService {
         }
 
         return exitsProds.get(0);
+    }
+
+    public User findUserById(UUID userId){
+        return userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("User with id: "+userId+" not found!")
+        );
+    }
+
+    public Product findProductByBarcode(String barcode){
+        return productRepository.findByBarcode(barcode).orElseThrow(
+                () -> new ResourceNotFoundException("Product with barcode: "+barcode+" not found!")
+        );
     }
 }

@@ -26,6 +26,9 @@ public class OrderOnlineDetail {
     private int quantity;
 
     @Column(nullable = false)
+    private String barcode;
+
+    @Column(nullable = false)
     private Double price; // Sử dụng Double để có thể là null
 
     @ManyToOne
