@@ -13,12 +13,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderOnlineResponse {
-
     private UUID orderId;
+    private UUID userId;
     private Date orderDate;
     private String status;
-    private Customer customer;
     private boolean paymentStatus;
     private String paymentMethod;
-    private List<OrderOnlineDetailResponse> orderOnlineDetails;
+    private UUID storeId;
+    private List<OrderOnlineDetailResponse> orderDetails;
 }

@@ -32,15 +32,16 @@ public class OrderController {
     }
 
 
-    // @PostMapping
-    // public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest orderRequest) {
-    //     try {
-    //         OrderResponse response = orderService.createOrder(orderRequest);
-    //         return new ResponseEntity<>(response, HttpStatus.CREATED);
-    //     } catch (Exception e) {
-    //         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    //     }
-    // }
+     @PostMapping
+     public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest orderRequest) {
+         System.out.println(orderRequest.toString());
+         try {
+             OrderResponse response = orderService.createOrder(orderRequest);
+             return new ResponseEntity<>(response, HttpStatus.CREATED);
+         } catch (Exception e) {
+             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+         }
+     }
 
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable String orderId) {

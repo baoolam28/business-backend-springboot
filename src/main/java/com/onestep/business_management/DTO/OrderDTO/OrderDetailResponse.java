@@ -7,12 +7,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderDetailResponse {
-    private int orderDetailId;
+    private UUID orderDetailId;
+    private String barcode;
     private int quantity;
     private double price;
-    private ProductResponse product;
+
 }

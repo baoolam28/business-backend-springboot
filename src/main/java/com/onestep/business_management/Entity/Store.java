@@ -83,4 +83,12 @@ public class Store {
     @JsonIgnore
     private List<Inventory> inventories = new ArrayList<>();
 
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<OrderOffline> ordersOffline = new ArrayList<>();
+
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<OrderOnline> ordersOnline = new ArrayList<>();
+
 }

@@ -33,8 +33,8 @@ public class OrderOnline {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(name = "OrderOnlineId")
-    private UUID OrderOnlineId;
+    @Column(name = "orderOnlineId")
+    private UUID orderOnlineId;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date orderDate;
@@ -57,11 +57,15 @@ public class OrderOnline {
     @JoinColumn(name = "userId", nullable = true)
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "storeId", nullable = true) // Mỗi đơn hàng gắn với 1 cửa hàng
+    private Store store;
+
     @OneToMany(mappedBy = "orderOnline", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderOnlineDetail> orderDetails = new ArrayList<>();
 
     // Phương thức tiện ích để lấy thông tin đơn hàng
     public String getOrderSummary() {
-        return String.format("OrderOnline [ID=%s, Date=%s, Status=%s]", OrderOnlineId, orderDate, status);
+        return String.format("OrderOnline [ID=%s, Date=%s, Status=%s]", orderOnlineId, orderDate, status);
     }
 }

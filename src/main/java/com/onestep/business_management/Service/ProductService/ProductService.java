@@ -45,7 +45,6 @@ public class ProductService {
             throw new ResourceAlreadyExistsException("Product already exist in store :" + productRequest.getStoreId());
         }
 
-
         Product newProduct = ProductMapper.INSTANCE.prodRequestToEntity(productRequest, mapperService);
         Product response = productRepository.save(newProduct);
         return ProductMapper.INSTANCE.productToResponse(response);
