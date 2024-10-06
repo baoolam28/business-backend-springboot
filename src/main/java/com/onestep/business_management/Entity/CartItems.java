@@ -1,5 +1,7 @@
 package com.onestep.business_management.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,6 +26,7 @@ public class CartItems {
 
     @ManyToOne
     @JoinColumn(name = "cartId", nullable = false)
+    @JsonBackReference
     private Cart cart;
 
     @ManyToOne
@@ -32,7 +35,7 @@ public class CartItems {
 
     private Integer quantity;
     
-    private float price; 
+    private Double price; 
     
-    private float totalPrice;
+    private Double totalPrice;
 }

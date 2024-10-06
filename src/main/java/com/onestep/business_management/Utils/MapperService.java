@@ -1,5 +1,21 @@
 package com.onestep.business_management.Utils;
 
+import com.onestep.business_management.Entity.Cart;
+import com.onestep.business_management.Entity.Category;
+import com.onestep.business_management.Entity.Origin;
+import com.onestep.business_management.Entity.Product;
+import com.onestep.business_management.Entity.Store;
+import com.onestep.business_management.Entity.Supplier;
+import com.onestep.business_management.Entity.User;
+import com.onestep.business_management.Exeption.ResourceNotFoundException;
+import com.onestep.business_management.Repository.CartRepository;
+import com.onestep.business_management.Repository.CategoryRepository;
+import com.onestep.business_management.Repository.OriginRepository;
+import com.onestep.business_management.Repository.ProductRepository;
+import com.onestep.business_management.Repository.StoreRepository;
+import com.onestep.business_management.Repository.SupplierRepository;
+import com.onestep.business_management.Repository.UserRepository;
+
 import com.onestep.business_management.Entity.*;
 import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Repository.*;
@@ -24,11 +40,18 @@ public class MapperService {
     private OriginRepository originRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private CartRepository cartRepository;
+
+    @Autowired
     private CustomerRepository customerRepository;
 
-    @Autowired ProductRepository productRepository;
+    @Autowired 
+    private ProductRepository productRepository;
 
-    @Autowired UserRepository userRepository;
+
 
     public Store findStoreById(UUID storeId) {
         return storeRepository.findById(storeId)
@@ -50,10 +73,21 @@ public class MapperService {
                 .orElseThrow(() -> new ResourceNotFoundException("Origin not found"));
     }
 
+    public Product findProductById(Integer productId){
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+    }
+
+    public Cart findCartById(Integer cartId){
+        return cartRepository.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
+    }            
+
     public Customer findCustomerById(Integer customerId){
         return customerRepository.findById(customerId).orElseThrow(
                 () -> new ResourceNotFoundException("Customer with id: "+customerId+" not found")
         );
+
     }
 
     public Product findProductInStore(UUID storeId, String barcode){

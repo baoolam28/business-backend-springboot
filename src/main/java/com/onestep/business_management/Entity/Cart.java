@@ -1,6 +1,9 @@
 package com.onestep.business_management.Entity;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -11,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,11 +31,12 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer cartId;
 
-    @ManyToOne
+    @OneToOne()
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CartItems> cartItems;
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<CartItems> cartItems = new ArrayList<>();
 
 }
