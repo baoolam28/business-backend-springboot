@@ -1,4 +1,4 @@
-package com.onestep.business_management.Service.OrderService;
+package com.onestep.business_management.Service.OrderOnlineService;
 
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineDetailRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineDetailResponse;
