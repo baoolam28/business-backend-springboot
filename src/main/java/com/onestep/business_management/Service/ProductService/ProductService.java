@@ -46,11 +46,17 @@ public class ProductService {
         }
 
 
-
-
         Product newProduct = ProductMapper.INSTANCE.prodRequestToEntity(productRequest, mapperService);
         Product response = productRepository.save(newProduct);
         return ProductMapper.INSTANCE.productToResponse(response);
+    }
+
+
+    public Product findById(Integer productId){
+        Product product = productRepository.findById(productId).orElseThrow(
+            () -> new ResourceNotFoundException("Product not found: " + productId)
+        );
+        return product;
     }
 
     public List<ProductResponse> getAll() {

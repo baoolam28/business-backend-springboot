@@ -53,8 +53,9 @@ public interface ProductMapper {
         productResponse.setUnit(product.getUnit());
 
         if (product.getPrice() != null) {
-            productResponse.setPrice(product.getPrice().floatValue());
+            productResponse.setPrice(product.getPrice());
         }
+        
 
         // Set createdBy, createdDate, and disabled fields
         productResponse.setCreatedBy(product.getCreatedBy());

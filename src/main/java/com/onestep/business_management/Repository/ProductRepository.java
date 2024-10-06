@@ -14,7 +14,6 @@ import java.util.UUID;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
     Optional<Product> findByBarcode(String barcode);
-
     @Query("SELECT p FROM Product p WHERE " +
             "p.productName LIKE %:keyword% OR " +
             "p.abbreviations LIKE %:keyword% OR " +
