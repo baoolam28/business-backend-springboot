@@ -26,6 +26,7 @@ public interface OrderMapper {
     @Mapping(target = "orderId", source = "orderOfflineId")
     @Mapping(target = "orderDetails", source = "orderDetails", qualifiedByName = "mapOrderDetailsToResponses")
     @Mapping(target = "customerId", source = "customer.customerId")
+    @Mapping(target = "storeId" , source = "store.storeId")
     OrderResponse toResponse(OrderOffline order);
 
 
