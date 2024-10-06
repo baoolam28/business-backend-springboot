@@ -3,6 +3,7 @@ package com.onestep.business_management.Controller;
 import com.onestep.business_management.DTO.OrderDTO.OrderReportResponse;
 import com.onestep.business_management.DTO.OrderDTO.OrderRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderResponse;
+import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Service.OrderService.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -31,17 +32,16 @@ public class OrderController {
         }
     }
 
-
-     @PostMapping
-     public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest orderRequest) {
-         System.out.println(orderRequest.toString());
-         try {
-             OrderResponse response = orderService.createOrder(orderRequest);
-             return new ResponseEntity<>(response, HttpStatus.CREATED);
-         } catch (Exception e) {
-             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-         }
-     }
+    @PostMapping
+    public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest orderRequest) {
+        System.out.println(orderRequest.toString());
+        try {
+            OrderResponse response = orderService.createOrder(orderRequest);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable String orderId) {
@@ -55,11 +55,13 @@ public class OrderController {
     }
 
     @PutMapping("/{orderId}/payment")
-    public ResponseEntity<OrderResponse> updateOrderPayment(@PathVariable String orderId,
-                                                            @RequestParam String paymentMethod,
-                                                            @RequestParam boolean paymentStatus) {
-                                                                UUID uuid = UUID.fromString(orderId);
-              
+    public ResponseEntity<OrderResponse> updateOrderPayment(
+            @PathVariable String orderId,
+            @RequestParam String paymentMethod,
+            @RequestParam boolean paymentStatus) {
+
+        UUID uuid = UUID.fromString(orderId);
+
         try {
             OrderResponse response = orderService.updateOrderPayment(uuid, paymentMethod, paymentStatus);
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -70,28 +72,23 @@ public class OrderController {
 
     @GetMapping("/reports")
     public ResponseEntity<OrderReportResponse> getOrderReports(
-            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        System.out.println("Received startDate: " + startDate);
+        System.out.println("Received endDate: " + endDate);
         try {
-            // Set default values if parameters are not provided
-            if (startDate == null) {
-                startDate = LocalDate.now().minusMonths(1); // Default to one month ago
-            }
-            if (endDate == null) {
-                endDate = LocalDate.now(); // Default to today
-            }
-
-            // Ensure endDate is not before startDate
-            if (endDate.isBefore(startDate)) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-
-            // Call the service with the provided or default dates
-            OrderReportResponse response = orderService.getOrderReports(startDate, endDate);
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            OrderReportResponse report = orderService.getOrderReports(startDate, endDate);
+            return new ResponseEntity<>(report, HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace(); // In ra lỗi để dễ dàng gỡ lỗi
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable UUID id) {
+        orderService.deleteOrder(id);
+        return ResponseEntity.noContent().build(); // Trả về 204 No Content
     }
 
 }
