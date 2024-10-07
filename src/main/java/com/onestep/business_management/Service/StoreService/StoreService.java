@@ -69,6 +69,19 @@ public class StoreService {
                 .collect(Collectors.toList());
     }
 
+    public StoreResponse getStoreByUser(UUID userId){
+        User storeManager = userRepository.findById(userId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId + " not found.")
+        );
+
+        List<Store> store = storeRepository.findByStoreManager(storeManager);
+
+        if(store.isEmpty()){
+            throw new ResourceNotFoundException("Store not found!");
+        }
+        return StoreMapper.INSTANCE.toResponse(store.get(0));
+    }
+
     // Delete Store by ID
     public void deleteStoreById(Integer id) {
         // do something 
