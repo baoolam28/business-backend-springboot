@@ -113,6 +113,35 @@ public class CartService {
          return CartMapper.INSTANCE.toResponse(updatedCart);
     }
 
+    public CartResponse updateProductFromCart(Integer cartId, Integer productId, Integer newQuantity){
+
+        Cart cart = cartRepository.findById(cartId).orElseThrow(
+            () -> new ResourceNotFoundException("Cart not found with id: " + cartId)
+        );
+
+        CartItems cartItem = cart.getCartItems().stream()
+                .filter(item -> item.getProduct().getProductId().equals(productId))
+                .findFirst().orElseThrow(
+                    () -> new ResourceNotFoundException("Product not found in cart: " + productId)
+                );
+
+        if(newQuantity <= 0){
+            cart.getCartItems().remove(cartItem);
+        }else{
+            cartItem.setQuantity(newQuantity);
+        }
+
+        //nếu CartItem rỗng thì xóa cart
+        if(cart.getCartItems().isEmpty()){
+            cartRepository.delete(cart);
+            return null;
+        }
+
+        Cart updateCartItem = cartRepository.save(cart);
+
+        return CartMapper.INSTANCE.toResponse(updateCartItem);
+    } 
+
 
     public CartResponse deleteProductFromCart(Integer cartId, Integer productId){
 
