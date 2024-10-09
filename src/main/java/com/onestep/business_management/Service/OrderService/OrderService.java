@@ -210,5 +210,16 @@ public class OrderService {
         return totalRevenue / totalOrders;
     }
 
+    public List<OrderResponse> getAllOrdersByStoreId(UUID storeId) {
+        List<OrderOffline> orders = orderRepository.findBystore(storeId);
+
+        if (orders.isEmpty()) {
+            throw new ResourceNotFoundException("No orders found for Store ID: " + storeId);
+        }
+
+        return orders.stream()
+                .map(OrderMapper.INSTANCE::toResponse)
+                .collect(Collectors.toList());
+    }
 
 }
