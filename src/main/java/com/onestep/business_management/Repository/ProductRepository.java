@@ -30,4 +30,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     List<Product> findBySupplierSupplierId(Integer supplierId);
     List<Product> findByOriginOriginId(Integer originId);
 
+    @Query("SELECT p FROM Product p WHERE p.store.storeId = :storeId")
+    List<Product> findByStore(@Param("storeId") UUID storeId);
 }

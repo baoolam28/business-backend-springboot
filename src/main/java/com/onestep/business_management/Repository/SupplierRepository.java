@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface SupplierRepository extends JpaRepository<Supplier, Integer> {
@@ -33,4 +34,7 @@ public interface SupplierRepository extends JpaRepository<Supplier, Integer> {
 
     @Query("SELECT s FROM Supplier s WHERE s.address LIKE %:address%")
     List<Supplier> findByAddress(@Param("address") String address);
+
+    @Query("SELECT s FROM Supplier s WHERE s.store.storeId LIKE %:storeId%")
+    List<Supplier> findByStore(@Param("storeId") UUID storeId);
 }

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,6 +61,13 @@ public class ProductService {
 
     public List<ProductResponse> getAll() {
         List<Product> products = productRepository.findAll();
+        return products.stream()
+                .map(ProductMapper.INSTANCE::productToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProductResponse> getAllByStore(UUID storeId) {
+        List<Product> products = productRepository.findByStore(storeId);
         return products.stream()
                 .map(ProductMapper.INSTANCE::productToResponse)
                 .collect(Collectors.toList());
