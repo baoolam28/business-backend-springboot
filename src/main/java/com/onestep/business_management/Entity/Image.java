@@ -13,25 +13,16 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Image {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer imageId;
+    private String imageId;
 
     private String fileName;
-    private String fileType;
-
-    @Lob
-    private byte[] fileData;
 
     @ManyToOne
     @JoinColumn(name = "productId", nullable = true)
     private Product product;
 
-    @ManyToOne
+    @OneToOne()
     @JoinColumn(name = "userId", nullable = true)
     private User user;
 
-    // Phương thức tiện ích có thể thêm vào
-    public String getImageDetails() {
-        return String.format("Image [ID=%d, Name=%s, Type=%s]", imageId, fileName, fileType);
-    }
 }
