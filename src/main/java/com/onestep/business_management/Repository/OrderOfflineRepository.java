@@ -34,4 +34,7 @@ public interface OrderOfflineRepository extends JpaRepository<OrderOffline, UUID
             "ORDER BY year", nativeQuery = true)
     List<Object[]> countCustomerOrderByYear(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
+    @Query(value = "SELECT * FROM orders_offline o WHERE o.store_id = :storeId", nativeQuery = true)
+    List<OrderOffline> findBystore(@Param("storeId") UUID storeId);
+
 }
