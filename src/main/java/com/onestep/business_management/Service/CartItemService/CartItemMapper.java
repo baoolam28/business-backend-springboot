@@ -1,5 +1,7 @@
 package com.onestep.business_management.Service.CartItemService;
 
+import com.onestep.business_management.DTO.CartDTO.CartRequest;
+import com.onestep.business_management.Entity.ProductDetail;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 import org.mapstruct.Context;
@@ -16,27 +18,20 @@ import com.onestep.business_management.Exeption.ResourceNotFoundException;
 public interface CartItemMapper {
     CartItemMapper INSTANCE = Mappers.getMapper(CartItemMapper.class);
 
-    default CartItems cartItemRequestToEntity(CartItemRequest cartItemRequest, @Context MapperService mapperService){
+    default CartItems cartItemRequestToEntity(CartRequest cartRequest, @Context MapperService mapperService){
 
-        if(cartItemRequest == null){
+        if(cartRequest == null){
             return null;
         }
 
         CartItems cartItems = new CartItems();
 
-        if(cartItemRequest.getProductId() != null){
-            Product product = mapperService.findProductById(cartItemRequest.getProductId());
-            if(product == null){
-                throw new ResourceNotFoundException("Product not found" + product);
-            }
-            cartItems.setProduct(product);
+        if(cartRequest.getProductDetailId() != null){
+            ProductDetail detail = mapperService.findProductDetailById(cartRequest.getProductDetailId());
+            cartItems.setProductDetail(detail);
         }
 
-        cartItems.setQuantity(cartItemRequest.getQuantity());
-
-       cartItems.setPrice(cartItemRequest.getPrice());
-
-        cartItems.setTotalPrice(cartItemRequest.getPrice() * cartItemRequest.getQuantity());
+        cartItems.setQuantity(cartRequest.getQuantity());
 
         return cartItems;
     }

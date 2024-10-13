@@ -27,29 +27,6 @@ public class CartItemService {
     private MapperService mapperService;
 
 
-    public CartItemResponse createCartItem(Integer cartId, CartItemRequest cartItemRequest) {
-        Optional<Cart> cartOpt = cartRepository.findById(cartId);
-
-        if(cartOpt.isEmpty()){
-            throw new IllegalArgumentException("Cart not found with id: " + cartId);
-        }
-
-        Cart cart = cartOpt.get();
-
-        CartItems cartItems = CartItemMapper.INSTANCE.cartItemRequestToEntity(cartItemRequest, mapperService);
-        CartItems saveCartItem = cartItemsRepository.save(cartItems);
-        
-        return CartItemMapper.INSTANCE.cartItemToResponse(saveCartItem);
-    }
-
-    // public List<CartItemResponse> getAllCartItem(Integer cartId){
-    //     List<CartItems> cartItemsList = cartItemsRepository.findByCartItems_CartId(cartId);
-
-    //     return cartItemsList.stream()
-    //             .map(cartItemmapper.INSTANCE::cartItemToResponse)
-    //             .collect(Collectors.toList());
-
-    // }
 
     public CartItemResponse getCartItemById(Integer itemId){
         Optional<CartItems> cartItems = cartItemsRepository.findById(itemId);

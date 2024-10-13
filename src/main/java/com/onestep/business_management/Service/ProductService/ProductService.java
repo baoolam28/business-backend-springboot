@@ -1,5 +1,7 @@
 package com.onestep.business_management.Service.ProductService;
 
+import com.onestep.business_management.DTO.ProductDTO.ProductOnlineRequest;
+import com.onestep.business_management.DTO.ProductDTO.ProductOnlineResponse;
 import com.onestep.business_management.DTO.ProductDTO.ProductRequest;
 import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
 import com.onestep.business_management.Entity.Product;
@@ -49,6 +51,14 @@ public class ProductService {
         Product newProduct = ProductMapper.INSTANCE.prodRequestToEntity(productRequest, mapperService);
         Product response = productRepository.save(newProduct);
         return ProductMapper.INSTANCE.productToResponse(response);
+    }
+
+    public ProductOnlineResponse createProductOnline(ProductOnlineRequest request){
+        Product productOnline = ProductMapper.INSTANCE.ProdOnlineToEntity(request, mapperService);
+
+        Product response = productRepository.save(productOnline);
+
+        return ProductMapper.INSTANCE.productToOnlineResponse(response);
     }
 
 

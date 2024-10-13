@@ -15,5 +15,6 @@ import com.onestep.business_management.DTO.CartItemDTO.CartItemRequest;
 @NoArgsConstructor
 public class CartRequest {
     private UUID userId;
-    private List<CartItemRequest> cartItems = new ArrayList<>();
+    private Integer productDetailId;
+    private Integer quantity;
 }

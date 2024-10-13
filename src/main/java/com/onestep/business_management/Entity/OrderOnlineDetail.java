@@ -26,9 +26,6 @@ public class OrderOnlineDetail {
     private int quantity;
 
     @Column(nullable = false)
-    private String barcode;
-
-    @Column(nullable = false)
     private Double price; // Sử dụng Double để có thể là null
 
     @ManyToOne
@@ -38,8 +35,8 @@ public class OrderOnlineDetail {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "productId")
-    private Product product;
+    @JoinColumn(name = "productDetailId")
+    private ProductDetail productDetail;
 
     // Phương thức tiện ích để tính toán tổng giá
     public double calculateTotalPrice() {

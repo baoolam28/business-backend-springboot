@@ -7,12 +7,12 @@ import com.onestep.business_management.DTO.CartItemDTO.CartItemResponse;
 import com.onestep.business_management.Entity.Cart;
 import com.onestep.business_management.Entity.CartItems;
 import com.onestep.business_management.Entity.Product;
+import com.onestep.business_management.Entity.ProductDetail;
 import com.onestep.business_management.Service.ProductService.ProductService;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.mapstruct.Named;
+import com.onestep.business_management.Utils.MapperService;
+import com.onestep.business_management.Utils.StringToMapConverter;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,7 +28,7 @@ public interface CartMapper {
     @Mappings({
         @Mapping(target = "cartItems", source = "cartItems", qualifiedByName = "mapCartItemRequestsToEntities")
     })
-    Cart toEntity(CartRequest cartRequest);
+    Cart toEntity(CartRequest cartRequest, @Context MapperService mapperService);
 
     // Mapping Cart Entity to CartResponse
     @Mappings({
@@ -39,7 +39,7 @@ public interface CartMapper {
 
     // Custom method to map List<CartItemRequest> to List<CartItem>
     @Named("mapCartItemRequestsToEntities")
-    default List<CartItems> mapCartItemRequestsToEntities(List<CartItemRequest> cartItemRequests) {
+    default List<CartItems> mapCartItemRequestsToEntities(List<CartItemRequest> cartItemRequests, MapperService mapperService) {
         if(cartItemRequests == null || cartItemRequests.isEmpty()){
             return new ArrayList<>();
         }
@@ -48,8 +48,7 @@ public interface CartMapper {
             
             CartItems cartItem = new CartItems();
             cartItem.setQuantity(request.getQuantity());
-            cartItem.setPrice(request.getPrice());
-
+            cartItem.setProductDetail(mapperService.findProductDetailById(request.getProductDetailId()));
             return cartItem;
         }).toList();
     }
@@ -59,16 +58,20 @@ public interface CartMapper {
     default List<CartItemResponse> mapCartItemsToResponses(List<CartItems> cartItems) {
         
         return cartItems.stream().map(cartItem -> {
-            Product product = cartItem.getProduct();
+            ProductDetail productDetail = cartItem.getProductDetail();
+            Product product = productDetail.getProduct();
             CartItemResponse response = new CartItemResponse();
-            if(product != null){
-                response.setProductId(product.getProductId());
+            if(productDetail != null){
+                response.setProductDetailId(productDetail.getProductDetailId());
                 response.setProductName(product.getProductName());
-                response.setBarcode(product.getBarcode());
             }
             response.setQuantity(cartItem.getQuantity());
-            response.setPrice(cartItem.getPrice());
-            response.setTotalPrice(cartItem.getPrice() * cartItem.getQuantity());
+            response.setPrice(productDetail.getPrice());
+            response.setTotalPrice(productDetail.getPrice() * cartItem.getQuantity());
+            response.setImage(productDetail.getImage());
+
+            // ép kiểu (string) attributes của productDetail -> Map<String,String>
+            response.setAttributes(StringToMapConverter.convertStringToMap(productDetail.getAttributes()));
             return response;
         }).toList();
     }
