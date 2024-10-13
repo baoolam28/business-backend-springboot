@@ -13,22 +13,36 @@ import java.util.UUID;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
-    Optional<Product> findByBarcode(String barcode);
-    @Query("SELECT p FROM Product p WHERE " +
-            "p.productName LIKE %:keyword% OR " +
-            "p.abbreviations LIKE %:keyword% OR " +
-            "p.unit LIKE %:keyword% OR " +
-            "p.price LIKE %:keyword% OR " +
-            "p.origin.originName LIKE %:keyword% OR " +
-            "p.category.categoryName LIKE %:keyword%")
-    List<Product> searchByKeyword(@Param("keyword") String keyword);
 
-    @Query("SELECT p FROM Product p WHERE p.store.storeId = :storeId AND p.barcode = :barcode")
-    List<Product> findProductInStore(@Param("storeId") UUID storeId, @Param("barcode") String barcode);
+        Optional<Product> findByBarcode(String barcode);
 
-    List<Product> findByCategoryCategoryId(Integer categoryId);
-    List<Product> findBySupplierSupplierId(Integer supplierId);
-    List<Product> findByOriginOriginId(Integer originId);
+        @Query("SELECT p FROM Product p WHERE " +
+                        "p.productName LIKE %:keyword% OR " +
+                        "p.abbreviations LIKE %:keyword% OR " +
+                        "p.unit LIKE %:keyword% OR " +
+                        "p.price LIKE %:keyword% OR " +
+                        "p.origin.originName LIKE %:keyword% OR " +
+                        "p.category.categoryName LIKE %:keyword%")
+        List<Product> searchByKeyword(@Param("keyword") String keyword);
+
+        @Query("SELECT p FROM Product p WHERE p.store.storeId = :storeId AND p.barcode = :barcode")
+        List<Product> findProductInStore(@Param("storeId") UUID storeId, @Param("barcode") String barcode);
+
+        List<Product> findByCategoryCategoryId(Integer categoryId);
+
+        List<Product> findBySupplierSupplierId(Integer supplierId);
+
+        List<Product> findByOriginOriginId(Integer originId);
+        
+        @Query("SELECT p.productId, p.productName, p.price, s.storeName, s.pickupAddress, c.categoryName, " +
+        "AVG(r.rating) AS averageRating, COUNT(r.rating) AS totalReviews " +
+        "FROM Product p " +
+        "JOIN p.store s " +
+        "JOIN p.category c " +
+        "LEFT JOIN Review r ON p.productId = r.product.productId " +
+        "WHERE c.categoryId = :categoryId " +
+        "GROUP BY p.productId, p.productName, p.price, s.storeName, s.pickupAddress, c.categoryName")
+ List<Object[]> findProductsWithStoreCategoryAndReviewInfo(@Param("categoryId") Integer categoryId);
 
     @Query("SELECT p FROM Product p WHERE p.store.storeId = :storeId")
     List<Product> findByStore(@Param("storeId") UUID storeId);

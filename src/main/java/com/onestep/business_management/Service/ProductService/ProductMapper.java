@@ -12,6 +12,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import com.onestep.business_management.Utils.StringToMapConverter;
+import com.onestep.business_management.DTO.ProductDTO.ProductCategoryReponse;
+import com.onestep.business_management.DTO.ProductDTO.ProductRequest;
+import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
+import com.onestep.business_management.Entity.Product;
+import com.onestep.business_management.Entity.Review;
+import com.onestep.business_management.Utils.MapperService;
+import org.mapstruct.*;
+import org.mapstruct.factory.Mappers;
+import java.util.List;
 
 @Mapper
 public interface ProductMapper {
@@ -40,14 +49,12 @@ public interface ProductMapper {
         return product;
     }
 
-
     default ProductResponse productToResponse(Product product) {
         if (product == null) {
             return null;
         }
 
         ProductResponse productResponse = new ProductResponse();
-
 
         // Set basic product fields
         productResponse.setProductId(product.getProductId());
@@ -66,13 +73,15 @@ public interface ProductMapper {
         productResponse.setCreatedDate(product.getCreatedDate());
         productResponse.setDisabled(product.isDisabled());
 
-        // Set category fields (assuming product.getCategory() returns a Category object)
+        // Set category fields (assuming product.getCategory() returns a Category
+        // object)
         if (product.getCategory() != null) {
             productResponse.setCategoryId(product.getCategory().getCategoryId());
             productResponse.setCategoryName(product.getCategory().getCategoryName());
         }
 
-        // Set supplier fields (assuming product.getSupplier() returns a Supplier object)
+        // Set supplier fields (assuming product.getSupplier() returns a Supplier
+        // object)
         if (product.getSupplier() != null) {
             productResponse.setSupplierId(product.getSupplier().getSupplierId());
             productResponse.setSupplierName(product.getSupplier().getSupplierName());
@@ -84,9 +93,45 @@ public interface ProductMapper {
             productResponse.setOriginName(product.getOrigin().getOriginName());
         }
 
-
-
         return productResponse;
+    }
+
+    default ProductCategoryReponse productToCategoryResponse(Product product, List<Review> reviews) {
+        if (product == null) {
+            return null;
+        }
+
+        ProductCategoryReponse response = new ProductCategoryReponse();
+        response.setProductId(product.getProductId());
+        response.setCategoryId(product.getCategory().getCategoryId());
+        response.setProductName(product.getProductName());
+        response.setPrice(product.getPrice());
+
+        // Tính trung bình rating
+        if (reviews != null && !reviews.isEmpty()) {
+            double averageRating = reviews.stream()
+                    .mapToDouble(Review::getRating)
+                    .average()
+                    .orElse(0.0); // Nếu không có đánh giá, trả về 0
+            response.setRating(averageRating);
+            response.setTotalReviews(reviews.size());
+        } else {
+            response.setRating(0.0); // Không có đánh giá, rating mặc định là 0
+            response.setTotalReviews(0);
+        }
+
+        // Thông tin cửa hàng
+        if (product.getStore() != null) {
+            response.setStoreName(product.getStore().getStoreName());
+            response.setPickupAddress(product.getStore().getPickupAddress());
+        }
+
+        // Thông tin danh mục
+        if (product.getCategory() != null) {
+            response.setCategoryName(product.getCategory().getCategoryName());
+        }
+
+        return response;
     }
 
 
@@ -144,6 +189,22 @@ public interface ProductMapper {
         return null;
     }
 
+    private Variants productDetailToVariants(ProductDetail productDetail) {
+        if (productDetail == null) {
+            return null;
+        }
+
+        Variants variant = new Variants();
+        variant.setProductDetailId(productDetail.getProductDetailId());
+        variant.setPrice(productDetail.getPrice());
+        variant.setQuantityInStock(productDetail.getQuantityInStock());
+        variant.setSku(productDetail.getSku());
+        variant.setAttributes(StringToMapConverter.convertStringToMap(productDetail.getAttributes()));
+        variant.setImage(productDetail.getImage());
+
+        return variant;
+
+    }
 
     default ProductOnlineResponse productToOnlineResponse(Product product){
         if (product == null) {
@@ -173,24 +234,5 @@ public interface ProductMapper {
 
         return response;
     }
-
-    private Variants productDetailToVariants(ProductDetail productDetail) {
-        if (productDetail == null) {
-            return null;
-        }
-
-        Variants variant = new Variants();
-        variant.setProductDetailId(productDetail.getProductDetailId());
-        variant.setPrice(productDetail.getPrice());
-        variant.setQuantityInStock(productDetail.getQuantityInStock());
-        variant.setSku(productDetail.getSku());
-        variant.setAttributes(StringToMapConverter.convertStringToMap(productDetail.getAttributes()));
-        variant.setImage(productDetail.getImage());
-
-        return variant;
-
-    }
-
-
 
 }
