@@ -7,7 +7,6 @@ import com.onestep.business_management.Entity.OrderOnline;
 import com.onestep.business_management.Entity.OrderOnlineDetail;
 import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Repository.OrderOnlineRepository;
-
 import com.onestep.business_management.Utils.MapperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,7 @@ public class OrderOnlineService {
     @Autowired
     private MapperService mapperService;
 
-    public OrderOnlineResponse create_order_online(OrderOnlineRequest request){
+    public OrderOnlineResponse create_order_online(OrderOnlineRequest request) {
         return null;
     }
 
@@ -31,7 +30,8 @@ public class OrderOnlineService {
         List<OrderOnlineResponse> responses = new ArrayList<>();
 
         // Nhóm các sản phẩm theo storeId
-        Map<UUID, List<OrderOnlineDetailRequest>> storeGroupedDetails = orderRequest.getOrderOnlineDetailRequests().stream()
+        Map<UUID, List<OrderOnlineDetailRequest>> storeGroupedDetails = orderRequest.getOrderOnlineDetailRequests()
+                .stream()
                 .collect(Collectors.groupingBy(OrderOnlineDetailRequest::getStoreId));
 
         // Tạo đơn hàng cho mỗi cửa hàng
@@ -71,12 +71,11 @@ public class OrderOnlineService {
         return responses;
     }
 
-
     public List<OrderOnlineResponse> getOrdersOnlineByUser(UUID userId) {
 
         List<OrderOnline> orders = orderOnlineRepository.findByUser(userId);
 
-        if(orders.isEmpty()){
+        if (orders.isEmpty()) {
             throw new ResourceNotFoundException("There are no orders yet!");
         }
 
@@ -84,6 +83,5 @@ public class OrderOnlineService {
                 .map(OrderOnlineMapper.INSTANCE::toResponse)
                 .toList();
     }
-
 
 }
