@@ -6,10 +6,8 @@ import org.springframework.stereotype.Service;
 
 import com.onestep.business_management.DTO.CartDTO.CartRequest;
 import com.onestep.business_management.DTO.CartDTO.CartResponse;
-import com.onestep.business_management.DTO.CartItemDTO.CartItemRequest;
 import com.onestep.business_management.Entity.Cart;
 import com.onestep.business_management.Entity.CartItems;
-import com.onestep.business_management.Entity.Product;
 import com.onestep.business_management.Entity.User;
 import com.onestep.business_management.Exeption.ResourceAlreadyExistsException;
 import com.onestep.business_management.Exeption.ResourceNotFoundException;
@@ -17,10 +15,8 @@ import com.onestep.business_management.Repository.CartRepository;
 import com.onestep.business_management.Repository.ProductRepository;
 import com.onestep.business_management.Repository.UserRepository;
 import com.onestep.business_management.Service.CartItemService.CartItemMapper;
-import com.onestep.business_management.Service.CartItemService.CartItemService;
 import com.onestep.business_management.Utils.MapperService;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,9 +24,6 @@ import java.util.UUID;
 public class CartService {
     @Autowired
     private CartRepository cartRepository;
-
-    @Autowired
-    private CartItemService cartItemService;
 
     @Autowired
     private UserRepository userRepository;

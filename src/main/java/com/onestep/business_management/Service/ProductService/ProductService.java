@@ -66,6 +66,12 @@ public class ProductService {
         return ProductMapper.INSTANCE.productToOnlineResponse(response);
     }
 
+    public ProductOnlineResponse findProductOnline(Integer prodId){
+        return ProductMapper.INSTANCE.productToOnlineResponse(productRepository.findById(prodId).orElseThrow(
+                () -> new ResourceNotFoundException("Product with id: "+prodId+" not found!")
+        ));
+    }
+
 
     public Product findById(Integer productId){
         Product product = productRepository.findById(productId).orElseThrow(

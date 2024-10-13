@@ -16,5 +16,4 @@ public class ProductDetailRequest {
     private int quantityInStock;
     private MultipartFile image;
     private Map<String,String> attributes;
-
 }

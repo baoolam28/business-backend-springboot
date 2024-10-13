@@ -26,7 +26,7 @@ public class OrderOnlineDetail {
     private int quantity;
 
     @Column(nullable = false)
-    private Double price; // Sử dụng Double để có thể là null
+    private Double price;
 
     @ManyToOne
     @JoinColumn(name = "orderOnlineId") 

@@ -123,6 +123,7 @@ public class MapperService {
         );
     }
 
+
     public List<Image> uploadImages(List<MultipartFile> files){
         return imageService.uploadImages(files);
     }
