@@ -1,9 +1,12 @@
 package com.onestep.business_management.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.Date;
 
@@ -38,4 +41,10 @@ public class Supplier {
 
     @Column(name = "disabled", nullable = false)
     private boolean disabled = false; // Khởi tạo mặc định
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "storeId")
+    @ToString.Exclude
+    @JsonIgnore
+    private Store store;
 }

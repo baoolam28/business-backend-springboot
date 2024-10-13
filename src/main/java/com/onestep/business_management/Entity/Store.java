@@ -91,4 +91,9 @@ public class Store {
     @JsonIgnore
     private List<OrderOnline> ordersOnline = new ArrayList<>();
 
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Supplier> suppliers = new ArrayList<>();
+
+
 }

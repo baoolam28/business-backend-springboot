@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/seller/products")
@@ -33,10 +34,10 @@ public class ProductSellerController {
     }
 
     // Get all products
-    @GetMapping
-    public ResponseEntity<?> getAllProducts() {
+    @GetMapping("/{storeId}")
+    public ResponseEntity<?> getAllProducts(@PathVariable UUID storeId) {
         try {
-            List<ProductResponse> response = productService.getAll();
+            List<ProductResponse> response = productService.getAllByStore(storeId);
             ApiResponse<List<ProductResponse>> apiResponse = new ApiResponse<>(
                     HttpStatus.OK.value(),
                     "Products retrieved successfully",

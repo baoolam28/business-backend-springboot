@@ -1,6 +1,7 @@
 package com.onestep.business_management.Service.AuthService;
 
 import com.onestep.business_management.DTO.AuthDTO.*;
+import com.onestep.business_management.Entity.Image;
 import com.onestep.business_management.Entity.Role;
 import com.onestep.business_management.Entity.User;
 import com.onestep.business_management.Exeption.InvalidAccountExeption;
@@ -125,7 +126,7 @@ public class AuthenticationService {
         String fullName = user.getFullName();
         Set<Role> roles = user.getRoles();
         String roleName = roles.toString();
-        String phoneNumber = user.getPhoneNumber();
+
         boolean isActive = user.isDisabled();
 
         UserInfo userInfo = new UserInfo();
@@ -133,11 +134,56 @@ public class AuthenticationService {
         userInfo.setUsername(userName);
         userInfo.setRole(roleName);
         userInfo.setFullName(fullName);
-        userInfo.setPhoneNumber(phoneNumber);
+        Image image = user.getImage();
+        if(image != null){
+            userInfo.setImage(image.getFileName());
+        }
         userInfo.setActive(isActive);
 
         String  accessToken = jwtService.generateToken(userDetails);
 
         return  new LoginResponse(accessToken,userInfo);
     }
+
+
+    public LoginResponse google_sign_in(GoogleSignInRequest request){
+        User existUser = userRepository.findByUsername(request.getEmail()).orElse(null);
+
+        if(existUser == null){
+            User newUser = new User();
+            newUser.setUsername(request.getEmail());
+            newUser.setPassword(request.getAt_hash());
+            newUser.setFullName(request.getName());
+            newUser.setDisabled(false);
+            int roleBuyer = roleCode.get("ROLE_BUYER");
+            Role newRole = roleRepository.findById(roleBuyer).orElseThrow(
+                    () -> new RuntimeException("Buyer role not found!")
+            );
+            Set<Role> roles = new HashSet<>();
+            roles.add(newRole);
+            newUser.setRoles(roles);
+
+            ;
+            return  convertToResponse(userRepository.save(newUser));
+        }
+
+
+        return convertToResponse(existUser);
+    }
+
+    private LoginResponse convertToResponse(User newUser){
+
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserId(newUser.getUserId());
+        userInfo.setUsername(newUser.getUsername());
+        userInfo.setRole(newUser.getRoles().toString());
+        userInfo.setFullName(newUser.getFullName());
+        userInfo.setActive(newUser.isDisabled());
+
+        String  accessToken = jwtService.generateToken(newUser);
+
+        return new LoginResponse(accessToken,userInfo);
+    }
 }
+
+

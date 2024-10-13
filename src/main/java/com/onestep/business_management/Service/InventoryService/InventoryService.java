@@ -11,6 +11,7 @@ import com.onestep.business_management.Repository.InventoryRepository;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,5 +51,12 @@ public class InventoryService {
     // Delete Inventory by ID
     public void deleteInventoryById(Integer id) {
         inventoryRepository.deleteById(id);
+    }
+
+    public List<InventoryResponse> getInventoryByStore(UUID storeId){
+        List<Inventory> inventories = inventoryRepository.findInventoryByStore(storeId);
+        return inventories.stream()
+                .map(InventoryMapper.INSTANCE::toResponse)
+                .collect(Collectors.toList());
     }
 }

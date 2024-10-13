@@ -32,7 +32,7 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
     @Column(name = "phoneNumber", length = 15, nullable = true, columnDefinition = "NVARCHAR(15)")
@@ -41,8 +41,9 @@ public class User implements UserDetails {
     @Column(name = "fullName", length = 50, nullable = true, columnDefinition = "NVARCHAR(50)")
     private String fullName;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> images = new ArrayList<>();
+    @OneToOne()
+    @JoinColumn(name = "imageId", nullable = true)
+    private Image image;
 
     private boolean disabled;
 
@@ -50,8 +51,8 @@ public class User implements UserDetails {
     @JoinTable(name = "userRoles", joinColumns = @JoinColumn(name = "userId"), inverseJoinColumns = @JoinColumn(name = "roleId"))
     private Set<Role> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Cart> carts = new ArrayList<>(); // Khởi tạo mặc định
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Cart cart;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

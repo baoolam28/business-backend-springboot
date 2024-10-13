@@ -18,7 +18,7 @@ public class ProductResponse {
     private String categoryName;
     private String abbreviations;
     private String unit;
-    private Float price;
+    private Double price;
     private Integer supplierId;
     private String supplierName;
     private Integer originId;
@@ -26,5 +26,4 @@ public class ProductResponse {
     private UUID createdBy;
     private Date createdDate;
     private boolean disabled;
-    
 }
