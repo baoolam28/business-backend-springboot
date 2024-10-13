@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.onestep.business_management.DTO.API.ApiResponse;
@@ -20,6 +22,7 @@ import com.onestep.business_management.Service.CartService.CartService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -75,6 +78,25 @@ public class CartBuyerProductController {
             ApiResponse<CartResponse> apiResponse = new ApiResponse<>(
                     HttpStatus.OK.value(),
                     "Product added to cart retrieved successfully",
+                    response,
+                    LocalDateTime.now()
+            );
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+           System.out.println("Error retrieving cart: " + e.getMessage());
+           ApiResponse errorResponse = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+           return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/{id}/product/{productId}")
+    public ResponseEntity<?> updateProductFromCart(@PathVariable("id") Integer cartId, @PathVariable("productId") Integer productId,  @RequestBody Map<String, Integer> quantityRequest){
+        Integer newQuantity = quantityRequest.get("quantity");
+        try {
+            CartResponse response = cartService.updateProductFromCart(cartId, productId, newQuantity);
+            ApiResponse<CartResponse> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Update quantity from cart successfully",
                     response,
                     LocalDateTime.now()
             );
