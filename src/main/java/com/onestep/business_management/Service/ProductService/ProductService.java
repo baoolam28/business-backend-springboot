@@ -39,7 +39,8 @@ public class ProductService {
     @Autowired
     private MapperService mapperService;
 
-    @Autowired ReviewRepository reviewRepository ;
+    @Autowired
+    ReviewRepository reviewRepository;
 
     public ProductResponse createProduct(ProductRequest productRequest) {
 
@@ -55,11 +56,9 @@ public class ProductService {
         return ProductMapper.INSTANCE.productToResponse(response);
     }
 
-
-    public Product findById(Integer productId){
+    public Product findById(Integer productId) {
         Product product = productRepository.findById(productId).orElseThrow(
-            () -> new ResourceNotFoundException("Product not found: " + productId)
-        );
+                () -> new ResourceNotFoundException("Product not found: " + productId));
         return product;
     }
 
@@ -161,11 +160,4 @@ public class ProductService {
         return null;
     }
 
-    // Tìm sản phẩm kèm thông tin category (dành cho response
-    // ProductCategoryResponse)
-    public ProductCategoryReponse getProductCategoryInfo(Integer productId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + productId));
-        return ProductMapper.INSTANCE.productToCategoryResponse(product);
-    }
 }
