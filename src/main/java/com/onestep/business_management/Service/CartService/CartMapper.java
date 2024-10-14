@@ -7,12 +7,12 @@ import com.onestep.business_management.DTO.CartItemDTO.CartItemResponse;
 import com.onestep.business_management.Entity.Cart;
 import com.onestep.business_management.Entity.CartItems;
 import com.onestep.business_management.Entity.Product;
+import com.onestep.business_management.Entity.ProductDetail;
 import com.onestep.business_management.Service.ProductService.ProductService;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.mapstruct.Named;
+import com.onestep.business_management.Utils.MapperService;
+import com.onestep.business_management.Utils.StringToMapConverter;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,54 +21,44 @@ import java.util.ArrayList;
 
 @Mapper
 public interface CartMapper {
-    
+
     CartMapper INSTANCE = Mappers.getMapper(CartMapper.class);
 
     // Mapping CartRequest to Cart Entity
-    @Mappings({
-        @Mapping(target = "cartItems", source = "cartItems", qualifiedByName = "mapCartItemRequestsToEntities")
-    })
-    Cart toEntity(CartRequest cartRequest);
 
     // Mapping Cart Entity to CartResponse
     @Mappings({
-        @Mapping(target = "cartItems", source = "cartItems", qualifiedByName = "mapCartItemsToResponses"),
-        @Mapping(source = "user.userId", target = "userId")
+            @Mapping(target = "cartItems", source = "cartItems", qualifiedByName = "mapCartItemsToResponses"),
+            @Mapping(source = "user.userId", target = "userId")
     })
     CartResponse toResponse(Cart cart);
 
-    // Custom method to map List<CartItemRequest> to List<CartItem>
-    @Named("mapCartItemRequestsToEntities")
-    default List<CartItems> mapCartItemRequestsToEntities(List<CartItemRequest> cartItemRequests) {
-        if(cartItemRequests == null || cartItemRequests.isEmpty()){
-            return new ArrayList<>();
-        }
-        
-        return cartItemRequests.stream().map(request -> {
-            
-            CartItems cartItem = new CartItems();
-            cartItem.setQuantity(request.getQuantity());
-            cartItem.setPrice(request.getPrice());
+    // Custom method to map List<CartItemRequest> to List<CartItems>
 
-            return cartItem;
-        }).toList();
-    }
 
-    // Custom method to map List<CartItem> to List<CartItemResponse>
+    // Custom method to map List<CartItems> to List<CartItemResponse>
     @Named("mapCartItemsToResponses")
     default List<CartItemResponse> mapCartItemsToResponses(List<CartItems> cartItems) {
-        
+        if (cartItems == null) {
+            return new ArrayList<>();
+        }
+
         return cartItems.stream().map(cartItem -> {
-            Product product = cartItem.getProduct();
+            ProductDetail productDetail = cartItem.getProductDetail();
+            Product product = productDetail != null ? productDetail.getProduct() : null;
+
             CartItemResponse response = new CartItemResponse();
-            if(product != null){
-                response.setProductId(product.getProductId());
-                response.setProductName(product.getProductName());
-                response.setBarcode(product.getBarcode());
+            if (productDetail != null) {
+                response.setProductDetailId(productDetail.getProductDetailId());
+                response.setProductName(product != null ? product.getProductName() : null);
+                response.setQuantity(cartItem.getQuantity());
+                response.setPrice(productDetail.getPrice());
+                response.setTotalPrice(productDetail.getPrice() * cartItem.getQuantity());
+                response.setImage(productDetail.getImage());
+
+                // Convert attributes from string to map
+                response.setAttributes(StringToMapConverter.convertStringToMap(productDetail.getAttributes()));
             }
-            response.setQuantity(cartItem.getQuantity());
-            response.setPrice(cartItem.getPrice());
-            response.setTotalPrice(cartItem.getPrice() * cartItem.getQuantity());
             return response;
         }).toList();
     }

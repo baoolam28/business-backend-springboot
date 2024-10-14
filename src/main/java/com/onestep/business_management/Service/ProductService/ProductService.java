@@ -1,5 +1,8 @@
 package com.onestep.business_management.Service.ProductService;
 
+
+import com.onestep.business_management.DTO.ProductDTO.ProductOnlineRequest;
+import com.onestep.business_management.DTO.ProductDTO.ProductOnlineResponse;
 import com.onestep.business_management.DTO.ProductDTO.ProductCategoryReponse;
 import com.onestep.business_management.DTO.ProductDTO.ProductRequest;
 import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
@@ -56,7 +59,23 @@ public class ProductService {
         return ProductMapper.INSTANCE.productToResponse(response);
     }
 
-    public Product findById(Integer productId) {
+
+    public ProductOnlineResponse createProductOnline(ProductOnlineRequest request){
+        Product productOnline = ProductMapper.INSTANCE.ProdOnlineToEntity(request, mapperService);
+
+        Product response = productRepository.save(productOnline);
+
+        return ProductMapper.INSTANCE.productToOnlineResponse(response);
+    }
+
+    public ProductOnlineResponse findProductOnline(Integer prodId){
+        return ProductMapper.INSTANCE.productToOnlineResponse(productRepository.findById(prodId).orElseThrow(
+                () -> new ResourceNotFoundException("Product with id: "+prodId+" not found!")
+        ));
+    }
+
+
+    public Product findById(Integer productId){
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ResourceNotFoundException("Product not found: " + productId));
         return product;

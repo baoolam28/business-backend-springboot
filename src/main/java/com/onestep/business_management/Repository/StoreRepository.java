@@ -14,4 +14,6 @@ import java.util.UUID;
 @Repository
 public interface StoreRepository extends JpaRepository<Store, UUID> {
     List<Store> findByStoreManager(User storeManager);
+
+
 }

@@ -27,6 +27,8 @@ public class Product {
 
     private String barcode;
 
+    private String description;
+
     @Column(name = "productName", length = 100, nullable = true, columnDefinition = "NVARCHAR(100)")
     private String productName;
 
@@ -57,6 +59,8 @@ public class Product {
     @Column(name = "createdBy")
     private UUID createdBy;
 
+    private boolean isOnline;
+
     private boolean disabled;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -76,15 +80,10 @@ public class Product {
     @JsonIgnore
     private List<Inventory> inventories = new ArrayList<>();
 
-    public void addImage(Image image) {
-        images.add(image);
-        image.setProduct(this);
-    }
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<ProductDetail> productDetails = new ArrayList<>();
 
-    public void removeImage(Image image) {
-        images.remove(image);
-        image.setProduct(null); 
-    }
 
 
 }

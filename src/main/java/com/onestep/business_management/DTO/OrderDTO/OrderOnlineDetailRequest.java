@@ -12,7 +12,6 @@ import java.util.UUID;
 public class OrderOnlineDetailRequest {
 
     private UUID storeId;
+    private Integer productDetailId;
     private int quantity;
-    private double price;
-    private String barcode;
 }
