@@ -42,7 +42,8 @@ public class ProductService {
     @Autowired
     private MapperService mapperService;
 
-    @Autowired ReviewRepository reviewRepository ;
+    @Autowired
+    ReviewRepository reviewRepository;
 
     public ProductResponse createProduct(ProductRequest productRequest) {
 
@@ -57,6 +58,7 @@ public class ProductService {
         Product response = productRepository.save(newProduct);
         return ProductMapper.INSTANCE.productToResponse(response);
     }
+
 
     public ProductOnlineResponse createProductOnline(ProductOnlineRequest request){
         Product productOnline = ProductMapper.INSTANCE.ProdOnlineToEntity(request, mapperService);
@@ -75,8 +77,7 @@ public class ProductService {
 
     public Product findById(Integer productId){
         Product product = productRepository.findById(productId).orElseThrow(
-            () -> new ResourceNotFoundException("Product not found: " + productId)
-        );
+                () -> new ResourceNotFoundException("Product not found: " + productId));
         return product;
     }
 

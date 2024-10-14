@@ -28,12 +28,12 @@ public class ShipmentAddressService {
     private ShipmentAddressMapper shippingAddressMapper;
 
     // Create or Update Shipping Address
-    public ShipmentAddressRespone saveShippingAddress(ShipmentAddressRequest shippingAddressRequest) {
-        UUID uuid = UUID.fromString(shippingAddressRequest.getUserId());
+    public ShipmentAddressRespone saveShippingAddress(String userId, ShipmentAddressRequest shippingAddressRequest) {
+        UUID uuid = UUID.fromString(userId);
         User user = userRepository.findById(uuid).orElse(null);
 
         if (user == null) {
-            throw new RuntimeException("User not found with id: " + shippingAddressRequest.getUserId());
+            throw new RuntimeException("User not found with id: " + userId);
         }
 
         // Lấy tất cả địa chỉ giao hàng của user
