@@ -17,6 +17,10 @@ public class OrderResponse {
     private Date orderDate;
     private String status;
     private Integer customerId;
+    private String customerName;
+    private String customerEmail;
+    private String customerPhone;
+    private String customerAddress;
     private boolean paymentStatus;
     private String paymentMethod;
     private List<OrderDetailResponse> orderDetails;

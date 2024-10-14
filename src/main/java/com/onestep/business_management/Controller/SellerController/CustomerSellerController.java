@@ -1,8 +1,9 @@
-package com.onestep.business_management.Controller;
+package com.onestep.business_management.Controller.SellerController;
 
 import com.onestep.business_management.DTO.API.ApiResponse;
 import com.onestep.business_management.DTO.CustomerDTO.CustomerRequest;
 import com.onestep.business_management.DTO.CustomerDTO.CustomerResponse;
+import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
 import com.onestep.business_management.Service.CustomerService.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,9 +15,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/customers")
-public class CustomerController {
-
+@RequestMapping("/api/seller/customers")
+public class CustomerSellerController {
+    
     @Autowired
     private CustomerService customerService;
 
@@ -51,18 +52,20 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<CustomerResponse> createCustomer(@RequestBody CustomerRequest customerRequest) {
-        try {
-            CustomerResponse response = customerService.createCustomer(customerRequest);
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (Exception e) {
-            // Handle exception
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> createCustomer(@RequestBody CustomerRequest customerRequest) {
+        CustomerResponse response = customerService.createCustomer(customerRequest);
+         ApiResponse<CustomerResponse> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),  // Status code 200
+                    "Customer created successfully",
+                    response,
+                    LocalDateTime.now()  // Current date
+            );
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CustomerResponse> updateCustomer(@PathVariable int id, @RequestBody CustomerRequest customerRequest) {
+    public ResponseEntity<CustomerResponse> updateCustomer(@PathVariable int id,
+            @RequestBody CustomerRequest customerRequest) {
         try {
             CustomerResponse response = customerService.updateCustomer(id, customerRequest);
             return new ResponseEntity<>(response, HttpStatus.OK);

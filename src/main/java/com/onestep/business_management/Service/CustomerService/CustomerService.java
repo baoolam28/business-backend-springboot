@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+import java.util.UUID;
 @Service
 public class CustomerService {
 
@@ -56,5 +56,11 @@ public class CustomerService {
         return null;
     }
 
+    public List<CustomerResponse> getCustomersByStoreId(UUID storeId) {
+        List<Customer> customers = customerRepository.findBystore(storeId); // Lấy danh sách khách hàng theo storeId
+        return customers.stream()
+                .map(CustomerMapper.INSTANCE::toResponse) // Chuyển đổi sang CustomerResponse
+                .collect(Collectors.toList()); // Trả về danh sách CustomerResponse
+    }
 
 }

@@ -36,7 +36,7 @@ public class OrderService {
     @Autowired
     private MapperService mapperService;
 
-     public OrderResponse createOrder(OrderRequest orderRequest) {
+    public OrderResponse createOrder(OrderRequest orderRequest) {
          try {
              OrderOffline order = OrderMapper.INSTANCE.toEntity(orderRequest, mapperService);
              order.setOrderDate(new Date());
@@ -69,9 +69,7 @@ public class OrderService {
          return null;
      }
 
-
-
-    @Transactional
+@Transactional
     public OrderResponse updateOrderPayment(UUID orderId, String paymentMethod, boolean paymentStatus) {
         OrderOffline order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
@@ -85,7 +83,6 @@ public class OrderService {
         return OrderMapper.INSTANCE.toResponse(updatedOrder);
     }
 
-
     public OrderResponse getOrderById(UUID orderId) {
         return orderRepository.findById(orderId)
                 .map(OrderMapper.INSTANCE::toResponse)
@@ -98,38 +95,41 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-//    @Transactional
-//    public OrderResponse updateOrder(Integer orderId, OrderRequest orderRequest) {
-//        Order order = orderRepository.findById(orderId)
-//                .orElseThrow(() -> new RuntimeException("Order not found"));
-//
-//        order.setOrderDate(orderRequest.getOrderDate());
-//        order.setStatus(orderRequest.getStatus());
-//        order.setPaymentStatus(orderRequest.isPaymentStatus());
-//        order.setPaymentMethod(orderRequest.getPaymentMethod());
-//
-//        if (orderRequest.getCustomerId() > 0) {
-//            Customer customer = customerRepository.findById(orderRequest.getCustomerId())
-//                    .orElseThrow(() -> new RuntimeException("Customer not found"));
-//            order.setCustomer(customer);
-//        }
-//
-//        List<OrderDetail> orderDetails = orderRequest.getOrderDetails().stream().map(request -> {
-//            OrderDetail detail = new OrderDetail();
-//            detail.setQuantity(request.getQuantity());
-//            detail.setPrice(request.getPrice());
-//            Product product = productRepository.findByBarcode(request.getProductBarcode())
-//                    .orElseThrow(() -> new RuntimeException("Product not found"));
-//            detail.setProduct(product);
-//            detail.setOrder(order);
-//            return detail;
-//        }).collect(Collectors.toList());
-//
-//        order.setOrderDetails(orderDetails);
-//
-//        Order updatedOrder = orderRepository.save(order);
-//        return OrderMapper.INSTANCE.toResponse(updatedOrder);
-//    }
+    // @Transactional
+    // public OrderResponse updateOrder(Integer orderId, OrderRequest orderRequest)
+    // {
+    // Order order = orderRepository.findById(orderId)
+    // .orElseThrow(() -> new RuntimeException("Order not found"));
+    //
+    // order.setOrderDate(orderRequest.getOrderDate());
+    // order.setStatus(orderRequest.getStatus());
+    // order.setPaymentStatus(orderRequest.isPaymentStatus());
+    // order.setPaymentMethod(orderRequest.getPaymentMethod());
+    //
+    // if (orderRequest.getCustomerId() > 0) {
+    // Customer customer = customerRepository.findById(orderRequest.getCustomerId())
+    // .orElseThrow(() -> new RuntimeException("Customer not found"));
+    // order.setCustomer(customer);
+    // }
+    //
+    // List<OrderDetail> orderDetails =
+    // orderRequest.getOrderDetails().stream().map(request -> {
+    // OrderDetail detail = new OrderDetail();
+    // detail.setQuantity(request.getQuantity());
+    // detail.setPrice(request.getPrice());
+    // Product product =
+    // productRepository.findByBarcode(request.getProductBarcode())
+    // .orElseThrow(() -> new RuntimeException("Product not found"));
+    // detail.setProduct(product);
+    // detail.setOrder(order);
+    // return detail;
+    // }).collect(Collectors.toList());
+    //
+    // order.setOrderDetails(orderDetails);
+    //
+    // Order updatedOrder = orderRepository.save(order);
+    // return OrderMapper.INSTANCE.toResponse(updatedOrder);
+    // }
 
     public boolean deleteOrder(UUID orderId) {
         if (orderRepository.existsById(orderId)) {
@@ -139,7 +139,7 @@ public class OrderService {
         return false;
     }
 
-    public OrderReportResponse getOrderReports(LocalDate startDate, LocalDate endDate) {
+public OrderReportResponse getOrderReports(LocalDate startDate, LocalDate endDate) {
         long totalOrders = 0;
         double totalRevenue = 0;
         double averageOrderValue = 0;
@@ -186,10 +186,9 @@ public class OrderService {
             throw new RuntimeException("An error occurred while generating the report", e);
         }
 
-        return new OrderReportResponse(totalOrders, totalRevenue, averageOrderValue, customerCountByWeek, customerCountByMonth, customerCountByYear);
+        return new OrderReportResponse(totalOrders, totalRevenue, averageOrderValue, customerCountByWeek,
+                customerCountByMonth, customerCountByYear);
     }
-
-
 
     public long getTotalOrders() {
         return orderRepository.count();

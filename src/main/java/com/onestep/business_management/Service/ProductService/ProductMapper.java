@@ -6,8 +6,7 @@ import com.onestep.business_management.Entity.Product;
 import com.onestep.business_management.Utils.MapperService;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
-
-
+import java.util.UUID;
 
 @Mapper
 public interface ProductMapper {
@@ -27,7 +26,6 @@ public interface ProductMapper {
         product.setCreatedDate(productRequest.getCreatedDate());
         product.setCreatedBy(productRequest.getCreatedBy());
 
-        // Fetch related entities
         product.setStore(mapperService.findStoreById(productRequest.getStoreId()));
         product.setCategory(mapperService.findCategoryById(productRequest.getCategoryId()));
         product.setSupplier(mapperService.findSupplierById(productRequest.getSupplierId()));
@@ -36,7 +34,6 @@ public interface ProductMapper {
         return product;
     }
 
-
     default ProductResponse productToResponse(Product product) {
         if (product == null) {
             return null;
@@ -44,8 +41,11 @@ public interface ProductMapper {
 
         ProductResponse productResponse = new ProductResponse();
 
-
-        // Set basic product fields
+        // Giả sử product.getStore().getStoreId() trả về UUID
+        UUID storeId = product.getStore().getStoreId(); // Lấy UUID
+        // Chuyển đổi UUID thành String
+        String storeIdString = storeId.toString();
+        productResponse.setStoreId(storeIdString);
         productResponse.setProductId(product.getProductId());
         productResponse.setBarcode(product.getBarcode());
         productResponse.setProductName(product.getProductName());
@@ -55,20 +55,20 @@ public interface ProductMapper {
         if (product.getPrice() != null) {
             productResponse.setPrice(product.getPrice());
         }
-        
 
         // Set createdBy, createdDate, and disabled fields
         productResponse.setCreatedBy(product.getCreatedBy());
         productResponse.setCreatedDate(product.getCreatedDate());
         productResponse.setDisabled(product.isDisabled());
 
-        // Set category fields (assuming product.getCategory() returns a Category object)
         if (product.getCategory() != null) {
             productResponse.setCategoryId(product.getCategory().getCategoryId());
+
             productResponse.setCategoryName(product.getCategory().getCategoryName());
         }
 
-        // Set supplier fields (assuming product.getSupplier() returns a Supplier object)
+        // Set supplier fields (assuming product.getSupplier() returns a Supplier
+        // object)
         if (product.getSupplier() != null) {
             productResponse.setSupplierId(product.getSupplier().getSupplierId());
             productResponse.setSupplierName(product.getSupplier().getSupplierName());
@@ -79,12 +79,6 @@ public interface ProductMapper {
             productResponse.setOriginId(product.getOrigin().getOriginId());
             productResponse.setOriginName(product.getOrigin().getOriginName());
         }
-
-
-
         return productResponse;
     }
-
-
-
 }

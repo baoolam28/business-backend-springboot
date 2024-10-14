@@ -11,6 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductResponse {
+    private String storeId;
     private Integer productId;
     private String barcode;
     private String productName;
