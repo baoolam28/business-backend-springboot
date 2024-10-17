@@ -22,6 +22,7 @@ public interface OrderOnlineMapper {
     @Mapping(target = "orderDetails", source = "orderDetails", qualifiedByName = "mapDetailsToResponses")
     @Mapping(target = "userId", source = "user.userId")
     @Mapping(target = "storeId", source = "store.storeId")
+    @Mapping(target = "storeName", source = "store.storeName")
     OrderOnlineResponse toResponse(OrderOnline order);
 
     // Custom method to map List<OrderOnlineDetailRequest> to List<OrderOnlineDetail>
@@ -43,8 +44,10 @@ public interface OrderOnlineMapper {
         return details.stream().map(detail -> {
             OrderOnlineDetailResponse response = new OrderOnlineDetailResponse();
             response.setOrderDetailId(detail.getOrderDetailId());
+            response.setProductDetailId(detail.getProductDetail().getProductDetailId());
             response.setQuantity(detail.getQuantity());
             response.setPrice(detail.getPrice());
+
             ProductDetail productDetail = detail.getProductDetail();
             Product product = productDetail.getProduct();
             response.setProductName(product.getProductName());

@@ -40,10 +40,11 @@ public class OrderOnline {
     private Date orderDate;
 
     public enum Status {
+        HUY,
         CHUA_GIAO_HANG,
         DANG_GIAO_HANG,
         CHO_XAC_NHAN,
-        DANG_DONG_GOI,
+        DANG_VAN_CHUYEN,
         GIAO_HANG_THANH_CONG
     }
 

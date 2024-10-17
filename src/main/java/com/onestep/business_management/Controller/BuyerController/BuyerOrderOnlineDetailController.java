@@ -1,0 +1,49 @@
+package com.onestep.business_management.Controller.BuyerController;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.onestep.business_management.DTO.API.ApiResponse;
+import com.onestep.business_management.DTO.OrderDTO.OrderOnlineDetailRequest;
+import com.onestep.business_management.DTO.OrderDTO.OrderOnlineRequest;
+import com.onestep.business_management.DTO.OrderDTO.OrderOnlineResponse;
+import com.onestep.business_management.DTO.StoreDTO.StoreResponse;
+import com.onestep.business_management.Service.OrderOnlineService.OrderOnlineService;
+import org.springframework.web.bind.annotation.RequestParam;
+
+
+@RestController
+@RequestMapping("/api/buyer/ordersOnlineDetails")
+public class BuyerOrderOnlineDetailController {
+    @Autowired
+    private OrderOnlineService orderOnlineService;
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getOrderStatus(@PathVariable("userId") UUID userId) {
+       try {
+            List<OrderOnlineResponse> response = orderOnlineService.getOrdersOnlineByUser(userId);
+            ApiResponse<List<OrderOnlineResponse>> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Store retrieved successfully",
+                    response,
+                    LocalDateTime.now()
+            );
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error retrieving products: " + e.getMessage());
+            ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+}

@@ -20,5 +20,6 @@ public class OrderOnlineDetailResponse {
     private double price;
     private Double totalPrice;
     private String image;
+
     private Map<String, String> attributes;
 }
