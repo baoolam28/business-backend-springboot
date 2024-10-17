@@ -2,10 +2,10 @@ package com.onestep.business_management.Service.OrderOnlineService;
 
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineDetailRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineDetailResponse;
-import com.onestep.business_management.DTO.OrderDTO.OrderOnlineRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineResponse;
 import com.onestep.business_management.Entity.*;
 import com.onestep.business_management.Utils.MapperService;
+import com.onestep.business_management.Utils.StringToMapConverter;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -30,9 +30,9 @@ public interface OrderOnlineMapper {
         return detailRequests.stream().map(detailRequest -> {
             OrderOnlineDetail detail = new OrderOnlineDetail();
             detail.setQuantity(detailRequest.getQuantity());
-            detail.setPrice(detailRequest.getPrice());
-            detail.setBarcode(detailRequest.getBarcode());
-            detail.setProduct(mapperService.findProductByBarcode(detailRequest.getBarcode()));  // Ánh xạ product từ barcode
+            ProductDetail productDetail = mapperService.findProductDetailById(detailRequest.getProductDetailId());
+            detail.setProductDetail(productDetail);
+            detail.setPrice(productDetail.getPrice());
             return detail;
         }).toList();
     }
@@ -45,10 +45,12 @@ public interface OrderOnlineMapper {
             response.setOrderDetailId(detail.getOrderDetailId());
             response.setQuantity(detail.getQuantity());
             response.setPrice(detail.getPrice());
-            response.setBarcode(detail.getBarcode());
-            Product prodRes = detail.getProduct();
-            response.setProductId(prodRes.getProductId());
-            response.setProductName(prodRes.getProductName());
+            ProductDetail productDetail = detail.getProductDetail();
+            Product product = productDetail.getProduct();
+            response.setProductName(product.getProductName());
+            response.setTotalPrice(detail.getPrice() * detail.getQuantity());
+            response.setImage(productDetail.getImage());
+            response.setAttributes(StringToMapConverter.convertStringToMap(productDetail.getAttributes()));
             return response;
         }).toList();
     }

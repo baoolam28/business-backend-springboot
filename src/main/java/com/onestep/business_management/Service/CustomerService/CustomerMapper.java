@@ -12,7 +12,7 @@ import java.util.UUID;
 
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public interface CustomerMapper {
     CustomerMapper INSTANCE = Mappers.getMapper(CustomerMapper.class);
 

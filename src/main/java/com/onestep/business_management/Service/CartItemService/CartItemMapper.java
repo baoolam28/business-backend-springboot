@@ -1,65 +1,64 @@
 package com.onestep.business_management.Service.CartItemService;
 
+import com.onestep.business_management.DTO.CartDTO.CartRequest;
+import com.onestep.business_management.Entity.*;
+import com.onestep.business_management.Utils.StringToMapConverter;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 import org.mapstruct.Context;
 
 import com.onestep.business_management.DTO.CartItemDTO.CartItemRequest;
 import com.onestep.business_management.DTO.CartItemDTO.CartItemResponse;
-import com.onestep.business_management.Entity.Cart;
 import com.onestep.business_management.Utils.MapperService;
-import com.onestep.business_management.Entity.CartItems;
-import com.onestep.business_management.Entity.Product;
 import com.onestep.business_management.Exeption.ResourceNotFoundException;
 
 @Mapper
 public interface CartItemMapper {
     CartItemMapper INSTANCE = Mappers.getMapper(CartItemMapper.class);
 
-    default CartItems cartItemRequestToEntity(CartItemRequest cartItemRequest, @Context MapperService mapperService){
+    default CartItems cartItemRequestToEntity(CartRequest cartRequest, @Context MapperService mapperService){
 
-        if(cartItemRequest == null){
+        if(cartRequest == null){
             return null;
         }
 
         CartItems cartItems = new CartItems();
 
-        if(cartItemRequest.getProductId() != null){
-            Product product = mapperService.findProductById(cartItemRequest.getProductId());
-            if(product == null){
-                throw new ResourceNotFoundException("Product not found" + product);
-            }
-            cartItems.setProduct(product);
+        if(cartRequest.getProductDetailId() != null){
+            ProductDetail detail = mapperService.findProductDetailById(cartRequest.getProductDetailId());
+            cartItems.setProductDetail(detail);
         }
 
-        cartItems.setQuantity(cartItemRequest.getQuantity());
-
-       cartItems.setPrice(cartItemRequest.getPrice());
-
-        cartItems.setTotalPrice(cartItemRequest.getPrice() * cartItemRequest.getQuantity());
+        cartItems.setQuantity(cartRequest.getQuantity());
 
         return cartItems;
     }
 
 
-    default CartItemResponse cartItemToResponse(CartItems cartItems){
+    default CartItemResponse cartItemToResponse(CartItems cartItems, @Context MapperService mapperService){
         if(cartItems == null){
             return null;
         }
 
         CartItemResponse cartItemResponse = new CartItemResponse();
 
-        if(cartItems.getProduct() != null){
-            Product product = cartItems.getProduct();
+        ProductDetail productDetail = cartItems.getProductDetail();
 
-            cartItemResponse.setProductId(product.getProductId());
-            cartItemResponse.setProductName(product.getProductName());
-            cartItemResponse.setBarcode(product.getBarcode());
+        if(productDetail == null){
+            return null;
         }
 
-        cartItemResponse.setPrice(cartItems.getPrice());
+        cartItemResponse.setProductDetailId(productDetail.getProductDetailId());
+
+        Product product = productDetail.getProduct();
+        Store store = product.getStore();
+        cartItemResponse.setStoreId(store.getStoreId());
+        cartItemResponse.setProductName(product.getProductName());
+        cartItemResponse.setPrice(productDetail.getPrice());
         cartItemResponse.setQuantity(cartItems.getQuantity());
-        cartItemResponse.setTotalPrice(cartItems.getTotalPrice());
+        cartItemResponse.setTotalPrice(cartItems.getQuantity() * productDetail.getPrice());
+        cartItemResponse.setImage(productDetail.getImage());
+        cartItemResponse.setAttributes(StringToMapConverter.convertStringToMap(productDetail.getAttributes()));
 
         return cartItemResponse;
 

@@ -91,14 +91,38 @@ public class OrderSellerController {
     }
 
     @PutMapping("/{orderId}/payment")
-    public ResponseEntity<OrderResponse> updateOrderPayment(
+    public ResponseEntity<?> updateOrderPayment(
             @PathVariable UUID orderId,
             @RequestBody PaymentUpdateRequest request) {
 
-        OrderResponse updatedOrderResponse = orderService.updateOrderPayment(
-                orderId, request.getPaymentMethod(), request.isPaymentStatus());
+        try {
+            // Gọi service để cập nhật thanh toán
+            OrderResponse updatedOrderResponse = orderService.updateOrderPayment(
+                    orderId, request.getPaymentMethod(), request.isPaymentStatus());
 
-        return ResponseEntity.ok(updatedOrderResponse);
+            // Tạo phản hồi API thành công
+            ApiResponse<OrderResponse> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Cập nhật thanh toán thành công",
+                    updatedOrderResponse,
+                    LocalDateTime.now());
+
+            // Trả về phản hồi với mã trạng thái 200 OK
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            System.out.println("Lỗi khi cập nhật thanh toán: " + e.getMessage());
+
+            // Tạo phản hồi API lỗi
+            ApiResponse<String> errorResponse = new ApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Đã xảy ra lỗi khi cập nhật thanh toán: " + e.getMessage(),
+                    null,
+                    LocalDateTime.now());
+
+            // Trả về phản hồi với mã trạng thái 500 INTERNAL_SERVER_ERROR
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/store/{storeId}")

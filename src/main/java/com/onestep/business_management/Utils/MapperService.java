@@ -17,10 +17,11 @@ import com.onestep.business_management.Repository.SupplierRepository;
 import com.onestep.business_management.Repository.UserRepository;
 
 import com.onestep.business_management.Entity.*;
-import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Repository.*;
+import com.onestep.business_management.Service.ImageService.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -51,6 +52,10 @@ public class MapperService {
     @Autowired 
     private ProductRepository productRepository;
 
+    @Autowired
+    private ImageService imageService;
+
+    @Autowired ProductDetailRepository productDetailRepository;
 
 
     public Store findStoreById(UUID storeId) {
@@ -110,5 +115,20 @@ public class MapperService {
         return productRepository.findByBarcode(barcode).orElseThrow(
                 () -> new ResourceNotFoundException("Product with barcode: "+barcode+" not found!")
         );
+    }
+
+    public ProductDetail findProductDetailById(Integer id){
+        return productDetailRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Product detail with id: "+id+" not found!")
+        );
+    }
+
+
+    public List<Image> uploadImages(List<MultipartFile> files){
+        return imageService.uploadImages(files);
+    }
+
+    public Image uploadImage(MultipartFile file){
+        return imageService.uploadImage(file);
     }
 }
