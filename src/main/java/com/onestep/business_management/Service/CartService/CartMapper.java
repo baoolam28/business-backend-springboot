@@ -4,10 +4,7 @@ import com.onestep.business_management.DTO.CartDTO.CartRequest;
 import com.onestep.business_management.DTO.CartDTO.CartResponse;
 import com.onestep.business_management.DTO.CartItemDTO.CartItemRequest;
 import com.onestep.business_management.DTO.CartItemDTO.CartItemResponse;
-import com.onestep.business_management.Entity.Cart;
-import com.onestep.business_management.Entity.CartItems;
-import com.onestep.business_management.Entity.Product;
-import com.onestep.business_management.Entity.ProductDetail;
+import com.onestep.business_management.Entity.*;
 import com.onestep.business_management.Service.ProductService.ProductService;
 
 import com.onestep.business_management.Utils.MapperService;
@@ -55,6 +52,13 @@ public interface CartMapper {
                 response.setPrice(productDetail.getPrice());
                 response.setTotalPrice(productDetail.getPrice() * cartItem.getQuantity());
                 response.setImage(productDetail.getImage());
+                Store store = product.getStore();
+                response.setStoreId(store.getStoreId());
+                response.setDistrict(store.getDistrict());
+                response.setHeight(productDetail.getHeight());
+                response.setLength(productDetail.getLength());
+                response.setWeight(productDetail.getWeight());
+                response.setWidth(productDetail.getWidth());
 
                 // Convert attributes from string to map
                 response.setAttributes(StringToMapConverter.convertStringToMap(productDetail.getAttributes()));

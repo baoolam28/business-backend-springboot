@@ -28,9 +28,9 @@ public class ShipmentAddressService {
     private ShipmentAddressMapper shippingAddressMapper;
 
     // Create or Update Shipping Address
-    public ShipmentAddressRespone saveShippingAddress(String userId, ShipmentAddressRequest shippingAddressRequest) {
-        UUID uuid = UUID.fromString(userId);
-        User user = userRepository.findById(uuid).orElse(null);
+    public ShipmentAddressRespone saveShippingAddress(ShipmentAddressRequest shippingAddressRequest) {
+        UUID userId = shippingAddressRequest.getUserId();
+        User user = userRepository.findById(userId).orElse(null);
 
         if (user == null) {
             throw new RuntimeException("User not found with id: " + userId);

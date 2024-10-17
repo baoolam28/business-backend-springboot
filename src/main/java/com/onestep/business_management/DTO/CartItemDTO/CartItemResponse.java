@@ -18,5 +18,10 @@ public class CartItemResponse {
     private Double price; 
     private Double totalPrice;
     private String image;
+    private String district;
+    private Double height;
+    private Double length;
+    private Double width;
+    private Double weight;
     private Map<String,String> attributes;
 }

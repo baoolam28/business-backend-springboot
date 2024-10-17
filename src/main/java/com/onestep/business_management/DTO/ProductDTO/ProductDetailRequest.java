@@ -15,5 +15,9 @@ public class ProductDetailRequest {
     private String sku;
     private int quantityInStock;
     private MultipartFile image;
+    private Double height;
+    private Double length;
+    private Double width;
+    private Double weight;
     private Map<String,String> attributes;
 }

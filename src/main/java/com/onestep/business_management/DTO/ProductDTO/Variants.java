@@ -16,7 +16,9 @@ public class Variants {
     private int quantityInStock;
     private String sku;
     private String image;
+    private Double height;
+    private Double length;
+    private Double width;
+    private Double weight;
     private Map<String,String> attributes;
-
-
 }

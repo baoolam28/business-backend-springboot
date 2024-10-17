@@ -32,6 +32,12 @@ public class ShippingAddress {
     @Column(name = "address", length = 255, nullable = true, columnDefinition = "NVARCHAR(255)")
     private String address;
 
+    @Column(name = "province", length = 10, nullable = true, columnDefinition = "NVARCHAR(10)")
+    private String province;
+
+    @Column(name = "district", length = 10, nullable = true, columnDefinition = "NVARCHAR(10)")
+    private String district;
+
     @Column(name = "wardCode", length = 10, nullable = true, columnDefinition = "NVARCHAR(10)")
     private String wardCode;
 

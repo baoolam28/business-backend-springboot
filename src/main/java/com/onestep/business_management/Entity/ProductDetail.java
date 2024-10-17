@@ -28,7 +28,15 @@ public class ProductDetail {
 
     private String image;
 
-    @Column(name = "attributes", columnDefinition = "TEXT")
+    private Double height;
+
+    private Double length;
+
+    private Double width;
+
+    private Double weight;
+
+    @Column(name = "attributes", length = 255, nullable = true, columnDefinition = "NVARCHAR(255)")
     private String attributes;
 
     @ManyToOne(fetch = FetchType.LAZY)

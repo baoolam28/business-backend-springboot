@@ -24,6 +24,7 @@ public class BuyerOrderOlineController {
 
     @PostMapping
     public ResponseEntity<?> createOrderOnline(@RequestBody OrderOnlineRequest orderRequest) {
+        System.out.println("order rq: "+orderRequest);
         List<OrderOnlineResponse> response = orderOnlineService.createMultipleOrders(orderRequest);
         ApiResponse<List<OrderOnlineResponse>> apiResponse = new ApiResponse<>(
                 HttpStatus.OK.value(),  // Status code 200
