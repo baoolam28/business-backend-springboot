@@ -1,5 +1,6 @@
 package com.onestep.business_management.Controller.BuyerController;
 
+import com.onestep.business_management.DTO.API.ApiResponse;
 import com.onestep.business_management.DTO.ShipmentAddressDTO.ShipmentAddressRequest;
 import com.onestep.business_management.DTO.ShipmentAddressDTO.ShipmentAddressRespone;
 import com.onestep.business_management.Service.ShipmentAddressService.ShipmentAddressService;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/buyer/shipping-addresses") // Đường dẫn chung cho tất cả các endpoint
@@ -19,26 +21,46 @@ public class ShippingAddressController {
     private ShipmentAddressService shipmentAddressService;
 
     // Tạo hoặc cập nhật địa chỉ giao hàng
-    @PostMapping
-    public ResponseEntity<ShipmentAddressRespone> createOrUpdateShippingAddress(
-            @RequestBody ShipmentAddressRequest shippingAddressRequest) {
-        ShipmentAddressRespone response = shipmentAddressService.saveShippingAddress(shippingAddressRequest);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    @PostMapping("/{userId}")
+    public ResponseEntity<?> createOrUpdateShippingAddress(
+            @PathVariable String userId, @RequestBody ShipmentAddressRequest shippingAddressRequest) {
+        try {
+            ShipmentAddressRespone response = shipmentAddressService.saveShippingAddress(userId,
+                    shippingAddressRequest);
+            ApiResponse<ShipmentAddressRespone> apiResponse = new ApiResponse<>(
+                    HttpStatus.CREATED.value(),
+                    "Shipping address saved successfully",
+                    response,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+        } catch (Exception e) {
+            System.out.println("Error saving shipping address: " + e.getMessage());
+            ApiResponse<?> errorResponse = new ApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Lấy địa chỉ giao hàng theo ID người dùng
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<ShipmentAddressRespone>> getShippingAddressesByUserId(
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getShippingAddressesByUserId(
             @PathVariable UUID userId) {
-        List<ShipmentAddressRespone> addresses = shipmentAddressService.getShippingAddressById(userId);
-        return new ResponseEntity<>(addresses, HttpStatus.OK);
-    }
-
-    // Lấy tất cả địa chỉ giao hàng
-    @GetMapping
-    public ResponseEntity<List<ShipmentAddressRespone>> getAllShippingAddresses() {
-        List<ShipmentAddressRespone> addresses = shipmentAddressService.getAllShippingAddresses();
-        return new ResponseEntity<>(addresses, HttpStatus.OK);
+        try {
+            List<ShipmentAddressRespone> addresses = shipmentAddressService.getShippingAddressById(userId);
+            ApiResponse<List<ShipmentAddressRespone>> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Shipping addresses retrieved successfully",
+                    addresses,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error retrieving shipping addresses: " + e.getMessage());
+            ApiResponse<?> errorResponse = new ApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Xóa địa chỉ giao hàng theo ID

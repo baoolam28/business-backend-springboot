@@ -41,11 +41,11 @@ public class OrderOnline {
 
     public enum Status {
         HUY,
-        CHUA_GIAO_HANG,
-        DANG_GIAO_HANG,
         CHO_XAC_NHAN,
+        DANG_GIAO_HANG,
         DANG_VAN_CHUYEN,
-        GIAO_HANG_THANH_CONG
+        GIAO_HANG_THANH_CONG,
+        CHUA_GIAO_HANG
     }
 
     private Status status;

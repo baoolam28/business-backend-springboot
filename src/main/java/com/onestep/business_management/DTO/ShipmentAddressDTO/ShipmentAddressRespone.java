@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ShipmentAddressRespone {
     private Integer addressId;
-    private String userId;
     private String fullName;
     private String phoneNumber;
     private String address;
