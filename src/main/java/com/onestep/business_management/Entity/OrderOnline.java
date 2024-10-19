@@ -5,20 +5,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -61,11 +52,17 @@ public class OrderOnline {
     @JoinColumn(name = "storeId", nullable = true) // Mỗi đơn hàng gắn với 1 cửa hàng
     private Store store;
 
-    @OneToMany(mappedBy = "orderOnline", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "orderOnline", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<OrderOnlineDetail> orderDetails = new ArrayList<>();
 
-    // Phương thức tiện ích để lấy thông tin đơn hàng
+    @OneToOne(mappedBy = "orderOnline", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Shipment shipment;
+
+    // Utility method for order summary
     public String getOrderSummary() {
         return String.format("OrderOnline [ID=%s, Date=%s, Status=%s]", orderOnlineId, orderDate, status);
     }
 }
+
