@@ -4,6 +4,7 @@ import com.onestep.business_management.DTO.OrderDTO.OrderOnlineDetailRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineDetailResponse;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineResponse;
 import com.onestep.business_management.Entity.*;
+import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Utils.MapperService;
 import com.onestep.business_management.Utils.StringToMapConverter;
 import org.mapstruct.*;
@@ -16,8 +17,7 @@ import java.util.UUID;
 public interface OrderOnlineMapper {
     OrderOnlineMapper INSTANCE = Mappers.getMapper(OrderOnlineMapper.class);
 
-
-    // Ánh xạ từ OrderOnline sang OrderOnlineResponse
+    // Mapping from OrderOnline entity to OrderOnlineResponse DTO
     @Mapping(target = "orderId", source = "orderOnlineId")
     @Mapping(target = "orderDetails", source = "orderDetails", qualifiedByName = "mapDetailsToResponses")
     @Mapping(target = "userId", source = "user.userId")
@@ -31,6 +31,9 @@ public interface OrderOnlineMapper {
             OrderOnlineDetail detail = new OrderOnlineDetail();
             detail.setQuantity(detailRequest.getQuantity());
             ProductDetail productDetail = mapperService.findProductDetailById(detailRequest.getProductDetailId());
+            if (productDetail == null) {
+                throw new ResourceNotFoundException("ProductDetail not found for ID: " + detailRequest.getProductDetailId());
+            }
             detail.setProductDetail(productDetail);
             detail.setPrice(productDetail.getPrice());
             return detail;
@@ -41,29 +44,44 @@ public interface OrderOnlineMapper {
     @Named("mapDetailsToResponses")
     default List<OrderOnlineDetailResponse> mapDetailsToResponses(List<OrderOnlineDetail> details) {
         return details.stream().map(detail -> {
-            OrderOnlineDetailResponse response = new OrderOnlineDetailResponse();
-            response.setOrderDetailId(detail.getOrderDetailId());
-            response.setQuantity(detail.getQuantity());
-            response.setPrice(detail.getPrice());
             ProductDetail productDetail = detail.getProductDetail();
-            Product product = productDetail.getProduct();
-            response.setProductName(product.getProductName());
-            response.setTotalPrice(detail.getPrice() * detail.getQuantity());
-            response.setImage(productDetail.getImage());
-            response.setAttributes(StringToMapConverter.convertStringToMap(productDetail.getAttributes()));
-            return response;
+
+            return OrderOnlineDetailResponse.builder()
+                    .orderDetailId(detail.getOrderDetailId())
+                    .quantity(detail.getQuantity())
+                    .price(detail.getPrice())
+                    .productDetailId(productDetail != null ? productDetail.getProductDetailId() : null)
+                    .productName(productDetail != null && productDetail.getProduct() != null
+                            ? productDetail.getProduct().getProductName()
+                            : null)
+                    .totalPrice(detail.calculateTotalPrice())
+                    .image(productDetail != null ? productDetail.getImage() : null)
+                    .attributes(productDetail != null
+                            ? StringToMapConverter.convertStringToMap(productDetail.getAttributes())
+                            : null)
+                    .build();
         }).toList();
     }
+
+
 
     // Mapping Store ID to Store entity using MapperService
     @Named("mapStoreIdToStore")
     default Store mapStoreIdToStore(UUID storeId, @Context MapperService mapperService) {
-        return mapperService.findStoreById(storeId);
+        Store store = mapperService.findStoreById(storeId);
+        if (store == null) {
+            throw new IllegalArgumentException("Store not found for ID: " + storeId);
+        }
+        return store;
     }
 
     // Mapping User ID to User entity using MapperService
     @Named("mapUserIdToUser")
     default User mapUserIdToUser(UUID userId, @Context MapperService mapperService) {
-        return mapperService.findUserById(userId);
+        User user = mapperService.findUserById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found for ID: " + userId);
+        }
+        return user;
     }
 }

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -16,7 +17,9 @@ public class ProductOnlineResponse {
     private Double price;
     private String description;
     private String categoryName;
+    private UUID storeId;
     private String storeName;
+    private String district;
     private List<Variants> variants;
     private List<String> images;
 }

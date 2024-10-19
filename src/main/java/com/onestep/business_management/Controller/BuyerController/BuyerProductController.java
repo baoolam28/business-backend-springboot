@@ -49,18 +49,15 @@ public class BuyerProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<ProductResponse>> getProductById(@PathVariable("id") Integer productId) {
+    public ResponseEntity<?> getProductById(@PathVariable("id") Integer productId) {
         try {
-            ProductResponse response = productService.findProductById(productId);
-            if (response != null) {
-                return new ResponseEntity<>(
-                        new ApiResponse<>(HttpStatus.OK.value(), "Product found", response, LocalDateTime.now()),
-                        HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(
-                        new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "Product not found", null, LocalDateTime.now()),
-                        HttpStatus.NOT_FOUND);
-            }
+            ProductOnlineResponse response = productService.findProductOnline(productId);
+            ApiResponse<ProductOnlineResponse> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Products retrieved successfully",
+                    response,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(
                     new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An error occurred", null,
