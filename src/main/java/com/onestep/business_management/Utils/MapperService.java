@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -44,6 +45,10 @@ public class MapperService {
     private ImageService imageService;
 
     @Autowired ProductDetailRepository productDetailRepository;
+
+
+    @Autowired
+    private ShipmentRepository shipmentRepository;
 
 
     public Store findStoreById(UUID storeId) {
@@ -113,9 +118,10 @@ public class MapperService {
 
     public ShippingAddress findShippingAddressById(Integer addressId){
         return shippingAddressRepository.findById(addressId).orElseThrow(
-                () -> new ResourceNotFoundException("Shipping address with id: "+addressId+" not found!")
+                () -> new ResourceNotFoundException("Address with id: "+addressId+" not found!")
         );
     }
+
 
     public List<Image> uploadImages(List<MultipartFile> files){
         return imageService.uploadImages(files);
@@ -123,5 +129,11 @@ public class MapperService {
 
     public Image uploadImage(MultipartFile file){
         return imageService.uploadImage(file);
+    }
+
+    public Optional<Shipment> findShipmentByOrder(UUID uuid) {
+        return Optional.of(shipmentRepository.findShipmentByOrderOnlineId(uuid).orElseThrow(
+                () -> new ResourceNotFoundException("OrderOnline not found!")
+        ));
     }
 }

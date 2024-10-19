@@ -2,6 +2,8 @@ package com.onestep.business_management.Entity;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,7 +25,8 @@ public class Shipment {
     private String shippingMethod;
 
     @OneToOne
-    @JoinColumn(name = "orderOnlineId", referencedColumnName = "orderOnlineId")
+    @JsonIgnore
+    @JoinColumn(name = "orderOnlineId", unique = true, nullable = false)
     private OrderOnline orderOnline;
 
     @OneToOne
@@ -57,6 +60,8 @@ public class Shipment {
     private Date updateAt;
 
     private String note;
+
+    private String shippingNote;
 
     @PrePersist
     protected void onCreate() {
@@ -94,6 +99,11 @@ public class Shipment {
                 }
             }
             throw new IllegalArgumentException("Invalid shipping status value: " + value);
+        }
+
+        @Override
+        public String toString() {
+            return name() + " (" + value + ")";
         }
     }
 }
