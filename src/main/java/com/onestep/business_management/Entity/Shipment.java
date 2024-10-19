@@ -18,6 +18,10 @@ public class Shipment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer shipmentId;
 
+    private Double shippingFee;
+
+    private String shippingMethod;
+
     @OneToOne
     @JoinColumn(name = "orderOnlineId", referencedColumnName = "orderOnlineId")
     private OrderOnline orderOnline;
@@ -52,6 +56,8 @@ public class Shipment {
     @Column(name = "updateAt")
     private Date updateAt;
 
+    private String note;
+
     @PrePersist
     protected void onCreate() {
         this.createAt = new Date();
@@ -65,8 +71,8 @@ public class Shipment {
 
     public enum ShippingStatus {
         CHO_XAC_NHAN(0),
-        DA_DONG_GOI(1),
-        DANG_GIAO_HANG(2),
+        DA_XAC_NHAN(1),
+        DANG_GIAO(2),
         GIAO_HANG_THANH_CONG(3),
         DA_HUY_DON(4),
         GIAO_HANG_THAT_BAI(5);

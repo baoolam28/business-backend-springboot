@@ -17,21 +17,46 @@ import com.onestep.business_management.DTO.API.ApiResponse;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineDetailRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineResponse;
+import com.onestep.business_management.DTO.ShippingDTO.ShipmentResponse;
 import com.onestep.business_management.DTO.StoreDTO.StoreResponse;
 import com.onestep.business_management.Service.OrderOnlineService.OrderOnlineService;
+import com.onestep.business_management.Service.ShipmentService.ShipmentService;
+
 import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
-@RequestMapping("/api/buyer/ordersOnlineDetails")
+@RequestMapping("/api/buyer/purchase")
 public class BuyerOrderOnlineDetailController {
     @Autowired
-    private OrderOnlineService orderOnlineService;
+    private ShipmentService shipmentService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<?> getOrderStatus(@PathVariable("userId") UUID userId) {
+    @Autowired
+    private OrderOnlineService onlineService;
+
+    @GetMapping("/{shipmentId}")
+    public ResponseEntity<?> getOrderStatus(@PathVariable("shipmentId") Integer shipmentId) {
        try {
-            List<OrderOnlineResponse> response = orderOnlineService.getOrdersOnlineByUser(userId);
+            ShipmentResponse response = shipmentService.getShipmentById(shipmentId);
+            ApiResponse<ShipmentResponse> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Store retrieved successfully",
+                    response,
+                    LocalDateTime.now()
+            );
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error retrieving products: " + e.getMessage());
+            ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @GetMapping("/orderOnline/{userId}")
+    public ResponseEntity<?> getAllOrderStatus(@PathVariable("userId") UUID userId) {
+       try {
+            List<OrderOnlineResponse> response = onlineService.getOrdersOnlineByUser(userId);
             ApiResponse<List<OrderOnlineResponse>> apiResponse = new ApiResponse<>(
                     HttpStatus.OK.value(),
                     "Store retrieved successfully",
@@ -45,5 +70,7 @@ public class BuyerOrderOnlineDetailController {
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+ 
     
 }

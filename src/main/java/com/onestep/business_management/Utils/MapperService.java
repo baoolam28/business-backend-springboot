@@ -1,21 +1,6 @@
 package com.onestep.business_management.Utils;
 
-import com.onestep.business_management.Entity.Cart;
-import com.onestep.business_management.Entity.Category;
-import com.onestep.business_management.Entity.Origin;
-import com.onestep.business_management.Entity.Product;
-import com.onestep.business_management.Entity.Store;
-import com.onestep.business_management.Entity.Supplier;
-import com.onestep.business_management.Entity.User;
 import com.onestep.business_management.Exeption.ResourceNotFoundException;
-import com.onestep.business_management.Repository.CartRepository;
-import com.onestep.business_management.Repository.CategoryRepository;
-import com.onestep.business_management.Repository.OriginRepository;
-import com.onestep.business_management.Repository.ProductRepository;
-import com.onestep.business_management.Repository.StoreRepository;
-import com.onestep.business_management.Repository.SupplierRepository;
-import com.onestep.business_management.Repository.UserRepository;
-
 import com.onestep.business_management.Entity.*;
 import com.onestep.business_management.Repository.*;
 import com.onestep.business_management.Service.ImageService.ImageService;
@@ -51,6 +36,9 @@ public class MapperService {
 
     @Autowired 
     private ProductRepository productRepository;
+    
+    @Autowired
+    private ShippingAddressRepository shippingAddressRepository;
 
     @Autowired
     private ImageService imageService;
@@ -123,6 +111,11 @@ public class MapperService {
         );
     }
 
+    public ShippingAddress findShippingAddressById(Integer addressId){
+        return shippingAddressRepository.findById(addressId).orElseThrow(
+                () -> new ResourceNotFoundException("Shipping address with id: "+addressId+" not found!")
+        );
+    }
 
     public List<Image> uploadImages(List<MultipartFile> files){
         return imageService.uploadImages(files);

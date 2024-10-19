@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -38,6 +39,10 @@ public class OrderOnline {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date orderDate;
+
+    @OneToOne
+    @JoinColumn(name = "shipmentIs")
+    private Shipment shipment;
 
     public enum Status {
         HUY,
