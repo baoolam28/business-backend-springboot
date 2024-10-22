@@ -8,6 +8,7 @@ import com.onestep.business_management.DTO.ProductDTO.ProductCategoryReponse;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineResponse;
 
+import com.onestep.business_management.DTO.ProductDTO.ProductOnlineResponse;
 import com.onestep.business_management.DTO.ProductDTO.ProductRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -67,6 +68,24 @@ public class BuyerProductController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/product-detail/{id}")
+    public ResponseEntity<?> getProductDetailByProduct(@PathVariable("id") Integer productId) {
+        try {
+            ProductOnlineResponse response = productService.findProductOnline(productId);
+            ApiResponse<ProductOnlineResponse> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Products retrieved successfully",
+                    response,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error retrieving products: " + e.getMessage());
+            ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     @GetMapping("/search")
     public ResponseEntity<List<ProductResponse>> searchByKeyword(@RequestParam("keyword") String keyword) {

@@ -5,6 +5,7 @@ import com.onestep.business_management.DTO.OrderDTO.OrderOnlineRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineResponse;
 import com.onestep.business_management.Entity.OrderOnline;
 import com.onestep.business_management.Entity.OrderOnlineDetail;
+import com.onestep.business_management.Entity.ProductDetail;
 import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Repository.OrderOnlineRepository;
 import com.onestep.business_management.Utils.MapperService;
@@ -51,10 +52,10 @@ public class OrderOnlineService {
             List<OrderOnlineDetail> orderDetails = details.stream().map(detailRequest -> {
                 OrderOnlineDetail detail = new OrderOnlineDetail();
                 detail.setQuantity(detailRequest.getQuantity());
-                detail.setPrice(detailRequest.getPrice());
-                detail.setBarcode(detailRequest.getBarcode());
-                detail.setProduct(mapperService.findProductByBarcode(detailRequest.getBarcode()));
-                detail.setOrderOnline(order); // Gán chi tiết cho đơn hàng
+                ProductDetail productDetail = mapperService.findProductDetailById(detailRequest.getProductDetailId());
+                detail.setPrice(productDetail.getPrice());
+                detail.setProductDetail(productDetail);
+                detail.setOrderOnline(order);
                 return detail;
             }).collect(Collectors.toList());
 
