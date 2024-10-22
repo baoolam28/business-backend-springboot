@@ -161,7 +161,10 @@ public interface ProductMapper {
                         productDetail.setQuantityInStock(detailRequest.getQuantityInStock());
                         Image image = mapperService.uploadImage(detailRequest.getImage());
                         productDetail.setImage(image.getFileName());
-
+                        productDetail.setHeight(detailRequest.getHeight());
+                        productDetail.setLength(productDetail.getLength());
+                        productDetail.setWidth(productDetail.getWidth());
+                        productDetail.setWeight(productDetail.getWeight());
 
                         productDetail.setProduct(product);
                         Map<String, String> attributes = detailRequest.getAttributes();
@@ -201,6 +204,10 @@ public interface ProductMapper {
         variant.setSku(productDetail.getSku());
         variant.setAttributes(StringToMapConverter.convertStringToMap(productDetail.getAttributes()));
         variant.setImage(productDetail.getImage());
+        variant.setHeight(productDetail.getHeight());
+        variant.setLength(productDetail.getLength());
+        variant.setWidth(productDetail.getWidth());
+        variant.setWeight(productDetail.getWeight());
 
         return variant;
 
@@ -217,6 +224,7 @@ public interface ProductMapper {
         response.setProductName(product.getProductName());
         response.setPrice(product.getPrice());
         Store store = product.getStore();
+        response.setStoreId(store.getStoreId());
         response.setStoreName(store.getStoreName());
         Category category = product.getCategory();
         response.setCategoryName(category.getCategoryName());
@@ -224,7 +232,7 @@ public interface ProductMapper {
                 product.getImages().stream()
                         .map(image -> image.getFileName())
                         .collect(Collectors.toList()));
-
+        response.setDistrict(store.getDistrict());
 
         List<Variants> variants = product.getProductDetails().stream()
                 .map(this::productDetailToVariants)

@@ -21,12 +21,11 @@ public class ShippingAddressController {
     private ShipmentAddressService shipmentAddressService;
 
     // Tạo hoặc cập nhật địa chỉ giao hàng
-    @PostMapping("/{userId}")
-    public ResponseEntity<?> createOrUpdateShippingAddress(
-            @PathVariable String userId, @RequestBody ShipmentAddressRequest shippingAddressRequest) {
+    @PostMapping()
+    public ResponseEntity<?> createOrUpdateShippingAddress(@RequestBody ShipmentAddressRequest shippingAddressRequest) {
         try {
-            ShipmentAddressRespone response = shipmentAddressService.saveShippingAddress(userId,
-                    shippingAddressRequest);
+            System.out.println(shippingAddressRequest.toString());
+            ShipmentAddressRespone response = shipmentAddressService.saveShippingAddress(shippingAddressRequest);
             ApiResponse<ShipmentAddressRespone> apiResponse = new ApiResponse<>(
                     HttpStatus.CREATED.value(),
                     "Shipping address saved successfully",
