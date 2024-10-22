@@ -65,8 +65,21 @@ public class ShippingAddressController {
 
     // Xóa địa chỉ giao hàng theo ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteShippingAddress(@PathVariable Integer id) {
-        shipmentAddressService.deleteShippingAddressById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<ApiResponse<Void>> deleteShippingAddress(@PathVariable Integer id) {
+        try {
+            shipmentAddressService.deleteShippingAddressById(id);
+            ApiResponse<Void> apiResponse = new ApiResponse<>(
+                    HttpStatus.NO_CONTENT.value(),
+                    "Shipping address deleted successfully",
+                    null, // Không cần dữ liệu trả về
+                    LocalDateTime.now());
+            return new ResponseEntity<>(apiResponse, HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            System.out.println("Error deleting shipping address: " + e.getMessage());
+            ApiResponse<Void> errorResponse = new ApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Failed to delete shipping address: " + e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
