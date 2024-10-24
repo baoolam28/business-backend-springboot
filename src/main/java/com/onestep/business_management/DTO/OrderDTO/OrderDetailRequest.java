@@ -11,6 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class OrderDetailRequest {
     private UUID storeId;
+    private Integer productId;
     private int quantity;
     private double price;
     private String barcode;

@@ -12,7 +12,7 @@ import com.onestep.business_management.Service.QrCodeService.QrCodeService;
 
 @RestController
 @RequestMapping("/api/seller/qr")
-public class QrController {
+public class QRSellerController {
     
     @Autowired
     private QrCodeService qrCodeService;

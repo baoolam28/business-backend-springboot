@@ -1,6 +1,8 @@
 package com.onestep.business_management.Controller.SellerController;
 
 import com.onestep.business_management.DTO.API.ApiResponse;
+import com.onestep.business_management.DTO.OrderDTO.OrderDetailRequest;
+import com.onestep.business_management.DTO.OrderDTO.OrderDetailResponse;
 import com.onestep.business_management.DTO.OrderDTO.OrderReportResponse;
 import com.onestep.business_management.DTO.OrderDTO.OrderRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderResponse;
@@ -204,4 +206,66 @@ public class OrderSellerController {
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/{orderId}/products")
+    public ResponseEntity<ApiResponse<List<OrderDetailResponse>>> getProductsByOrderId(@PathVariable String orderId) {
+        UUID uuid = UUID.fromString(orderId);
+        try {
+            List<OrderDetailResponse> products = orderService.getProductsByOrderId(uuid);
+            ApiResponse<List<OrderDetailResponse>> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Đã lấy sản phẩm từ đơn hàng thành công.",
+                    products,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ApiResponse<List<OrderDetailResponse>> errorResponse = new ApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Đã xảy ra lỗi khi lấy sản phẩm từ đơn hàng: " + e.getMessage(),
+                    null,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/update/{orderId}")
+    public ResponseEntity<?> updateOrderDetail(
+            @RequestBody OrderRequest request,
+            @PathVariable String orderId) {
+                
+        try {
+            UUID uuid = UUID.fromString(orderId);
+            // Gọi service để cập nhật thanh toán
+           System.out.println("loi " + request.toString());
+           
+            OrderResponse updatedOrderResponse = orderService.updateOrderDetail(request, uuid);
+
+
+            // Tạo phản hồi API thành công
+            ApiResponse<OrderResponse> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Cập nhật thành công",
+                    updatedOrderResponse,
+                    LocalDateTime.now());
+
+            // Trả về phản hồi với mã trạng thái 200 OK
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            System.out.println("Lỗi khi cập nhập hoá đơn: " + e.getMessage());
+
+            // Tạo phản hồi API lỗi
+            ApiResponse<String> errorResponse = new ApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Đã xảy ra lỗi khi cập nhật: " + e.getMessage(),
+                    null,
+                    LocalDateTime.now());
+
+            // Trả về phản hồi với mã trạng thái 500 INTERNAL_SERVER_ERROR
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
 }

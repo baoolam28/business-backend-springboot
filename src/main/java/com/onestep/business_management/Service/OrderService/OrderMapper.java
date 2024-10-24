@@ -42,6 +42,8 @@ public interface OrderMapper {
             response.setQuantity(detail.getQuantity());
             response.setPrice(detail.getPrice());
             response.setBarcode(detail.getBarcode());
+            Product product = detail.getProduct();
+            response.setProductId(product.getProductId());
             return response;
         }).toList();
     }
