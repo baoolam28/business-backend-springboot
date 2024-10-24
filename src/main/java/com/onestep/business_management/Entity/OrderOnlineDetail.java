@@ -28,18 +28,25 @@ public class OrderOnlineDetail {
     @Column(nullable = false)
     private Double price;
 
-    @ManyToOne
-    @JoinColumn(name = "orderOnlineId") 
-    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY) // Use LAZY to prevent eager loading issues
+    @JoinColumn(name = "orderOnlineId")
+    @JsonBackReference // Breaks circular reference during serialization
     private OrderOnline orderOnline;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productDetailId")
     private ProductDetail productDetail;
 
-    // Phương thức tiện ích để tính toán tổng giá
+    // Constructor for creating OrderOnlineDetail with specified fields
+    public OrderOnlineDetail(int quantity, Double price, ProductDetail productDetail, OrderOnline order) {
+        this.quantity = quantity;
+        this.price = price;
+        this.productDetail = productDetail;
+        this.orderOnline = order;
+    }
+
+    // Utility method to calculate the total price of this order detail
     public double calculateTotalPrice() {
-        return quantity * (price != null ? price : 0); // Đảm bảo giá không null
+        return quantity * (price != null ? price : 0); // Ensures price is not null
     }
 }
