@@ -30,7 +30,7 @@ public class StoreService {
 
     // Create or Update Store
     public StoreResponse saveStore(StoreRequest storeRequest) {
-        UUID managerId = storeRequest.getStoreManagerId();
+        UUID managerId = storeRequest.getStoreManager();
         User storeManager = userRepository.findById(managerId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + managerId + " not found.")
         );
@@ -44,8 +44,15 @@ public class StoreService {
         Store store = new Store();
         store.setStoreName(storeRequest.getStoreName());
         store.setStoreLocation(storeRequest.getStoreLocation());
+        store.setStoreDescription(storeRequest.getStoreDescription());
+        store.setStoreEmail(storeRequest.getStoreEmail());
+        store.setStoreBankAccount(storeRequest.getStoreBankAccount());
+        store.setPickupAddress(storeRequest.getPickupAddress());
+        store.setStoreTaxCode(storeRequest.getStoreTaxCode());
+        store.setManagerName(storeRequest.getManagerName());
+        store.setWardCode(storeRequest.getWardCode());
         store.setStoreManager(storeManager);
-
+        store.setAcctive(false);
         if (store.getCreatedAt() == null) {
             store.setCreatedAt(LocalDateTime.now());
         }

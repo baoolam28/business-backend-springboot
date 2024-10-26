@@ -11,9 +11,18 @@ import org.mapstruct.factory.Mappers;
 public interface StoreMapper {
     StoreMapper INSTANCE = Mappers.getMapper(StoreMapper.class);
 
-    @Mapping(target = "storeManager.userId", source = "storeManagerId")
+    @Mapping(target = "storeManager.userId", source = "storeManager")
+    @Mapping(target = "storeDescription", source = "storeDescription")
+    @Mapping(target = "storeEmail", source = "storeEmail")
+    @Mapping(target = "storeBankAccount", source = "storeBankAccount")
+    @Mapping(target = "pickupAddress", source = "pickupAddress")
+    @Mapping(target = "storeTaxCode", source = "storeTaxCode")
+    @Mapping(target = "managerName", source = "managerName")
+    @Mapping(target = "wardCode", source = "wardCode")
+    
     Store toEntity(StoreRequest storeRequest);
-
-    @Mapping(target = "storeManagerId", source = "storeManager.userId")
+    @Mapping(target = "storeManager", source = "storeManager.userId")
     StoreResponse toResponse(Store store);
+    
+
 }
