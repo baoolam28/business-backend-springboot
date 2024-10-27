@@ -12,4 +12,5 @@ import com.onestep.business_management.Entity.ShippingAddress;
 @Repository
 public interface ShippingAddressRepository extends JpaRepository<ShippingAddress, Integer> {
     List<ShippingAddress> findByUser(User user);
+
 }
