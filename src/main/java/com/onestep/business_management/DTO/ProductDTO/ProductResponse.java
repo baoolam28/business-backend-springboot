@@ -4,8 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+
+import com.onestep.business_management.Entity.Image;
 
 @Data
 @AllArgsConstructor
@@ -14,6 +18,7 @@ public class ProductResponse {
     private Integer productId;
     private String barcode;
     private String productName;
+    private List<Image> images = new ArrayList<>();
     private Integer categoryId;
     private String categoryName;
     private String abbreviations;

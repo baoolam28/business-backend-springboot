@@ -33,6 +33,7 @@ public interface ProductMapper {
 
         Product product = new Product();
         product.setBarcode(productRequest.getBarcode());
+        product.setImages(productRequest.getImages());
         product.setProductName(productRequest.getProductName());
         product.setAbbreviations(productRequest.getAbbreviations());
         product.setUnit(productRequest.getUnit());
@@ -59,6 +60,7 @@ public interface ProductMapper {
         // Set basic product fields
         productResponse.setProductId(product.getProductId());
         productResponse.setBarcode(product.getBarcode());
+        productResponse.setImages(product.getImages());
         productResponse.setProductName(product.getProductName());
         productResponse.setAbbreviations(product.getAbbreviations());
         productResponse.setUnit(product.getUnit());
