@@ -30,17 +30,12 @@ public class OrderOnline {
     @Temporal(TemporalType.TIMESTAMP)
     private Date orderDate;
 
-    @OneToOne
-    @JoinColumn(name = "shipmentIs")
-    private Shipment shipment;
-
     public enum Status {
-        HUY,
-        CHO_XAC_NHAN,
+        CHUA_GIAO_HANG,
         DANG_GIAO_HANG,
-        DANG_VAN_CHUYEN,
-        GIAO_HANG_THANH_CONG,
-        CHUA_GIAO_HANG
+        CHO_XAC_NHAN,
+        DANG_DONG_GOI,
+        GIAO_HANG_THANH_CONG
     }
 
     private Status status;
@@ -70,4 +65,3 @@ public class OrderOnline {
         return String.format("OrderOnline [ID=%s, Date=%s, Status=%s]", orderOnlineId, orderDate, status);
     }
 }
-

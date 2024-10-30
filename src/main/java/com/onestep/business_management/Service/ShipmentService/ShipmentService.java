@@ -3,16 +3,13 @@ package com.onestep.business_management.Service.ShipmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.onestep.business_management.DTO.OrderDTO.OrderOnlineResponse;
 import com.onestep.business_management.DTO.ShippingDTO.ShipmentResponse;
-import com.onestep.business_management.Entity.OrderOnline;
 import com.onestep.business_management.Entity.Shipment;
 import com.onestep.business_management.Exeption.ResourceNotFoundException;
-import com.onestep.business_management.Repository.OrderOnlineRepository;
 import com.onestep.business_management.Repository.ShipmentRepository;
-import com.onestep.business_management.Service.OrderOnlineService.OrderOnlineMapper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ShipmentService {
@@ -27,5 +24,17 @@ public class ShipmentService {
         );
 
         return ShipmentMapper.INSTANCE.toResponse(shipment);
+    }
+
+    public List<ShipmentResponse> getOrdersOnlineByUser(UUID userId) {
+        List<Shipment> shipments = shipmentRepository.findShipmentsByUserId(userId);
+
+        if (shipments.isEmpty()) {
+            throw new ResourceNotFoundException("There are no orders yet for user ID: " + userId);
+        }
+
+        return shipments.stream()
+                .map(ShipmentMapper.INSTANCE::toResponse)
+                .collect(Collectors.toList());
     }
 }

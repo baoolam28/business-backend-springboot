@@ -19,8 +19,20 @@ public class ShipmentResponse {
     private UUID userId;
     private Integer addressId;
     private Date orderDate;
+    private String paymentMethod;
     private UUID storeId;
     private String storeName;
     private ShippingStatus shippingStatus;
     private List<OrderOnlineDetailResponse> orderOnlineDetails;
+    private String trackingNumber;
+    private Double shippingFee;
+    private Date createAt;
+    private Date shippedDate;
+    private Date deliveredDate;
+    private Date updateAt;
+    private Date canceledDate;
+    private Date failedDeliveryDate;
+    private String shippingNote;
+
+    private List<StatusHistoryResponse> statusHistory;
 }

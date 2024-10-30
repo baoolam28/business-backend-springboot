@@ -28,11 +28,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RestController
 @RequestMapping("/api/buyer/purchase")
 public class BuyerOrderOnlineDetailController {
+    
     @Autowired
     private ShipmentService shipmentService;
-
-    @Autowired
-    private OrderOnlineService onlineService;
 
     @GetMapping("/{shipmentId}")
     public ResponseEntity<?> getOrderStatus(@PathVariable("shipmentId") Integer shipmentId) {
@@ -56,8 +54,8 @@ public class BuyerOrderOnlineDetailController {
     @GetMapping("/orderOnline/{userId}")
     public ResponseEntity<?> getAllOrderStatus(@PathVariable("userId") UUID userId) {
        try {
-            List<OrderOnlineResponse> response = onlineService.getOrdersOnlineByUser(userId);
-            ApiResponse<List<OrderOnlineResponse>> apiResponse = new ApiResponse<>(
+            List<ShipmentResponse> response = shipmentService.getOrdersOnlineByUser(userId);
+            ApiResponse<List<ShipmentResponse>> apiResponse = new ApiResponse<>(
                     HttpStatus.OK.value(),
                     "Store retrieved successfully",
                     response,
