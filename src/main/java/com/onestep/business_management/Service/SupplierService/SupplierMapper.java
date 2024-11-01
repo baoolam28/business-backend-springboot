@@ -23,5 +23,6 @@ public interface SupplierMapper {
     @Mapping(source = "phone", target = "phone")
     @Mapping(source = "fax", target = "fax")
     @Mapping(source = "address", target = "address")
+    @Mapping(source = "store.storeId", target = "storeId")
     SupplierResponse toResponse(Supplier supplier);
 }

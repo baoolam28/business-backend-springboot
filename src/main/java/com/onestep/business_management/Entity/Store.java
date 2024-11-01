@@ -59,6 +59,15 @@ public class Store {
     @Column(name = "pickupAddress", length = 255, nullable = true, columnDefinition = "NVARCHAR(255)")
     private String pickupAddress;
 
+    @Column(name = "province", length = 10, nullable = true, columnDefinition = "NVARCHAR(10)")
+    private String province;
+
+    @Column(name = "district", length = 10, nullable = true, columnDefinition = "NVARCHAR(10)")
+    private String district;
+
+    @Column(name = "wardCode", length = 10, nullable = true, columnDefinition = "NVARCHAR(10)")
+    private String wardCode;
+
     @Column(name = "storeTaxCode", length = 20, nullable = true, columnDefinition = "NVARCHAR(20)")
     private String storeTaxCode;
 
@@ -90,5 +99,10 @@ public class Store {
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<OrderOnline> ordersOnline = new ArrayList<>();
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Supplier> suppliers = new ArrayList<>();
+
 
 }

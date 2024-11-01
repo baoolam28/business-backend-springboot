@@ -2,10 +2,14 @@ package com.onestep.business_management.Entity;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @AllArgsConstructor
@@ -18,12 +22,21 @@ public class Shipment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer shipmentId;
 
-    @OneToOne
-    @JoinColumn(name = "orderOnlineId", referencedColumnName = "orderOnlineId")
+    private Double shippingFee;
+
+    private String shippingMethod;
+
+
+    @ToString.Exclude
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "orderOnlineId", nullable = false)
     private OrderOnline orderOnline;
 
-    @OneToOne
-    @JoinColumn(name = "address_id", referencedColumnName = "address_id")
+
+    @ManyToOne
+    @JoinColumn(name = "address_id", referencedColumnName = "address_id", nullable = false)
+    @JsonManagedReference
     private ShippingAddress shippingAddress;
 
     @Enumerated(EnumType.ORDINAL)
@@ -52,6 +65,10 @@ public class Shipment {
     @Column(name = "updateAt")
     private Date updateAt;
 
+    private String note;
+
+    private String shippingNote;
+
     @PrePersist
     protected void onCreate() {
         this.createAt = new Date();
@@ -65,8 +82,8 @@ public class Shipment {
 
     public enum ShippingStatus {
         CHO_XAC_NHAN(0),
-        DA_DONG_GOI(1),
-        DANG_GIAO_HANG(2),
+        DA_XAC_NHAN(1),
+        DANG_GIAO(2),
         GIAO_HANG_THANH_CONG(3),
         DA_HUY_DON(4),
         GIAO_HANG_THAT_BAI(5);
@@ -88,6 +105,11 @@ public class Shipment {
                 }
             }
             throw new IllegalArgumentException("Invalid shipping status value: " + value);
+        }
+
+        @Override
+        public String toString() {
+            return name() + " (" + value + ")";
         }
     }
 }

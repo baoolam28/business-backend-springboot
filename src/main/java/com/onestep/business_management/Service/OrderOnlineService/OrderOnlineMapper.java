@@ -2,10 +2,11 @@ package com.onestep.business_management.Service.OrderOnlineService;
 
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineDetailRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineDetailResponse;
-import com.onestep.business_management.DTO.OrderDTO.OrderOnlineRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineResponse;
 import com.onestep.business_management.Entity.*;
+import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Utils.MapperService;
+import com.onestep.business_management.Utils.StringToMapConverter;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -16,8 +17,7 @@ import java.util.UUID;
 public interface OrderOnlineMapper {
     OrderOnlineMapper INSTANCE = Mappers.getMapper(OrderOnlineMapper.class);
 
-
-    // Ánh xạ từ OrderOnline sang OrderOnlineResponse
+    // Mapping from OrderOnline entity to OrderOnlineResponse DTO
     @Mapping(target = "orderId", source = "orderOnlineId")
     @Mapping(target = "orderDetails", source = "orderDetails", qualifiedByName = "mapDetailsToResponses")
     @Mapping(target = "userId", source = "user.userId")
@@ -30,9 +30,12 @@ public interface OrderOnlineMapper {
         return detailRequests.stream().map(detailRequest -> {
             OrderOnlineDetail detail = new OrderOnlineDetail();
             detail.setQuantity(detailRequest.getQuantity());
-            detail.setPrice(detailRequest.getPrice());
-            detail.setBarcode(detailRequest.getBarcode());
-            detail.setProduct(mapperService.findProductByBarcode(detailRequest.getBarcode()));  // Ánh xạ product từ barcode
+            ProductDetail productDetail = mapperService.findProductDetailById(detailRequest.getProductDetailId());
+            if (productDetail == null) {
+                throw new ResourceNotFoundException("ProductDetail not found for ID: " + detailRequest.getProductDetailId());
+            }
+            detail.setProductDetail(productDetail);
+            detail.setPrice(productDetail.getPrice());
             return detail;
         }).toList();
     }
@@ -41,27 +44,44 @@ public interface OrderOnlineMapper {
     @Named("mapDetailsToResponses")
     default List<OrderOnlineDetailResponse> mapDetailsToResponses(List<OrderOnlineDetail> details) {
         return details.stream().map(detail -> {
-            OrderOnlineDetailResponse response = new OrderOnlineDetailResponse();
-            response.setOrderDetailId(detail.getOrderDetailId());
-            response.setQuantity(detail.getQuantity());
-            response.setPrice(detail.getPrice());
-            response.setBarcode(detail.getBarcode());
-            Product prodRes = detail.getProduct();
-            response.setProductId(prodRes.getProductId());
-            response.setProductName(prodRes.getProductName());
-            return response;
+            ProductDetail productDetail = detail.getProductDetail();
+
+            return OrderOnlineDetailResponse.builder()
+                    .orderDetailId(detail.getOrderDetailId())
+                    .quantity(detail.getQuantity())
+                    .price(detail.getPrice())
+                    .productDetailId(productDetail != null ? productDetail.getProductDetailId() : null)
+                    .productName(productDetail != null && productDetail.getProduct() != null
+                            ? productDetail.getProduct().getProductName()
+                            : null)
+                    .totalPrice(detail.calculateTotalPrice())
+                    .image(productDetail != null ? productDetail.getImage() : null)
+                    .attributes(productDetail != null
+                            ? StringToMapConverter.convertStringToMap(productDetail.getAttributes())
+                            : null)
+                    .build();
         }).toList();
     }
+
+
 
     // Mapping Store ID to Store entity using MapperService
     @Named("mapStoreIdToStore")
     default Store mapStoreIdToStore(UUID storeId, @Context MapperService mapperService) {
-        return mapperService.findStoreById(storeId);
+        Store store = mapperService.findStoreById(storeId);
+        if (store == null) {
+            throw new IllegalArgumentException("Store not found for ID: " + storeId);
+        }
+        return store;
     }
 
     // Mapping User ID to User entity using MapperService
     @Named("mapUserIdToUser")
     default User mapUserIdToUser(UUID userId, @Context MapperService mapperService) {
-        return mapperService.findUserById(userId);
+        User user = mapperService.findUserById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found for ID: " + userId);
+        }
+        return user;
     }
 }

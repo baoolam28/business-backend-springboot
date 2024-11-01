@@ -1,7 +1,9 @@
 package com.onestep.business_management.Controller;
 
+import com.onestep.business_management.DTO.API.ApiResponse;
 import com.onestep.business_management.DTO.CategoryDTO.CategoryRequest;
 import com.onestep.business_management.DTO.CategoryDTO.CategoryResponse;
+import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
 import com.onestep.business_management.Service.CategoryService.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,9 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/api/buyer/categories")
 public class CategoryController {
 
     @Autowired
@@ -19,10 +22,12 @@ public class CategoryController {
 
     // Get All Categories
     @GetMapping
-    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
+    public ResponseEntity<?> getAllCategories() {
         try {
             List<CategoryResponse> response = categoryService.getAllCategories();
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            ApiResponse<List<CategoryResponse>> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(), "Get all successfully", response, LocalDateTime.now());
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -75,7 +80,7 @@ public class CategoryController {
     // Delete Category by ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
-        try {
+        try {   
             categoryService.deleteCategoryById(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {

@@ -17,12 +17,14 @@ import com.onestep.business_management.Repository.SupplierRepository;
 import com.onestep.business_management.Repository.UserRepository;
 
 import com.onestep.business_management.Entity.*;
-import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Repository.*;
+import com.onestep.business_management.Service.ImageService.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -51,6 +53,15 @@ public class MapperService {
     @Autowired 
     private ProductRepository productRepository;
 
+    @Autowired
+    private ImageService imageService;
+
+    @Autowired ProductDetailRepository productDetailRepository;
+
+    @Autowired ShippingAddressRepository shippingAddressRepository;
+
+    @Autowired
+    private ShipmentRepository shipmentRepository;
 
 
     public Store findStoreById(UUID storeId) {
@@ -110,5 +121,32 @@ public class MapperService {
         return productRepository.findByBarcode(barcode).orElseThrow(
                 () -> new ResourceNotFoundException("Product with barcode: "+barcode+" not found!")
         );
+    }
+
+    public ProductDetail findProductDetailById(Integer id){
+        return productDetailRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Product detail with id: "+id+" not found!")
+        );
+    }
+
+    public ShippingAddress findShippingAddressById(Integer addressId){
+        return shippingAddressRepository.findById(addressId).orElseThrow(
+                () -> new ResourceNotFoundException("Address with id: "+addressId+" not found!")
+        );
+    }
+
+
+    public List<Image> uploadImages(List<MultipartFile> files){
+        return imageService.uploadImages(files);
+    }
+
+    public Image uploadImage(MultipartFile file){
+        return imageService.uploadImage(file);
+    }
+
+    public Optional<Shipment> findShipmentByOrder(UUID uuid) {
+        return Optional.of(shipmentRepository.findShipmentByOrderOnlineId(uuid).orElseThrow(
+                () -> new ResourceNotFoundException("OrderOnline not found!")
+        ));
     }
 }

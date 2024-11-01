@@ -1,15 +1,21 @@
 package com.onestep.business_management.Service.SupplierService;
 
+import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
 import com.onestep.business_management.DTO.SupplierDTO.SupplierRequest;
 import com.onestep.business_management.DTO.SupplierDTO.SupplierResponse;
+import com.onestep.business_management.Entity.Store;
 import com.onestep.business_management.Entity.Supplier;
+import com.onestep.business_management.Exeption.ResourceNotFoundException;
+import com.onestep.business_management.Repository.StoreRepository;
 import com.onestep.business_management.Repository.SupplierRepository;
+import com.onestep.business_management.Service.ProductService.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,11 +23,18 @@ public class SupplierService {
     @Autowired
     SupplierRepository supplierRepository;
 
-
+    @Autowired
+    private StoreRepository storeRepository;
     public SupplierResponse create_supplier(SupplierRequest supplierRequest){
+
+        Store store = storeRepository.findById(supplierRequest.getStoreId()).orElseThrow(
+                () -> new ResourceNotFoundException("Store with id = "+supplierRequest.getStoreId()+" not found!")
+        );
+
         Supplier newSupplier = SupplierMapper.INSTANCE.toEntity(supplierRequest);
         newSupplier.setCreatedDate(new Date());
         newSupplier.setDisabled(false);
+        newSupplier.setStore(store);
         System.out.println(newSupplier.toString());
         Supplier savedSupplier = supplierRepository.save(newSupplier);
         return SupplierMapper.INSTANCE.toResponse(savedSupplier);
@@ -86,5 +99,12 @@ public class SupplierService {
             return SupplierMapper.INSTANCE.toResponse(updatedSupplier);
         }
         return null;
+    }
+
+    public List<SupplierResponse> getAllByStore(UUID storeId) {
+        return supplierRepository.findByStore(storeId).stream()
+                .map(SupplierMapper.INSTANCE::toResponse)
+                .collect(Collectors.toList());
+
     }
 }

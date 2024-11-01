@@ -26,5 +26,4 @@ public class ProductResponse {
     private UUID createdBy;
     private Date createdDate;
     private boolean disabled;
-    
 }

@@ -27,6 +27,8 @@ public class Product {
 
     private String barcode;
 
+    private String description;
+
     @Column(name = "productName", length = 100, nullable = true, columnDefinition = "NVARCHAR(100)")
     private String productName;
 
@@ -57,6 +59,8 @@ public class Product {
     @Column(name = "createdBy")
     private UUID createdBy;
 
+    private boolean isOnline;
+
     private boolean disabled;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -76,128 +80,10 @@ public class Product {
     @JsonIgnore
     private List<Inventory> inventories = new ArrayList<>();
 
-    public void addImage(Image image) {
-        images.add(image);
-        image.setProduct(this);
-    }
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<ProductDetail> productDetails = new ArrayList<>();
 
-    public void removeImage(Image image) {
-        images.remove(image);
-        image.setProduct(null); 
-    }
 
-    // public Double getPrice() {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'getPrice'");
-    // }
 
-    // public Integer getProductId() {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'getProductId'");
-    // }
-
-    // public String getProductName() {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'getProductName'");
-    // }
-
-    // public void setBarcode(String barcode2) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'setBarcode'");
-    // }
-
-    // public void setProductName(String productName2) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'setProductName'");
-    // }
-
-    // public void setAbbreviations(String abbreviations2) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'setAbbreviations'");
-    // }
-
-    // public void setUnit(String unit2) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'setUnit'");
-    // }
-
-    // public void setPrice(Double price2) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'setPrice'");
-    // }
-
-    // public void setCreatedDate(Date createdDate2) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'setCreatedDate'");
-    // }
-
-    // public void setStore(Store storeById) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'setStore'");
-    // }
-
-    // public void setCategory(Category categoryById) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'setCategory'");
-    // }
-
-    // public void setSupplier(Supplier supplierById) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'setSupplier'");
-    // }
-
-    // public void setOrigin(Origin originById) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'setOrigin'");
-    // }
-
-    // public void setCreatedBy(UUID createdBy2) {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'setCreatedBy'");
-    // }
-
-    // public ProductResponse getOrigin() {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'getOrigin'");
-    // }
-
-    // public ProductResponse getSupplier() {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'getSupplier'");
-    // }
-
-    // public ProductResponse getCategory() {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'getCategory'");
-    // }
-
-    // public boolean isDisabled() {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'isDisabled'");
-    // }
-
-    // public Date getCreatedDate() {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'getCreatedDate'");
-    // }
-
-    // public UUID getCreatedBy() {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'getCreatedBy'");
-    // }
-
-    // public String getUnit() {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'getUnit'");
-    // }
-
-    // public String getAbbreviations() {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'getAbbreviations'");
-    // }
-
-    // public String getBarcode() {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'getBarcode'");
-    // }
 }

@@ -1,7 +1,10 @@
 package com.onestep.business_management.Controller.SellerController;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import com.onestep.business_management.DTO.API.ApiResponse;
+import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,19 +17,21 @@ import com.onestep.business_management.DTO.CategoryDTO.CategoryResponse;
 import com.onestep.business_management.Service.CategoryService.CategoryService;
 
 @RestController
-@RequestMapping("/api/seller/categories/{storeId}")
+@RequestMapping("/api/seller/categories")
 public class CategorySellerController {
     @Autowired
     private CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
-        try {
-            List<CategoryResponse> response = categoryService.getAllCategories();
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> getAllCategories() {
+        List<CategoryResponse> response = categoryService.getAllCategories();
+        ApiResponse<List<CategoryResponse>> apiResponse = new ApiResponse<>(
+                HttpStatus.OK.value(),  // Status code 200
+                "Category retrieved successfully",
+                response,
+                LocalDateTime.now()  // Current date
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
     // Get Category by ID (Admin only)

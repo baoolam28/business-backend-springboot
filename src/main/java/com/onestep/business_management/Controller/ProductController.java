@@ -74,21 +74,21 @@ public class ProductController {
         }
     }
 
-    // Endpoint to find products by category ID
-    @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<ProductResponse>> findByCategory(@PathVariable("categoryId") int categoryId) {
-        try {
-            List<ProductResponse> response = productService.findByCategory(categoryId);
-            if (response != null && !response.isEmpty()) {
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            // Handle exceptions
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    // // Endpoint to find products by category ID
+    // @GetMapping("/category/{categoryId}")
+    // public ResponseEntity<List<ProductResponse>> findByCategory(@PathVariable("categoryId") int categoryId) {
+    //     try {
+    //         List<ProductResponse> response = productService.findByCategory(categoryId);
+    //         if (response != null && !response.isEmpty()) {
+    //             return new ResponseEntity<>(response, HttpStatus.OK);
+    //         } else {
+    //             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    //         }
+    //     } catch (Exception e) {
+    //         // Handle exceptions
+    //         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    //     }
+    // }
 
     // Endpoint to find products by supplier ID
     @GetMapping("/supplier/{supplierId}")
@@ -124,7 +124,8 @@ public class ProductController {
 
     // Endpoint to update a product
     @PutMapping("/{barcode}")
-    public ResponseEntity<ProductResponse> updateProduct(@PathVariable("barcode") String barcode, @RequestBody ProductRequest productRequest) {
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable("barcode") String barcode,
+            @RequestBody ProductRequest productRequest) {
         try {
             ProductResponse response = productService.updateProduct(productRequest);
             if (response != null) {

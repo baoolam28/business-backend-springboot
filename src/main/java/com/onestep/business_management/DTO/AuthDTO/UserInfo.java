@@ -11,7 +11,7 @@ public class UserInfo {
     private UUID userId;
     private String username;
     private String fullName;
-    private String phoneNumber;
+    private String image;
     private String role;
     private boolean isActive;
 

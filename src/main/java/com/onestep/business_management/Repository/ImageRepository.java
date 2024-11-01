@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import com.onestep.business_management.Entity.Image;
 
 @Repository
-public interface ImageRepository extends JpaRepository<Image, Integer>{
+public interface ImageRepository extends JpaRepository<Image, String>{
 
     
 } 

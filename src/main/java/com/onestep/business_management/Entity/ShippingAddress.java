@@ -1,5 +1,10 @@
 package com.onestep.business_management.Entity;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +20,7 @@ public class ShippingAddress {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "address_id")
-    private int addressId;
+    private Integer addressId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
@@ -30,10 +35,20 @@ public class ShippingAddress {
     @Column(name = "address", length = 255, nullable = true, columnDefinition = "NVARCHAR(255)")
     private String address;
 
+    @Column(name = "province", length = 10, nullable = true, columnDefinition = "NVARCHAR(10)")
+    private String province;
+
+    @Column(name = "district", length = 10, nullable = true, columnDefinition = "NVARCHAR(10)")
+    private String district;
+
     @Column(name = "wardCode", length = 10, nullable = true, columnDefinition = "NVARCHAR(10)")
     private String wardCode;
 
     @Column(name = "disabled", nullable = false)
     private boolean disabled;
+
+    @OneToMany(mappedBy = "shippingAddress", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Shipment> shipments = new ArrayList<>();
 
 }
