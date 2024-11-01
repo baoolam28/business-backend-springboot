@@ -22,18 +22,6 @@ public class ProductSellerController {
     @Autowired
     private ProductService productService;
 
-    // Create product
-    // @PostMapping
-    // public ResponseEntity<?> createProduct(@RequestBody ProductRequest prodRequest) {
-    //         ProductResponse response = productService.createProduct(prodRequest);
-    //         ApiResponse<ProductResponse> apiResponse = new ApiResponse<>(
-    //                 HttpStatus.OK.value(),  // Status code 200
-    //                 "Product created successfully",
-    //                 response,
-    //                 LocalDateTime.now()  // Current date
-    //         );
-    //         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    // }
 
     @PostMapping(value = "/online", consumes = {"multipart/form-data"})
     public ResponseEntity<?> createProductOnline(@ModelAttribute ProductOnlineRequest prodRequest) {
@@ -70,8 +58,8 @@ public class ProductSellerController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<?> createProduct(@RequestBody ProductRequest productRequest) {
+    @PostMapping(value = "/offline", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> createProduct(@ModelAttribute ProductRequest productRequest) {
         try {
             ProductResponse response = productService.createProduct(productRequest);
             ApiResponse<ProductResponse> apiResponse = new ApiResponse<>(

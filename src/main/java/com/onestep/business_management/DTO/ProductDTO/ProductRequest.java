@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProductRequest {
     private String barcode;
-    private MultipartFile 
+    private List<MultipartFile> images ; 
     private String productName;
     private Integer categoryId;
     private String abbreviations;
@@ -29,6 +29,5 @@ public class ProductRequest {
     private Integer originId;
     private UUID createdBy;
     private UUID storeId;
-    private Date createdDate;
     
 }

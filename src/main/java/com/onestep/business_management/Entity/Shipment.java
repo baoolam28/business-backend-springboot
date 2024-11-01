@@ -4,10 +4,12 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @AllArgsConstructor
@@ -24,13 +26,17 @@ public class Shipment {
 
     private String shippingMethod;
 
-    @OneToOne
-    @JsonIgnore
-    @JoinColumn(name = "orderOnlineId", unique = true, nullable = false)
+
+    @ToString.Exclude
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "orderOnlineId", nullable = false)
     private OrderOnline orderOnline;
 
-    @OneToOne
-    @JoinColumn(name = "address_id", referencedColumnName = "address_id")
+
+    @ManyToOne
+    @JoinColumn(name = "address_id", referencedColumnName = "address_id", nullable = false)
+    @JsonManagedReference
     private ShippingAddress shippingAddress;
 
     @Enumerated(EnumType.ORDINAL)
