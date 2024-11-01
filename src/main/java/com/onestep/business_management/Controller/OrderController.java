@@ -97,6 +97,28 @@ public class OrderController {
         }
     }
 
+
+    @GetMapping("/reports")
+    public ResponseEntity<OrderReportResponse> getOrderReports(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        System.out.println("Received startDate: " + startDate);
+        System.out.println("Received endDate: " + endDate);
+        try {
+            OrderReportResponse report = orderService.getOrderReports(startDate, endDate);
+            return new ResponseEntity<>(report, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace(); // In ra lỗi để dễ dàng gỡ lỗi
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable UUID id) {
+        orderService.deleteOrder(id);
+        return ResponseEntity.noContent().build(); // Trả về 204 No Content
+    }
+
     @GetMapping("/stores/{storeId}")
     public ResponseEntity<?> getAllOrdersByStoreId(@PathVariable String storeId) {
         try {
