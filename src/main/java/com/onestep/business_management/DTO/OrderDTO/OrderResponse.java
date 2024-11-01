@@ -19,6 +19,7 @@ public class OrderResponse {
     private Integer customerId;
     private boolean paymentStatus;
     private String paymentMethod;
+    private String storeId;
     private List<OrderDetailResponse> orderDetails;
 }
 
