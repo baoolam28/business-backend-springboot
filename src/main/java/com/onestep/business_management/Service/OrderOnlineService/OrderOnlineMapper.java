@@ -3,6 +3,8 @@ package com.onestep.business_management.Service.OrderOnlineService;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineDetailRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineDetailResponse;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineResponse;
+import com.onestep.business_management.DTO.OrderDTO.OrderShippingRespons;
+import com.onestep.business_management.DTO.OrderDTO.OrderStatusRequest;
 import com.onestep.business_management.Entity.*;
 import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Utils.MapperService;
@@ -24,15 +26,18 @@ public interface OrderOnlineMapper {
     @Mapping(target = "storeId", source = "store.storeId")
     OrderOnlineResponse toResponse(OrderOnline order);
 
-    // Custom method to map List<OrderOnlineDetailRequest> to List<OrderOnlineDetail>
+    // Custom method to map List<OrderOnlineDetailRequest> to
+    // List<OrderOnlineDetail>
     @Named("mapDetailRequestsToEntities")
-    default List<OrderOnlineDetail> mapDetailRequestsToEntities(List<OrderOnlineDetailRequest> detailRequests, @Context MapperService mapperService) {
+    default List<OrderOnlineDetail> mapDetailRequestsToEntities(List<OrderOnlineDetailRequest> detailRequests,
+            @Context MapperService mapperService) {
         return detailRequests.stream().map(detailRequest -> {
             OrderOnlineDetail detail = new OrderOnlineDetail();
             detail.setQuantity(detailRequest.getQuantity());
             ProductDetail productDetail = mapperService.findProductDetailById(detailRequest.getProductDetailId());
             if (productDetail == null) {
-                throw new ResourceNotFoundException("ProductDetail not found for ID: " + detailRequest.getProductDetailId());
+                throw new ResourceNotFoundException(
+                        "ProductDetail not found for ID: " + detailRequest.getProductDetailId());
             }
             detail.setProductDetail(productDetail);
             detail.setPrice(productDetail.getPrice());
@@ -40,7 +45,6 @@ public interface OrderOnlineMapper {
         }).toList();
     }
 
-    // Custom method to map List<OrderOnlineDetail> to List<OrderOnlineDetailResponse>
     @Named("mapDetailsToResponses")
     default List<OrderOnlineDetailResponse> mapDetailsToResponses(List<OrderOnlineDetail> details) {
         return details.stream().map(detail -> {
@@ -63,8 +67,6 @@ public interface OrderOnlineMapper {
         }).toList();
     }
 
-
-
     // Mapping Store ID to Store entity using MapperService
     @Named("mapStoreIdToStore")
     default Store mapStoreIdToStore(UUID storeId, @Context MapperService mapperService) {
@@ -84,4 +86,8 @@ public interface OrderOnlineMapper {
         }
         return user;
     }
+
+    @Mapping(target = "status", source = "status")
+    OrderOnline toOrderOnline(OrderStatusRequest orderStatusRequest, @Context MapperService mapperService);
+
 }

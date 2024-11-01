@@ -21,4 +21,4 @@ public class OrderOnlineResponse {
     private String paymentMethod;
     private UUID storeId;
     private List<OrderOnlineDetailResponse> orderDetails;
-}
+}   
