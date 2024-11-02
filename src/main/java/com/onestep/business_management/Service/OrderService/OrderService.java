@@ -1,6 +1,9 @@
 package com.onestep.business_management.Service.OrderService;
 
 import com.onestep.business_management.Entity.*;
+import com.itextpdf.text.List;
+import com.onestep.business_management.DTO.OrderDTO.OrderDetailRequest;
+import com.onestep.business_management.DTO.OrderDTO.OrderDetailResponse;
 import com.onestep.business_management.DTO.OrderDTO.OrderReportResponse;
 import com.onestep.business_management.DTO.OrderDTO.OrderRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderResponse;
@@ -37,46 +40,39 @@ public class OrderService {
     private MapperService mapperService;
 
     public OrderResponse createOrder(OrderRequest orderRequest) {
-        if (orderRequest.getStoreId() == null) {
-            throw new RuntimeException("Store ID cannot be null");
-        }
+         try {
+             OrderOffline order = OrderMapper.INSTANCE.toEntity(orderRequest, mapperService);
+             order.setOrderDate(new Date());
+             order.setStatus("PENDING"); // Order is pending payment
+             order.setPaymentStatus(false); // Payment status is initially unpaid
+             order.setPaymentMethod(null); // No payment method initially
 
-        try {
-            // Tiến hành tạo đơn hàng
-            OrderOffline order = OrderMapper.INSTANCE.toEntity(orderRequest, mapperService);
-            order.setOrderDate(new Date());
-            order.setStatus("PENDING");
-            order.setPaymentStatus(false);
-            order.setPaymentMethod(null);
+            java.util.List<OrderOfflineDetail> OrderOfflineDetails = orderRequest.getOrderDetails().stream().map(request -> {
+                 OrderOfflineDetail detail = new OrderOfflineDetail();
+                 detail.setQuantity(request.getQuantity());
+                 detail.setPrice(request.getPrice());
+                 detail.setBarcode(request.getBarcode());
+                 Product product = mapperService.findProductInStore(request.getStoreId(), request.getBarcode());
+                 detail.setProduct(product);
+                 detail.setOrderOffline(order);
+                 // Logic to fetch product by barcode
+                 return detail;
+             }).toList();
 
-            List<OrderOfflineDetail> orderDetails = orderRequest.getOrderDetails().stream().map(request -> {
-                OrderOfflineDetail detail = new OrderOfflineDetail();
-                detail.setQuantity(request.getQuantity());
-                detail.setPrice(request.getPrice());
-                detail.setBarcode(request.getBarcode());
-                // Kiểm tra sản phẩm trong cửa hàng
-                Product product = mapperService.findProductInStore(orderRequest.getStoreId(), request.getBarcode());
-                if (product == null) {
-                    throw new RuntimeException("Not found product with barcode = " + request.getBarcode()
-                            + " in store: " + orderRequest.getStoreId());
-                }
-                detail.setProduct(product);
-                detail.setOrderOffline(order);
-                return detail;
-            }).toList();
+             order.setOrderDetails(OrderOfflineDetails);
 
-            order.setOrderDetails(orderDetails);
 
-            // Lưu đơn hàng
-            OrderOffline savedOrder = orderRepository.save(order);
-            return OrderMapper.INSTANCE.toResponse(savedOrder);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            throw new RuntimeException("Error creating order: " + e.getMessage());
-        }
-    }
 
-    @Transactional
+             // Save order
+             OrderOffline savedOrder = orderRepository.save(order);
+             return OrderMapper.INSTANCE.toResponse(savedOrder);
+         }catch (Exception e){
+             System.out.println(e.getMessage());
+         }
+         return null;
+     }
+
+
     public OrderResponse updateOrderPayment(UUID orderId, String paymentMethod, boolean paymentStatus) {
         // Tìm kiếm đơn hàng theo ID
         OrderOffline order = orderRepository.findById(orderId)
@@ -102,7 +98,7 @@ public class OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found")); // Sử dụng ngoại lệ cụ thể hơn
     }
 
-    public List<OrderResponse> getAllOrders() {
+    public java.util.List<OrderResponse> getAllOrders() {
         return orderRepository.findAll().stream()
                 .map(OrderMapper.INSTANCE::toResponse)
                 .collect(Collectors.toList());
@@ -152,10 +148,12 @@ public class OrderService {
         return false;
     }
 
-    public OrderReportResponse getOrderReports(LocalDate startDate, LocalDate endDate) {
-        long totalOrders;
-        double totalRevenue;
-        double averageOrderValue;
+
+public OrderReportResponse getOrderReports(LocalDate startDate, LocalDate endDate) {
+        long totalOrders = 0;
+        double totalRevenue = 0;
+        double averageOrderValue = 0;
+
         Map<String, Integer> customerCountByWeek = new HashMap<>();
         Map<String, Integer> customerCountByMonth = new LinkedHashMap<>();
         Map<String, Integer> customerCountByYear = new LinkedHashMap<>();
@@ -167,7 +165,7 @@ public class OrderService {
             averageOrderValue = getAverageOrderValue(); // Đảm bảo phương thức này tồn tại và hoạt động đúng
 
             // Fetch weekly customer count data
-            List<Object[]> customersWeek = orderRepository.countCustomerOrderByWeek(startDate, endDate);
+            java.util.List<Object[]> customersWeek = orderRepository.countCustomerOrderByWeek(startDate, endDate);
             for (Object[] result : customersWeek) {
                 int year = (int) result[0];
                 int week = (int) result[1];
@@ -176,7 +174,7 @@ public class OrderService {
             }
 
             // Fetch monthly customer count data
-            List<Object[]> customersMonth = orderRepository.countCustomerOrderByMonth(startDate, endDate);
+            java.util.List<Object[]> customersMonth = orderRepository.countCustomerOrderByMonth(startDate, endDate);
             for (Object[] result : customersMonth) {
                 int year = (Integer) result[0];
                 int month = (Integer) result[1];
@@ -185,7 +183,7 @@ public class OrderService {
             }
 
             // Fetch yearly customer count data
-            List<Object[]> customersYear = orderRepository.countCustomerOrderByYear(startDate, endDate);
+            java.util.List<Object[]> customersYear = orderRepository.countCustomerOrderByYear(startDate, endDate);
             for (Object[] result : customersYear) {
                 int year = (Integer) result[0];
                 int count = ((Number) result[1]).intValue(); // Sử dụng intValue() thay vì longValue()
@@ -221,8 +219,9 @@ public class OrderService {
     }
 
 
-    public List<OrderResponse> getAllOrdersByStoreId(UUID storeId) {
-        List<OrderOffline> orders = orderRepository.findBystore(storeId);
+    public java.util.List<OrderResponse> getAllOrdersByStoreId(UUID storeId) {
+        java.util.List<OrderOffline> orders = orderRepository.findBystore(storeId);
+
 
         if (orders.isEmpty()) {
             throw new ResourceNotFoundException("No orders found for Store ID: " + storeId);
@@ -233,4 +232,49 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
+     public java.util.List<OrderDetailResponse> getProductsByOrderId(UUID orderId) {
+        // Tìm kiếm OrderOffline dựa trên orderId
+        OrderOffline orderOffline = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        // Sử dụng OrderMapper để chuyển đổi orderDetails thành danh sách OrderDetailResponse
+        return OrderMapper.INSTANCE.mapOrderDetailsToResponses(orderOffline.getOrderDetails());
+    }
+
+    public OrderResponse updateOrderDetail(OrderRequest request, UUID orderId) {
+        // Retrieve the OrderOffline entity by ID
+        OrderOffline orderOffline = orderRepository.findById(orderId).orElseThrow(
+                () -> new ResourceNotFoundException("Order offline not found"));
+
+        java.util.List<OrderDetailRequest> orderDetailRequests = request.getOrderDetails();
+        java.util.List<OrderOfflineDetail> updatedOrderDetails = orderDetailRequests.stream()
+                .map(detailRequest -> {
+                    OrderOfflineDetail orderOfflineDetail = new OrderOfflineDetail();
+                    Product product = productRepository.findById(detailRequest.getProductId()).orElseThrow(
+                        () -> new ResourceNotFoundException("Product ID not found")
+                    );
+                    orderOfflineDetail.setProduct(product);
+                    orderOfflineDetail.setBarcode(product.getBarcode());
+                    orderOfflineDetail.setPrice(product.getPrice());
+                    orderOfflineDetail.setQuantity(detailRequest.getQuantity());
+                    orderOfflineDetail.setOrderOffline(orderOffline);
+                    // Set other fields as needed
+                    return orderOfflineDetail;
+                })
+                .collect(Collectors.toList());
+
+                Customer customer = customerRepository.findById(request.getCustomerId()).orElseThrow(
+                    () -> new ResourceNotFoundException("Customer ID not found")
+                );
+                orderOffline.setCustomer(customer);
+
+        // Clear the existing order details and set the updated list
+        orderOffline.getOrderDetails().clear();
+        orderOffline.getOrderDetails().addAll(updatedOrderDetails);
+
+        // Save the updated orderOffline entity
+        OrderOffline response = orderRepository.save(orderOffline);
+
+        return OrderMapper.INSTANCE.toResponse(response);
+    }
 }

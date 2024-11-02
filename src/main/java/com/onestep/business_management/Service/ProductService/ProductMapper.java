@@ -43,7 +43,6 @@ public interface ProductMapper {
         product.setCreatedDate(new Date());
         product.setCreatedBy(productRequest.getCreatedBy());
 
-        // Fetch related entities
         product.setStore(mapperService.findStoreById(productRequest.getStoreId()));
         product.setCategory(mapperService.findCategoryById(productRequest.getCategoryId()));
         product.setSupplier(mapperService.findSupplierById(productRequest.getSupplierId()));
@@ -75,7 +74,6 @@ public interface ProductMapper {
         if (product.getPrice() != null) {
             productResponse.setPrice(product.getPrice());
         }
-        
 
         // Set createdBy, createdDate, and disabled fields
         productResponse.setCreatedBy(product.getCreatedBy());
@@ -86,6 +84,7 @@ public interface ProductMapper {
         // object)
         if (product.getCategory() != null) {
             productResponse.setCategoryId(product.getCategory().getCategoryId());
+
             productResponse.setCategoryName(product.getCategory().getCategoryName());
         }
 

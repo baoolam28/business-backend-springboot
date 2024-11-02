@@ -17,6 +17,7 @@ import com.onestep.business_management.Entity.Image;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductResponse {
+    private String storeId;
     private Integer productId;
     private String barcode;
     private String productName;
