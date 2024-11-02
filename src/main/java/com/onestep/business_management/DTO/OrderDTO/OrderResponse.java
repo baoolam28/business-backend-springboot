@@ -23,6 +23,7 @@ public class OrderResponse {
     private String customerAddress;
     private boolean paymentStatus;
     private String paymentMethod;
+    private String storeId;
     private List<OrderDetailResponse> orderDetails;
 }
 

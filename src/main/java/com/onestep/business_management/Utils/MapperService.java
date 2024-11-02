@@ -136,13 +136,13 @@ public class MapperService {
     }
 
 
-    public List<Image> uploadImages(List<MultipartFile> files){
-        return imageService.uploadImages(files);
-    }
+    // public List<Image> uploadImages(List<MultipartFile> files){
+    //     return imageService.uploadImages(files);
+    // }
 
-    public Image uploadImage(MultipartFile file){
-        return imageService.uploadImage(file);
-    }
+    // public Image uploadImage(MultipartFile file){
+    //     return imageService.uploadImage(file);
+    // }
 
     public Optional<Shipment> findShipmentByOrder(UUID uuid) {
         return Optional.of(shipmentRepository.findShipmentByOrderOnlineId(uuid).orElseThrow(
