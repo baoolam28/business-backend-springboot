@@ -20,5 +20,6 @@ public class OrderOnlineResponse {
     private boolean paymentStatus;
     private String paymentMethod;
     private UUID storeId;
+    private String storeName;
     private List<OrderOnlineDetailResponse> orderDetails;
 }   

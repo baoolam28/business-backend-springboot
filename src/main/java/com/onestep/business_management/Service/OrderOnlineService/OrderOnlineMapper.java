@@ -24,6 +24,7 @@ public interface OrderOnlineMapper {
     @Mapping(target = "orderDetails", source = "orderDetails", qualifiedByName = "mapDetailsToResponses")
     @Mapping(target = "userId", source = "user.userId")
     @Mapping(target = "storeId", source = "store.storeId")
+    @Mapping(target = "storeName", source = "store.storeName")
     OrderOnlineResponse toResponse(OrderOnline order);
 
     // Custom method to map List<OrderOnlineDetailRequest> to

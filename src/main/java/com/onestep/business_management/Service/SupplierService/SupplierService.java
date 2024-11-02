@@ -107,4 +107,14 @@ public class SupplierService {
                 .collect(Collectors.toList());
 
     }
+
+    public SupplierResponse delete_supplier(Integer supplierId){
+        Supplier supplier = supplierRepository.findById(supplierId).orElseThrow(
+            () -> new ResourceNotFoundException("Supplier not found by id: " + supplierId)
+        );
+
+        supplierRepository.delete(supplier);
+
+        return SupplierMapper.INSTANCE.toResponse(supplier);
+    }
 }

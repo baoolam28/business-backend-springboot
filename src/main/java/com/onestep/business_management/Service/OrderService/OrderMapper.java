@@ -26,8 +26,12 @@ public interface OrderMapper {
     @Mapping(target = "orderId", source = "orderOfflineId")
     @Mapping(target = "orderDetails", source = "orderDetails", qualifiedByName = "mapOrderDetailsToResponses")
     @Mapping(target = "customerId", source = "customer.customerId")
+    @Mapping(target = "customerName", source ="customer.name")
+    @Mapping(target = "customerEmail", source = "customer.email")
+    @Mapping(target = "customerPhone", source = "customer.phone")
+    @Mapping(target = "customerAddress", source = "customer.address")
+    @Mapping(target = "storeId" , source = "store.storeId")
     OrderResponse toResponse(OrderOffline order);
-
 
     // Custom method to map List<OrderOfflineDetail> to List<OrderDetailResponse>
     @Named("mapOrderDetailsToResponses")
@@ -35,9 +39,12 @@ public interface OrderMapper {
         return details.stream().map(detail -> {
             OrderDetailResponse response = new OrderDetailResponse();
             response.setOrderDetailId(detail.getOrderDetailId());
+            response.setName(detail.getProduct().getProductName());
             response.setQuantity(detail.getQuantity());
             response.setPrice(detail.getPrice());
             response.setBarcode(detail.getBarcode());
+            Product product = detail.getProduct();
+            response.setProductId(product.getProductId());
             return response;
         }).toList();
     }
@@ -54,4 +61,3 @@ public interface OrderMapper {
         return mapperService.findCustomerById(customerId);
     }
 }
-

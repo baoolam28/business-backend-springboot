@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class MapperService {
@@ -37,6 +38,9 @@ public class MapperService {
 
     @Autowired
     private ProductRepository productRepository;
+    
+    @Autowired
+    private ShippingAddressRepository shippingAddressRepository;
 
     @Autowired
     private ImageService imageService;
@@ -44,8 +48,6 @@ public class MapperService {
     @Autowired
     ProductDetailRepository productDetailRepository;
 
-    @Autowired
-    ShippingAddressRepository shippingAddressRepository;
 
     @Autowired
     private ShipmentRepository shipmentRepository;
@@ -125,13 +127,14 @@ public class MapperService {
                 () -> new ResourceNotFoundException("Address with id: " + addressId + " not found!"));
     }
 
-    public List<Image> uploadImages(List<MultipartFile> files) {
-        return imageService.uploadImages(files);
-    }
 
-    public Image uploadImage(MultipartFile file) {
-        return imageService.uploadImage(file);
-    }
+     public List<Image> uploadImages(List<MultipartFile> files){
+         return  imageService.uploadImages(files);
+     }
+
+     public Image uploadImage(MultipartFile file){
+         return imageService.uploadImage(file);
+     }
 
     public Optional<Shipment> findShipmentByOrder(UUID uuid) {
         return Optional.of(shipmentRepository.findShipmentByOrderOnlineId(uuid).orElseThrow(

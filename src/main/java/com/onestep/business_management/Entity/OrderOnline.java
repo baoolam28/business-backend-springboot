@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -56,13 +57,12 @@ public class OrderOnline {
     @JsonManagedReference
     private List<OrderOnlineDetail> orderDetails = new ArrayList<>();
 
-    @OneToOne(mappedBy = "orderOnline", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Shipment shipment;
+    @OneToMany(mappedBy = "orderOnline", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Shipment> shipments;
+
 
     // Utility method for order summary
     public String getOrderSummary() {
         return String.format("OrderOnline [ID=%s, Date=%s, Status=%s]", orderOnlineId, orderDate, status);
     }
 }
-

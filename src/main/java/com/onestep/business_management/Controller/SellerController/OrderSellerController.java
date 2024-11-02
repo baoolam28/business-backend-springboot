@@ -1,32 +1,234 @@
 package com.onestep.business_management.Controller.SellerController;
 
 import com.onestep.business_management.DTO.API.ApiResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import org.springframework.http.HttpStatus;
-
+import com.onestep.business_management.DTO.OrderDTO.OrderDetailRequest;
+import com.onestep.business_management.DTO.OrderDTO.OrderDetailResponse;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineResponse;
+import com.onestep.business_management.DTO.OrderDTO.OrderReportResponse;
+import com.onestep.business_management.DTO.OrderDTO.OrderRequest;
+import com.onestep.business_management.DTO.OrderDTO.OrderResponse;
 import com.onestep.business_management.DTO.OrderDTO.OrderStatusRequest;
+import com.onestep.business_management.DTO.PaymentDTO.PaymentUpdateRequest;
+import com.onestep.business_management.Entity.OrderOffline;
 import com.onestep.business_management.Entity.OrderOnline;
 import com.onestep.business_management.Exeption.ResourceNotFoundException;
+import com.onestep.business_management.Repository.OrderOfflineRepository;
 import com.onestep.business_management.Service.OrderOnlineService.OrderOnlineService;
-import java.util.List;
-import java.util.UUID;
+import com.onestep.business_management.Service.OrderService.OrderMapper;
+import com.onestep.business_management.Service.OrderService.OrderService;
+
+import jakarta.transaction.Transactional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/seller/orders-online")
+@RequestMapping("/api/seller/orders")
 public class OrderSellerController {
 
     @Autowired
+    private OrderService orderService;
+    @Autowired
     private OrderOnlineService orderOnlineService;
+
+    @Autowired
+    private OrderOfflineRepository orderOfflineRepository;
+
+    @GetMapping
+    public ResponseEntity<?> getAllOrder() {
+        try {
+            List<OrderResponse> danhSachDonHang = orderService.getAllOrders();
+            ApiResponse<List<OrderResponse>> phanHoiApi = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Đã lấy tất cả đơn hàng thành công",
+                    danhSachDonHang,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(phanHoiApi, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Lỗi khi lấy đơn hàng: " + e.getMessage());
+            ApiResponse<String> phanHoiLoi = new ApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Đã xảy ra lỗi khi lấy đơn hàng: " + e.getMessage(),
+                    null,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(phanHoiLoi, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest orderRequest) {
+        System.out.println(orderRequest.toString());
+        try {
+            OrderResponse response = orderService.createOrder(orderRequest);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/{orderId}")
+    public ResponseEntity<?> getOrderById(@PathVariable String orderId) {
+        UUID uuid = UUID.fromString(orderId);
+        try {
+
+            OrderResponse response = orderService.getOrderById(uuid);
+            ApiResponse<OrderResponse> phanHoiApi = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Đã lấy tất cả đơn hàng thành công",
+                    response,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(phanHoiApi, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Lỗi khi lấy đơn hàng: " + e.getMessage());
+            ApiResponse<String> phanHoiLoi = new ApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Đã xảy ra lỗi khi lấy đơn hàng: " + e.getMessage(),
+                    null,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(phanHoiLoi, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/{orderId}/payment")
+    public ResponseEntity<?> updateOrderPayment(
+            @PathVariable UUID orderId,
+            @RequestBody PaymentUpdateRequest request) {
+
+        try {
+            // Gọi service để cập nhật thanh toán
+            OrderResponse updatedOrderResponse = orderService.updateOrderPayment(
+                    orderId, request.getPaymentMethod(), request.isPaymentStatus());
+
+            // Tạo phản hồi API thành công
+            ApiResponse<OrderResponse> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Cập nhật thanh toán thành công",
+                    updatedOrderResponse,
+                    LocalDateTime.now());
+
+            // Trả về phản hồi với mã trạng thái 200 OK
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            System.out.println("Lỗi khi cập nhật thanh toán: " + e.getMessage());
+
+            // Tạo phản hồi API lỗi
+            ApiResponse<String> errorResponse = new ApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Đã xảy ra lỗi khi cập nhật thanh toán: " + e.getMessage(),
+                    null,
+                    LocalDateTime.now());
+
+            // Trả về phản hồi với mã trạng thái 500 INTERNAL_SERVER_ERROR
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<ApiResponse<String>> deleteOrder(@PathVariable String orderId) {
+        try {
+            UUID uuid = UUID.fromString(orderId);
+            orderService.deleteOrder(uuid);
+
+            ApiResponse<String> response = new ApiResponse<>(
+                    HttpStatus.NO_CONTENT.value(),
+                    "Đã xóa đơn hàng thành công.",
+                    null,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        } catch (IllegalArgumentException e) {
+            // Handle invalid UUID format
+            ApiResponse<String> errorResponse = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "UUID đơn hàng không hợp lệ: " + e.getMessage(),
+                    null,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        } catch (ResourceNotFoundException e) {
+            // Handle case where order is not found
+            ApiResponse<String> errorResponse = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    e.getMessage(),
+                    null,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            // Handle other exceptions
+            ApiResponse<String> errorResponse = new ApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Đã xảy ra lỗi khi xóa đơn hàng: " + e.getMessage(),
+                    null,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/{orderId}/products")
+    public ResponseEntity<ApiResponse<List<OrderDetailResponse>>> getProductsByOrderId(@PathVariable String orderId) {
+        UUID uuid = UUID.fromString(orderId);
+        try {
+            List<OrderDetailResponse> products = orderService.getProductsByOrderId(uuid);
+            ApiResponse<List<OrderDetailResponse>> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Đã lấy sản phẩm từ đơn hàng thành công.",
+                    products,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ApiResponse<List<OrderDetailResponse>> errorResponse = new ApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Đã xảy ra lỗi khi lấy sản phẩm từ đơn hàng: " + e.getMessage(),
+                    null,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/update/{orderId}")
+    public ResponseEntity<?> updateOrderDetail(
+            @RequestBody OrderRequest request,
+            @PathVariable String orderId) {
+
+        try {
+            UUID uuid = UUID.fromString(orderId);
+            // Gọi service để cập nhật thanh toán
+            System.out.println("loi " + request.toString());
+
+            OrderResponse updatedOrderResponse = orderService.updateOrderDetail(request, uuid);
+
+            // Tạo phản hồi API thành công
+            ApiResponse<OrderResponse> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Cập nhật thành công",
+                    updatedOrderResponse,
+                    LocalDateTime.now());
+
+            // Trả về phản hồi với mã trạng thái 200 OK
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            System.out.println("Lỗi khi cập nhập hoá đơn: " + e.getMessage());
+
+            // Tạo phản hồi API lỗi
+            ApiResponse<String> errorResponse = new ApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Đã xảy ra lỗi khi cập nhật: " + e.getMessage(),
+                    null,
+                    LocalDateTime.now());
+
+            // Trả về phản hồi với mã trạng thái 500 INTERNAL_SERVER_ERROR
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @GetMapping("/stores/{storeId}")
     public ResponseEntity<?> getAllOrdersByStoreId(@PathVariable String storeId) {
@@ -157,4 +359,5 @@ public class OrderSellerController {
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 }

@@ -35,8 +35,8 @@ public class BuyerOrderOlineController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    @GetMapping("")
-    public ResponseEntity<?> getOrdersByUserId(@RequestParam UUID userId) {
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getOrdersByUserId(@PathVariable("id") UUID userId) {
         List<OrderOnlineResponse> response = orderOnlineService.getOrdersOnlineByUser(userId);
         ApiResponse<List<OrderOnlineResponse>> apiResponse = new ApiResponse<>(
                 HttpStatus.OK.value(),  // Status code 200
