@@ -4,16 +4,24 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import com.onestep.business_management.Entity.Image;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductResponse {
+    private String storeId;
     private Integer productId;
     private String barcode;
     private String productName;
+    private List<String> images ; 
     private Integer categoryId;
     private String categoryName;
     private String abbreviations;
