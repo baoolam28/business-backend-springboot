@@ -78,6 +78,11 @@ public class ShipmentAddressService {
                 .collect(Collectors.toList());
     }
 
+    public ShipmentAddressRespone getAddressById(Integer addressId) {
+        ShippingAddress shippingAddress = shippingAddressRepository.findById(addressId).orElse(null);
+        return shippingAddressMapper.INSTANCE.toResponse(shippingAddress);
+    }
+
     // Delete Shipping Address by ID
     public void deleteShippingAddressById(Integer id) {
         shippingAddressRepository.deleteById(id);

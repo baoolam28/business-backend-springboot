@@ -1,14 +1,11 @@
 package com.onestep.business_management.Entity;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.*;
 
 @Entity
 @Data
@@ -47,8 +44,7 @@ public class ShippingAddress {
     @Column(name = "disabled", nullable = false)
     private boolean disabled;
 
-    @OneToMany(mappedBy = "shippingAddress", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonBackReference
-    private List<Shipment> shipments = new ArrayList<>();
+    @OneToMany(mappedBy = "shippingAddress", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Shipment> shipments;
 
 }

@@ -66,4 +66,3 @@ public class OrderOnline {
         return String.format("OrderOnline [ID=%s, Date=%s, Status=%s]", orderOnlineId, orderDate, status);
     }
 }
-

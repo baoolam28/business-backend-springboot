@@ -58,4 +58,41 @@ public class SupplierSellerController {
         }
     }
 
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateSupplier(@PathVariable("id") Integer supplierId, @RequestBody SupplierRequest request){
+        try {
+            SupplierResponse response = supplierService.update_supplier(request, supplierId);
+            ApiResponse<SupplierResponse> apiResponse = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Supplier retrieved successfully",
+                response,
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error retrieving products: " + e.getMessage());
+            ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteSupplier (@PathVariable("id") Integer supplierId){
+        try {
+            SupplierResponse response = supplierService.delete_supplier(supplierId);
+            ApiResponse<SupplierResponse> apiResponse = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Delete Supplier retrieved successfully",
+                response,
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error retrieving products: " + e.getMessage());
+            ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
