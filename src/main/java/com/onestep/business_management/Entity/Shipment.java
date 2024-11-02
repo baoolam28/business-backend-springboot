@@ -26,17 +26,13 @@ public class Shipment {
 
     private String shippingMethod;
 
-
-    @ToString.Exclude
     @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "orderOnlineId", nullable = false)
+    @JsonIgnore
+    @JoinColumn(name = "orderOnlineId", unique = true, nullable = false)
     private OrderOnline orderOnline;
 
-
     @ManyToOne
-    @JoinColumn(name = "address_id", referencedColumnName = "address_id", nullable = false)
-    @JsonManagedReference
+    @JoinColumn(name = "address_id", referencedColumnName = "address_id")
     private ShippingAddress shippingAddress;
 
     @Enumerated(EnumType.ORDINAL)
@@ -58,14 +54,18 @@ public class Shipment {
     private Date deliveredDate;
 
     @Temporal(TemporalType.TIMESTAMP)
+    private Date canceledDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date failedDeliveryDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "createAt", updatable = false)
     private Date createAt;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updateAt")
     private Date updateAt;
-
-    private String note;
 
     private String shippingNote;
 

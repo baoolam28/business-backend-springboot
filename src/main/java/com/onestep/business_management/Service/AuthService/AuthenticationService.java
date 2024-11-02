@@ -118,7 +118,6 @@ public class AuthenticationService {
         var userDetails = userDetailsService.loadUserByUsername(userName);
 
 
-
         User user = userRepository.findByUsername(userName).orElseThrow(
                 () -> new ResourceNotFoundException("User not found")
         );
