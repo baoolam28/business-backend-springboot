@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class MapperService {
@@ -136,13 +137,13 @@ public class MapperService {
     }
 
 
-    // public List<Image> uploadImages(List<MultipartFile> files){
-    //     return imageService.uploadImages(files);
-    // }
+     public List<Image> uploadImages(List<MultipartFile> files){
+         return  imageService.uploadImages(files);
+     }
 
-    // public Image uploadImage(MultipartFile file){
-    //     return imageService.uploadImage(file);
-    // }
+     public Image uploadImage(MultipartFile file){
+         return imageService.uploadImage(file);
+     }
 
     public Optional<Shipment> findShipmentByOrder(UUID uuid) {
         return Optional.of(shipmentRepository.findShipmentByOrderOnlineId(uuid).orElseThrow(

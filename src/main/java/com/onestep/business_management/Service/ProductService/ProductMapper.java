@@ -35,7 +35,7 @@ public interface ProductMapper {
 
         Product product = new Product();
         product.setBarcode(productRequest.getBarcode());
-        // product.setImages( mapperService.uploadImages(productRequest.getImages()));
+         product.setImages( mapperService.uploadImages(productRequest.getImages()));
         product.setProductName(productRequest.getProductName());
         product.setAbbreviations(productRequest.getAbbreviations());
         product.setUnit(productRequest.getUnit());
@@ -159,7 +159,11 @@ public interface ProductMapper {
             product.setCategory(category);
             Store store = mapperService.findStoreById(prodRequest.getStoreId());
             product.setStore(store);
-            // product.setImages(mapperService.uploadImages(prodRequest.getImages()));
+            List<Image> images = mapperService.uploadImages(prodRequest.getImages()); // Upload hình ảnh và nhận danh sách hình ảnh
+            for (Image image : images) {
+                image.setProduct(product);
+            }
+            product.setImages(images);
 
             List<ProductDetail> productDetails = prodRequest.getProductDetail().stream()
                     .map(detailRequest -> {
@@ -167,8 +171,8 @@ public interface ProductMapper {
                         productDetail.setPrice(detailRequest.getPrice());
                         productDetail.setSku(detailRequest.getSku());
                         productDetail.setQuantityInStock(detailRequest.getQuantityInStock());
-                        // Image image = mapperService.uploadImage(detailRequest.getImage());
-                        // productDetail.setImage(image.getFileName());
+                         Image image = mapperService.uploadImage(detailRequest.getImage());
+                         productDetail.setImage(image.getFileName());
                         productDetail.setHeight(detailRequest.getHeight());
                         productDetail.setLength(productDetail.getLength());
                         productDetail.setWidth(productDetail.getWidth());
