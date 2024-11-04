@@ -55,7 +55,7 @@ public class ProductSellerController {
     @GetMapping("/{storeId}")
     public ResponseEntity<?> getAllProducts(@PathVariable UUID storeId) {
         try {
-            List<ProductResponse> response = productService.getAllByStore(storeId);
+            List<ProductResponse> response = productService.getOfflineProductsByStore(storeId);
             ApiResponse<List<ProductResponse>> apiResponse = new ApiResponse<>(
                     HttpStatus.OK.value(),
                     "Products retrieved successfully",

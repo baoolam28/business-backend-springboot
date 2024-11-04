@@ -88,8 +88,8 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public List<ProductResponse> getAllByStore(UUID storeId) {
-        List<Product> products = productRepository.findByStore(storeId);
+    public List<ProductResponse> getOfflineProductsByStore(UUID storeId) {
+        List<Product> products = productRepository.findOfflineProductsByStore(storeId);
         return products.stream()
                 .map(ProductMapper.INSTANCE::productToResponse)
                 .collect(Collectors.toList());
