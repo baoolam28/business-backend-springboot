@@ -48,28 +48,45 @@ public class BuyerProductController {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable("id") Integer productId) {
+    @GetMapping("/online")
+    public ResponseEntity<?> getProductsOnline() {
         try {
-            ProductOnlineResponse response = productService.findProductOnline(productId);
-            ApiResponse<ProductOnlineResponse> apiResponse = new ApiResponse<>(
+            List<ProductResponse> response = productService.getAllProductOnline();
+            ApiResponse<List<ProductResponse>> apiResponse = new ApiResponse<>(
                     HttpStatus.OK.value(),
                     "Products retrieved successfully",
                     response,
                     LocalDateTime.now());
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(
-                    new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An error occurred", null,
-                            LocalDateTime.now()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            System.out.println("Error retrieving products: " + e.getMessage());
+            ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+//    @GetMapping("/{id}")
+//    public ResponseEntity<?> getProductById(@PathVariable("id") Integer productId) {
+//        try {
+//            ProductOnlineResponse response = productService.(productId);
+//            ApiResponse<ProductOnlineResponse> apiResponse = new ApiResponse<>(
+//                    HttpStatus.OK.value(),
+//                    "Products retrieved successfully",
+//                    response,
+//                    LocalDateTime.now());
+//            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(
+//                    new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An error occurred", null,
+//                            LocalDateTime.now()),
+//                    HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     @GetMapping("/product-detail/{id}")
     public ResponseEntity<?> getProductDetailByProduct(@PathVariable("id") Integer productId) {
         try {
-            ProductOnlineResponse response = productService.findProductOnline(productId);
+            ProductOnlineResponse response = productService.getProductDetailOnlineById(productId);
             ApiResponse<ProductOnlineResponse> apiResponse = new ApiResponse<>(
                     HttpStatus.OK.value(),
                     "Products retrieved successfully",

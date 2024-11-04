@@ -59,7 +59,7 @@ public class ProductSellerController {
     @GetMapping("/online/{storeId}")
     public ResponseEntity<?> getAllProductsOnline(@PathVariable UUID storeId) {
         try {
-            List<ProductResponse> response = productService.getAllByOnline(storeId);
+            List<ProductResponse> response = productService.getAllOnlineByStore(storeId);
             ApiResponse<List<ProductResponse>> apiResponse = new ApiResponse<>(
                     HttpStatus.OK.value(),
                     "Products retrieved successfully",
@@ -77,7 +77,7 @@ public class ProductSellerController {
     @GetMapping("/offline/{storeId}")
     public ResponseEntity<?> getAllProductsOffline(@PathVariable UUID storeId) {
         try {
-            List<ProductResponse> response = productService.getAllByOffline(storeId);
+            List<ProductResponse> response = productService.getAllOfflineByStore(storeId);
             ApiResponse<List<ProductResponse>> apiResponse = new ApiResponse<>(
                     HttpStatus.OK.value(),
                     "Products retrieved successfully",
