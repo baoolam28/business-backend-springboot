@@ -36,14 +36,48 @@ public class ProductSellerController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-
-
-
-    // Get all products
     @GetMapping("/{storeId}")
     public ResponseEntity<?> getAllProducts(@PathVariable UUID storeId) {
         try {
             List<ProductResponse> response = productService.getAllByStore(storeId);
+            ApiResponse<List<ProductResponse>> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Products retrieved successfully",
+                    response,
+                    LocalDateTime.now()
+            );
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error retrieving products: " + e.getMessage());
+            ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    // Get all products
+    @GetMapping("/online/{storeId}")
+    public ResponseEntity<?> getAllProductsOnline(@PathVariable UUID storeId) {
+        try {
+            List<ProductResponse> response = productService.getAllByOnline(storeId);
+            ApiResponse<List<ProductResponse>> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Products retrieved successfully",
+                    response,
+                    LocalDateTime.now()
+            );
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error retrieving products: " + e.getMessage());
+            ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/offline/{storeId}")
+    public ResponseEntity<?> getAllProductsOffline(@PathVariable UUID storeId) {
+        try {
+            List<ProductResponse> response = productService.getAllByOffline(storeId);
             ApiResponse<List<ProductResponse>> apiResponse = new ApiResponse<>(
                     HttpStatus.OK.value(),
                     "Products retrieved successfully",

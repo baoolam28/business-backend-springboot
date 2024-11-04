@@ -3,12 +3,14 @@ package com.onestep.business_management.Service.CategoryService;
 import com.onestep.business_management.DTO.CategoryDTO.CategoryRequest;
 import com.onestep.business_management.DTO.CategoryDTO.CategoryResponse;
 import com.onestep.business_management.Entity.Category;
+import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +35,16 @@ public class CategoryService {
     // Get All Categories
     public List<CategoryResponse> getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
+        return categories.stream()
+                .map(CategoryMapper.INSTANCE::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<CategoryResponse> getCategoriesByStore(UUID storeId) {
+        List<Category> categories = categoryRepository.findByStore(storeId).orElseThrow(
+                () -> new ResourceNotFoundException("get categories by store not found!")
+        );
+
         return categories.stream()
                 .map(CategoryMapper.INSTANCE::toResponse)
                 .collect(Collectors.toList());

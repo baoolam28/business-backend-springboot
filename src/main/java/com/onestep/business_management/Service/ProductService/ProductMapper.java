@@ -174,9 +174,9 @@ public interface ProductMapper {
                          Image image = mapperService.uploadImage(detailRequest.getImage());
                          productDetail.setImage(image.getFileName());
                         productDetail.setHeight(detailRequest.getHeight());
-                        productDetail.setLength(productDetail.getLength());
-                        productDetail.setWidth(productDetail.getWidth());
-                        productDetail.setWeight(productDetail.getWeight());
+                        productDetail.setLength(detailRequest.getLength());
+                        productDetail.setWidth(detailRequest.getWidth());
+                        productDetail.setWeight(detailRequest.getWeight());
 
                         productDetail.setProduct(product);
                         Map<String, String> attributes = detailRequest.getAttributes();

@@ -95,6 +95,22 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    public List<ProductResponse> getAllByOnline(UUID storeId) {
+        List<Product> products = productRepository.findByOnline(storeId);
+        return products.stream()
+                .map(ProductMapper.INSTANCE::productToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProductResponse> getAllByOffline(UUID storeId) {
+        List<Product> products = productRepository.findByOffline(storeId);
+        return products.stream()
+                .map(ProductMapper.INSTANCE::productToResponse)
+                .collect(Collectors.toList());
+    }
+
+
+
     public ProductResponse getByBarcode(String barcode) {
         Product product = productRepository.findByBarcode(barcode).orElse(null);
 

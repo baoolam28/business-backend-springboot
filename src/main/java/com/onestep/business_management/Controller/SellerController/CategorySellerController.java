@@ -2,6 +2,7 @@ package com.onestep.business_management.Controller.SellerController;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import com.onestep.business_management.DTO.API.ApiResponse;
 import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
@@ -35,15 +36,17 @@ public class CategorySellerController {
     }
 
     // Get Category by ID (Admin only)
-    @GetMapping("/{id}")
-    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Integer id) {
+    @GetMapping("/by-store/{id}")
+    public ResponseEntity<?> getCategoryByStore(@PathVariable UUID id) {
         try {
-            CategoryResponse response = categoryService.getCategoryById(id);
-            if (response != null) {
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
+            List<CategoryResponse> response = categoryService.getCategoriesByStore(id);
+            ApiResponse<List<CategoryResponse>> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),  // Status code 200
+                    "Category retrieved successfully",
+                    response,
+                    LocalDateTime.now()  // Current date
+            );
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

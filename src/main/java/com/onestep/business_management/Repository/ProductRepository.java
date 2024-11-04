@@ -46,4 +46,10 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query("SELECT p FROM Product p WHERE p.store.storeId = :storeId")
     List<Product> findByStore(@Param("storeId") UUID storeId);
+
+    @Query("SELECT p FROM Product p WHERE p.store.storeId = :storeId AND p.isOnline = true")
+    List<Product> findByOnline(@Param("storeId") UUID storeId);
+
+    @Query("SELECT p FROM Product p WHERE p.store.storeId = :storeId AND p.isOnline = false")
+    List<Product> findByOffline(@Param("storeId") UUID storeId);
 }
