@@ -35,14 +35,20 @@ public interface ProductMapper {
 
         Product product = new Product();
         product.setBarcode(productRequest.getBarcode());
-         product.setImages( mapperService.uploadImages(productRequest.getImages()));
+        if(productRequest.getImages() != null){
+            List<Image> images = mapperService.uploadImages(productRequest.getImages());
+            for(Image image : images){
+                image.setProduct(product);
+            }
+            product.setImages(images);
+        }
         product.setProductName(productRequest.getProductName());
         product.setAbbreviations(productRequest.getAbbreviations());
         product.setUnit(productRequest.getUnit());
         product.setPrice(productRequest.getPrice());
         product.setCreatedDate(new Date());
         product.setCreatedBy(productRequest.getCreatedBy());
-
+        product.setOnline(false);
         product.setStore(mapperService.findStoreById(productRequest.getStoreId()));
         product.setCategory(mapperService.findCategoryById(productRequest.getCategoryId()));
         product.setSupplier(mapperService.findSupplierById(productRequest.getSupplierId()));
@@ -70,6 +76,7 @@ public interface ProductMapper {
         productResponse.setProductName(product.getProductName());
         productResponse.setAbbreviations(product.getAbbreviations());
         productResponse.setUnit(product.getUnit());
+        productResponse.setCreatedBy(product.getCreatedBy());
 
         if (product.getPrice() != null) {
             productResponse.setPrice(product.getPrice());
