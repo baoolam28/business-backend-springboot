@@ -230,11 +230,10 @@ public class OrderSellerController {
         }
     }
 
-    @GetMapping("/stores/{storeId}")
-    public ResponseEntity<?> getAllOrdersByStoreId(@PathVariable String storeId) {
+    @GetMapping("/online/{storeId}")
+    public ResponseEntity<?> getAllOrdersByStoreId(@PathVariable UUID storeId) {
         try {
-            UUID uuid = UUID.fromString(storeId);
-            List<OrderOnlineResponse> orders = orderOnlineService.getAllOrdersByStoreId(uuid);
+            List<OrderOnlineResponse> orders = orderOnlineService.getAllOrdersByStoreId(storeId);
 
             ApiResponse<List<OrderOnlineResponse>> response = new ApiResponse<>(
                     HttpStatus.OK.value(),
@@ -273,7 +272,7 @@ public class OrderSellerController {
         }
     }
 
-    @PutMapping("/{orderId}/status")
+    @PutMapping("/online/{orderId}/status")
     public ResponseEntity<?> updateOrderStatus(@PathVariable String orderId,
             @RequestBody OrderStatusRequest orderStatusRequest) {
         try {
@@ -315,7 +314,7 @@ public class OrderSellerController {
         }
     }
 
-    @PutMapping("/stores/{storeId}/status")
+    @PutMapping("/online/{storeId}/status")
     public ResponseEntity<?> updateOrderStatusByStoreId(
             @PathVariable String storeId,
             @RequestBody OrderStatusRequest orderStatusRequest) {

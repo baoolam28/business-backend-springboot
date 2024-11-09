@@ -1,7 +1,13 @@
 package com.onestep.business_management.Service.CartService;
 
 
+import com.onestep.business_management.DTO.CartItemDTO.CartItemRequest;
+import com.onestep.business_management.DTO.CartItemDTO.CartUpdateRequest;
+import com.onestep.business_management.DTO.CartItemDTO.ItemsRequest;
+import com.onestep.business_management.Entity.ProductDetail;
+import com.onestep.business_management.Repository.ProductDetailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import com.onestep.business_management.DTO.CartDTO.CartRequest;
@@ -17,8 +23,8 @@ import com.onestep.business_management.Repository.UserRepository;
 import com.onestep.business_management.Service.CartItemService.CartItemMapper;
 import com.onestep.business_management.Utils.MapperService;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CartService {
@@ -33,6 +39,9 @@ public class CartService {
 
     @Autowired
     private MapperService mapperService;
+
+    @Autowired
+    private ProductDetailRepository productDetailRepository;
 
     public CartResponse getCartByUserId(UUID userId){
         User user = userRepository.findById(userId).orElseThrow(
@@ -85,30 +94,8 @@ public class CartService {
 
 
 
-    public CartResponse deleteProductFromCart(CartRequest cartRequest){
 
-        User user = userRepository.findById(cartRequest.getUserId()).orElseThrow(
-                () -> new ResourceNotFoundException("User not found: " + cartRequest.getUserId())
-        );
-
-        Cart cart = cartRepository.findByUser(user).orElseThrow(
-                () -> new ResourceAlreadyExistsException("Cart not found with user id: " + cartRequest.getUserId())
-        );
-
-        CartItems cartItems = cart.getCartItems().stream()
-                .filter(item -> item.getProductDetail().getProductDetailId().equals(cartRequest.getProductDetailId()))
-                .findFirst().orElseThrow(
-                    () -> new ResourceNotFoundException("Product not found in cart: " + cartRequest.getProductDetailId())
-                );
-
-        cart.getCartItems().remove(cartItems);
-
-        Cart updateCartItem = cartRepository.save(cart);
-
-        return CartMapper.INSTANCE.toResponse(updateCartItem);
-    }
-
-    public CartResponse updateCart(CartRequest cartRequest) {
+    public CartResponse updateCart(CartUpdateRequest cartRequest) {
         // 1. Tìm người dùng theo userId
         User user = userRepository.findById(cartRequest.getUserId()).orElseThrow(
                 () -> new ResourceNotFoundException("User not found: " + cartRequest.getUserId())
@@ -119,37 +106,75 @@ public class CartService {
                 () -> new ResourceNotFoundException("Cart not found for userId: " + cartRequest.getUserId())
         );
 
-        // 3. Tìm sản phẩm trong giỏ hàng
-        Optional<CartItems> optionalCartItem = cart.getCartItems().stream()
-                .filter(item -> item.getProductDetail().getProductDetailId().equals(cartRequest.getProductDetailId()))
-                .findFirst();
+        List<ItemsRequest> itemsRequest = cartRequest.getCartItems();
+        List<CartItems> cartItems = cart.getCartItems();
 
-        if (optionalCartItem.isPresent()) {
-            // 4. Nếu sản phẩm đã có, cập nhật số lượng
-            CartItems cartItem = optionalCartItem.get();
-            if (cartRequest.getQuantity() > 0) {
-                // Cập nhật số lượng nếu lớn hơn 0
-                cartItem.setQuantity(cartRequest.getQuantity());
-            } else {
-                // Xóa sản phẩm khỏi giỏ hàng nếu số lượng bằng 0
-                cart.getCartItems().remove(cartItem);
-            }
+        // 3. Nếu cartItems trong request là mảng rỗng, xóa hết sản phẩm trong giỏ hàng
+        if (itemsRequest.isEmpty()) {
+            cartItems.clear(); // Xóa tất cả các sản phẩm trong giỏ hàng
         } else {
-            // 5. Nếu sản phẩm chưa có và số lượng lớn hơn 0, thêm mới CartItem
-            if (cartRequest.getQuantity() > 0) {
-                CartItems newCartItem = CartItemMapper.INSTANCE.cartItemRequestToEntity(cartRequest, mapperService);
-                newCartItem.setCart(cart);
-                cart.getCartItems().add(newCartItem);
-            } else {
-                throw new ResourceNotFoundException("Cannot add product with quantity 0 to the cart.");
+            // 4. Lưu danh sách các productDetailId trong request để kiểm tra sản phẩm bị xóa
+            List<Integer> updatedProductDetailIds = itemsRequest.stream()
+                    .map(ItemsRequest::getProductDetailId)
+                    .collect(Collectors.toList());
+
+            // 5. Duyệt qua các sản phẩm trong giỏ hàng và xử lý cập nhật/xóa
+            for (Iterator<CartItems> iterator = cartItems.iterator(); iterator.hasNext(); ) {
+                CartItems item = iterator.next();
+                ProductDetail prodDetail = item.getProductDetail();
+
+                // Kiểm tra nếu sản phẩm trong giỏ hàng không có trong yêu cầu cập nhật => xóa
+                if (!updatedProductDetailIds.contains(prodDetail.getProductDetailId())) {
+                    iterator.remove(); // Xóa sản phẩm này khỏi giỏ hàng
+                } else {
+                    // Cập nhật số lượng cho các sản phẩm có trong yêu cầu
+                    ItemsRequest itemReq = findItemRequestById(item.getProductDetail().getProductDetailId(), itemsRequest);
+                    if (itemReq != null) {
+                        item.setQuantity(itemReq.getQuantity());
+                    }
+                }
+            }
+
+            // 6. Thêm sản phẩm mới vào giỏ hàng nếu nó không có trong giỏ
+            for (ItemsRequest itemReq : itemsRequest) {
+                boolean itemExists = cartItems.stream()
+                        .anyMatch(item -> item.getProductDetail().getProductDetailId() == itemReq.getProductDetailId());
+
+                if (!itemExists) {
+                    CartItems newItem = createNewItem(itemReq, cart);
+                    cartItems.add(newItem);
+                }
             }
         }
 
-        // 6. Lưu giỏ hàng đã cập nhật lại
+        // 7. Lưu giỏ hàng đã cập nhật
         Cart updatedCart = cartRepository.save(cart);
 
-        // 7. Trả về thông tin giỏ hàng đã cập nhật
+        // 8. Trả về thông tin giỏ hàng đã cập nhật
         return CartMapper.INSTANCE.toResponse(updatedCart);
     }
 
+    private ItemsRequest findItemRequestById(Integer productDetailId, List<ItemsRequest> itemsRequest) {
+        return itemsRequest.stream()
+                .filter(item -> item.getProductDetailId().equals(productDetailId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private CartItems createNewItem(ItemsRequest request, Cart cart) {
+        ProductDetail prodDetail = productDetailRepository.findById(request.getProductDetailId()).orElseThrow(
+                () -> new ResourceNotFoundException("Product detail not found!")
+        );
+
+        CartItems cartItem = new CartItems();
+        cartItem.setCart(cart);
+        cartItem.setProductDetail(prodDetail);
+        cartItem.setQuantity(request.getQuantity());
+
+        return cartItem;
+    }
+
+
 }
+
+

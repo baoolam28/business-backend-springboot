@@ -12,6 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class DocumentDetailResponse {
     private UUID docDetailId;
+    private String productName;
     private String productBarcode; // Barcode of the product
     private int quantity; // Quantity of the product
     private float price; // Price per unit of the product

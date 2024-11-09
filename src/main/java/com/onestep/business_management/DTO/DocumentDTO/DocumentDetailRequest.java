@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DocumentDetailRequest {
+    private Integer productId;
     private String barcode; // Barcode of the product
     private int quantity; // Quantity of the product
     private float price; // Price per unit of the product
