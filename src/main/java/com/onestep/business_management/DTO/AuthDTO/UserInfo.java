@@ -14,7 +14,7 @@ public class UserInfo {
     private String image;
     private String role;
     private boolean isActive;
-
+    
     public UserInfo() {
 
     }

@@ -28,6 +28,7 @@ import java.util.List;
 public interface ProductMapper {
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
     ObjectMapper objectMapper = new ObjectMapper();
+
     default Product prodRequestToEntity(ProductRequest productRequest, @Context MapperService mapperService) {
         if (productRequest == null) {
             return null;
@@ -35,7 +36,7 @@ public interface ProductMapper {
 
         Product product = new Product();
         product.setBarcode(productRequest.getBarcode());
-         product.setImages( mapperService.uploadImages(productRequest.getImages()));
+        product.setImages(mapperService.uploadImages(productRequest.getImages()));
         product.setProductName(productRequest.getProductName());
         product.setAbbreviations(productRequest.getAbbreviations());
         product.setUnit(productRequest.getUnit());
@@ -63,8 +64,8 @@ public interface ProductMapper {
         productResponse.setBarcode(product.getBarcode());
         List<Image> productImage = product.getImages();
         List<String> images = new ArrayList();
-        for(Image image : productImage){ 
-            images.add(image.getFileName()) ; 
+        for (Image image : productImage) {
+            images.add(image.getFileName());
         }
         productResponse.setImages(images);
         productResponse.setProductName(product.getProductName());
@@ -142,8 +143,7 @@ public interface ProductMapper {
         return response;
     }
 
-
-    default Product ProdOnlineToEntity(ProductOnlineRequest prodRequest, @Context MapperService mapperService){
+    default Product ProdOnlineToEntity(ProductOnlineRequest prodRequest, @Context MapperService mapperService) {
 
         if (prodRequest == null) {
             return null;
@@ -159,7 +159,8 @@ public interface ProductMapper {
             product.setCategory(category);
             Store store = mapperService.findStoreById(prodRequest.getStoreId());
             product.setStore(store);
-            List<Image> images = mapperService.uploadImages(prodRequest.getImages()); // Upload hình ảnh và nhận danh sách hình ảnh
+            List<Image> images = mapperService.uploadImages(prodRequest.getImages()); // Upload hình ảnh và nhận danh
+                                                                                      // sách hình ảnh
             for (Image image : images) {
                 image.setProduct(product);
             }
@@ -171,8 +172,8 @@ public interface ProductMapper {
                         productDetail.setPrice(detailRequest.getPrice());
                         productDetail.setSku(detailRequest.getSku());
                         productDetail.setQuantityInStock(detailRequest.getQuantityInStock());
-                         Image image = mapperService.uploadImage(detailRequest.getImage());
-                         productDetail.setImage(image.getFileName());
+                        Image image = mapperService.uploadImage(detailRequest.getImage());
+                        productDetail.setImage(image.getFileName());
                         productDetail.setHeight(detailRequest.getHeight());
                         productDetail.setLength(productDetail.getLength());
                         productDetail.setWidth(productDetail.getWidth());
@@ -197,7 +198,7 @@ public interface ProductMapper {
             product.setProductDetails(productDetails);
 
             return product;
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
@@ -225,7 +226,7 @@ public interface ProductMapper {
 
     }
 
-    default ProductOnlineResponse productToOnlineResponse(Product product){
+    default ProductOnlineResponse productToOnlineResponse(Product product) {
         if (product == null) {
             return null;
         }
@@ -254,10 +255,5 @@ public interface ProductMapper {
 
         return response;
     }
-
-
-
-
-
 
 }
