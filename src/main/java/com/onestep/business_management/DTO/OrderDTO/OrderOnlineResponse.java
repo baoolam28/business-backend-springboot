@@ -22,4 +22,4 @@ public class OrderOnlineResponse {
     private UUID storeId;
     private String storeName;
     private List<OrderOnlineDetailResponse> orderDetails;
-}
+}   

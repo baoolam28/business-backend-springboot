@@ -3,6 +3,7 @@ package com.onestep.business_management.Service.OrderOnlineService;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineDetailRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineResponse;
+import com.onestep.business_management.DTO.OrderDTO.OrderStatusRequest;
 import com.onestep.business_management.Entity.*;
 import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Repository.OrderOnlineRepository;
@@ -89,7 +90,8 @@ public class OrderOnlineService {
         return responses;
     }
 
-    private List<Shipment> createShipments(OrderOnlineRequest orderRequest, OrderOnline savedOrder, ShippingAddress address) {
+    private List<Shipment> createShipments(OrderOnlineRequest orderRequest, OrderOnline savedOrder,
+            ShippingAddress address) {
         List<Shipment> shipments = new ArrayList<>();
 
         // Create a shipment (or multiple if needed)
@@ -118,4 +120,74 @@ public class OrderOnlineService {
                 .map(OrderOnlineMapper.INSTANCE::toResponse)
                 .collect(Collectors.toList());
     }
+
+    public List<OrderOnlineResponse> getAllOrdersByStoreId(UUID storeId) {
+        try {
+            // Lấy tất cả các đơn hàng theo storeId
+            List<OrderOnline> orders = orderOnlineRepository.findByStoreId(storeId);
+
+            // Kiểm tra nếu không có đơn hàng nào
+            if (orders.isEmpty()) {
+                throw new ResourceNotFoundException("Không tìm thấy đơn hàng nào cho cửa hàng có ID: " + storeId);
+            }
+
+            // Chuyển đổi các đơn hàng thành OrderOnlineResponse
+            return orders.stream()
+                    .map(OrderOnlineMapper.INSTANCE::toResponse)
+                    .collect(Collectors.toList());
+
+        } catch (Exception e) {
+            logger.error("Lỗi khi lấy đơn hàng của cửa hàng có ID: {}", storeId, e);
+            throw e; // Ném lỗi để controller xử lý
+        }
+    }
+
+    @Transactional
+    public OrderOnlineResponse updateOrderStatus(String orderId, OrderStatusRequest orderStatusRequest) {
+        try {
+            // Tìm đơn hàng theo orderId
+            OrderOnline order = orderOnlineRepository.findById(UUID.fromString(orderId))
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Order not found for ID: " + orderId));
+
+            // Cập nhật trạng thái cho đơn hàng
+            order.setStatus(orderStatusRequest.getStatus());
+
+            // Lưu thay đổi vào cơ sở dữ liệu
+            OrderOnline updatedOrder = orderOnlineRepository.save(order);
+            logger.info("Updated OrderOnline ID: {} to status: {}", updatedOrder.getOrderOnlineId(),
+                    orderStatusRequest.getStatus());
+
+            // Chuyển đổi đơn hàng đã cập nhật thành phản hồi
+            return OrderOnlineMapper.INSTANCE.toResponse(updatedOrder);
+
+        } catch (Exception e) {
+            logger.error("Error updating order status for ID: {}", orderId, e);
+            throw e; // Ném lỗi để controller xử lý
+        }
+    }
+
+    @Transactional
+    public int updateOrderStatusByStoreID(OrderOnline.Status currentStatus, OrderOnline.Status newStatus,
+            UUID storeId) {
+        try {
+            // Update the order status for the specified store ID and current status
+            int updatedCount = orderOnlineRepository.updateOrderStatusByStoreID(currentStatus, newStatus, storeId);
+
+            // Check if any orders were updated
+            if (updatedCount == 0) {
+                logger.warn("No orders updated for Store ID: {} with current status: {}", storeId, currentStatus);
+                throw new ResourceNotFoundException("No orders found with the current status: " + currentStatus +
+                        " for Store ID: " + storeId);
+            }
+
+            logger.info("Updated {} orders for Store ID: {} from status {} to {}", updatedCount, storeId, currentStatus,
+                    newStatus);
+            return updatedCount;
+        } catch (Exception e) {
+            logger.error("Error updating orders for Store ID: {}", storeId, e);
+            throw e; // Rethrow the exception for controller to handle
+        }
+    }
+
 }

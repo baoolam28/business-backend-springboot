@@ -1,5 +1,6 @@
 package com.onestep.business_management.Repository;
 
+import com.onestep.business_management.Entity.OrderOffline;
 import com.onestep.business_management.Entity.Product;
 import com.onestep.business_management.Entity.Store;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,9 +49,18 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("SELECT p FROM Product p WHERE p.store.storeId = :storeId")
     List<Product> findByStore(@Param("storeId") UUID storeId);
 
-    @Query("SELECT p FROM Product p WHERE p.store.storeId = :storeId AND p.isOnline = true")
-    List<Product> findByOnline(@Param("storeId") UUID storeId);
+    @Query("SELECT p FROM Product p WHERE p.store.storeId = :storeId AND p.isOnline = true AND p.disabled = false")
+    List<Product> findProductOnlineByStore(@Param("storeId") UUID storeId);
 
-    @Query("SELECT p FROM Product p WHERE p.store.storeId = :storeId AND p.isOnline = false")
-    List<Product> findByOffline(@Param("storeId") UUID storeId);
+    @Query("SELECT p FROM Product p WHERE p.store.storeId = :storeId AND p.isOnline = false AND p.disabled = false")
+    List<Product> findProductOfflineByStore(@Param("storeId") UUID storeId);
+
+    @Query("SELECT p FROM Product p WHERE p.isOnline = true AND p.disabled = false")
+    List<Product> findAllOnline();
+
+
+    @Query("SELECT SUM(od.price * od.quantity) FROM OrderOffline o JOIN " +
+            " OrderOfflineDetail od ON o.orderOfflineId = od.orderDetailId" +
+            " WHERE o.store.storeId = :storeId AND o.orderDate BETWEEN :startDate AND :endDate")
+    List<OrderOffline> getOrderByDate(UUID storeId, Date startDate, Date endDate);
 }

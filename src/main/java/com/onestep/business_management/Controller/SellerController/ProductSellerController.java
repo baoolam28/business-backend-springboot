@@ -59,8 +59,8 @@ public class ProductSellerController {
     @GetMapping("/online/{storeId}")
     public ResponseEntity<?> getAllProductsOnline(@PathVariable UUID storeId) {
         try {
-            List<ProductResponse> response = productService.getAllByOnline(storeId);
-            ApiResponse<List<ProductResponse>> apiResponse = new ApiResponse<>(
+            List<ProductOnlineResponse> response = productService.getAllOnlineByStore(storeId);
+            ApiResponse<List<ProductOnlineResponse>> apiResponse = new ApiResponse<>(
                     HttpStatus.OK.value(),
                     "Products retrieved successfully",
                     response,
@@ -77,7 +77,7 @@ public class ProductSellerController {
     @GetMapping("/offline/{storeId}")
     public ResponseEntity<?> getAllProductsOffline(@PathVariable UUID storeId) {
         try {
-            List<ProductResponse> response = productService.getAllByOffline(storeId);
+            List<ProductResponse> response = productService.getAllOfflineByStore(storeId);
             ApiResponse<List<ProductResponse>> apiResponse = new ApiResponse<>(
                     HttpStatus.OK.value(),
                     "Products retrieved successfully",
@@ -108,8 +108,8 @@ public class ProductSellerController {
         }
     }
 
-    @PutMapping("/update/{barcode}")
-    public ResponseEntity<?> updateProduct(@RequestBody ProductRequest productRequest,@PathVariable("barcode") String barcode ){
+    @PostMapping(value = "/offline/update", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> updateProduct(@ModelAttribute ProductRequest productRequest ){
         try {
             ProductResponse response = productService.updateProduct(productRequest);
             if (response != null) {
@@ -131,10 +131,10 @@ public class ProductSellerController {
         
     }
 
-    @DeleteMapping("/delete/{barcode}")
-    public ResponseEntity<?> deleteProduct(@PathVariable("barcode") String barcode) {
+    @DeleteMapping("/offline/delete/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Integer id) {
         try {
-            ProductResponse response = productService.deleteProduct(barcode);
+            ProductResponse response = productService.deleteProductOffline(id);
             if (response != null) {
                 ApiResponse<ProductResponse> apiResponse = new ApiResponse<>(
                         HttpStatus.OK.value(),
