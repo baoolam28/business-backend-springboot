@@ -31,7 +31,7 @@ public class BuyerProductController {
     @Autowired
     private ReviewService reviewService;
 
-    @GetMapping
+    @GetMapping("/online")
     public ResponseEntity<?> getAllProducts() {
         try {
             List<ProductResponse> response = productService.getAll();
