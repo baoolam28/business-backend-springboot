@@ -1,6 +1,9 @@
 package com.onestep.business_management.Service.AuthService;
 
 import com.onestep.business_management.DTO.AuthDTO.*;
+import com.onestep.business_management.DTO.ForgotPasswordDTO.ResetPasswordWithEmailRequest;
+import com.onestep.business_management.DTO.ForgotPasswordDTO.ResetPasswordWithPhoneNumberRequest;
+import com.onestep.business_management.DTO.ForgotPasswordDTO.ResetPasswordResponse;
 import com.onestep.business_management.Entity.Image;
 import com.onestep.business_management.Entity.Role;
 import com.onestep.business_management.Entity.User;
@@ -9,7 +12,10 @@ import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Repository.RoleRepository;
 import com.onestep.business_management.Repository.UserRepository;
 import com.onestep.business_management.Scurity.JWTService;
+import com.onestep.business_management.Service.OTPService.OtpService;
 import com.onestep.business_management.Service.StoreService.StoreMapper;
+import com.onestep.business_management.Utils.EmailUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,6 +45,12 @@ public class AuthenticationService {
 
     @Autowired
     JWTService jwtService;
+
+    @Autowired
+    EmailUtil emailUtil;
+
+    @Autowired
+    OtpService otpService;
 
     private Map<String, Integer> roleCode = new HashMap<>() {{
         put("ROLE_ADMIN", 1);
@@ -89,6 +101,7 @@ public class AuthenticationService {
         // Setting other fields
         newUser.setFullName(request.getFullName());
         newUser.setPhoneNumber(request.getPhoneNumber());
+        newUser.setEmail(request.getEmail());
 
         System.out.println("new User: "+ newUser.toString());
         try {
@@ -182,6 +195,37 @@ public class AuthenticationService {
         String  accessToken = jwtService.generateToken(newUser);
 
         return new LoginResponse(accessToken,userInfo);
+    }
+
+    public ResetPasswordResponse sendEmail(String email){
+        User user = userRepository.findByEmail(email).orElseThrow(
+            () -> new ResourceNotFoundException("User not found with this email: " + email)
+        );
+        try {
+            emailUtil.sendSetPasswordEmail(email);
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            throw new RuntimeException("Unable to send set password email please try again");
+        }
+        return new ResetPasswordResponse("Please check your email to set a new password.");
+    }
+
+    public ResetPasswordResponse resetPasswordWithEmail (ResetPasswordWithEmailRequest request){
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
+            () -> new ResourceNotFoundException("User not found with this email: " + request.getEmail())
+        );
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(user);
+        return new ResetPasswordResponse("Password reset successfully");
+    }
+
+    public ResetPasswordResponse resetPasswordWithPhoneNumber (ResetPasswordWithPhoneNumberRequest request){
+        User user = userRepository.findByPhoneNumber(request.getPhoneNumber()).orElseThrow(
+            () -> new ResourceNotFoundException("User not found with this phoneNumber: " + request.getPhoneNumber())
+        );
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(user);
+        return new ResetPasswordResponse("Password reset successfully");
     }
 }
 
