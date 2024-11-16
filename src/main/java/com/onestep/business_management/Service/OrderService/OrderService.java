@@ -151,55 +151,55 @@ public class OrderService {
     }
 
 
-public OrderReportResponse getOrderReports(LocalDate startDate, LocalDate endDate) {
-        long totalOrders = 0;
-        double totalRevenue = 0;
-        double averageOrderValue = 0;
+// public OrderReportResponse getOrderReports(LocalDate startDate, LocalDate endDate) {
+//         long totalOrders = 0;
+//         double totalRevenue = 0;
+//         double averageOrderValue = 0;
 
-        Map<String, Integer> customerCountByWeek = new HashMap<>();
-        Map<String, Integer> customerCountByMonth = new LinkedHashMap<>();
-        Map<String, Integer> customerCountByYear = new LinkedHashMap<>();
+//         Map<String, Integer> customerCountByWeek = new HashMap<>();
+//         Map<String, Integer> customerCountByMonth = new LinkedHashMap<>();
+//         Map<String, Integer> customerCountByYear = new LinkedHashMap<>();
 
-        try {
-            // Fetch total orders, revenue, and average order value
-            totalOrders = getTotalOrders(); // Đảm bảo phương thức này tồn tại và hoạt động đúng
-            totalRevenue = getTotalRevenue(); // Đảm bảo phương thức này tồn tại và hoạt động đúng
-            averageOrderValue = getAverageOrderValue(); // Đảm bảo phương thức này tồn tại và hoạt động đúng
+//         try {
+//             // Fetch total orders, revenue, and average order value
+//             totalOrders = getTotalOrders(); // Đảm bảo phương thức này tồn tại và hoạt động đúng
+//             totalRevenue = getTotalRevenue(); // Đảm bảo phương thức này tồn tại và hoạt động đúng
+//             averageOrderValue = getAverageOrderValue(); // Đảm bảo phương thức này tồn tại và hoạt động đúng
 
-            // Fetch weekly customer count data
-            java.util.List<Object[]> customersWeek = orderRepository.countCustomerOrderByWeek(startDate, endDate);
-            for (Object[] result : customersWeek) {
-                int year = (int) result[0];
-                int week = (int) result[1];
-                int count = ((Number) result[2]).intValue(); // Sử dụng intValue() thay vì longValue()
-                customerCountByWeek.put("Year " + year + " Week " + week, count);
-            }
+//             // Fetch weekly customer count data
+//             java.util.List<Object[]> customersWeek = orderRepository.countCustomerOrderByWeek(startDate, endDate);
+//             for (Object[] result : customersWeek) {
+//                 int year = (int) result[0];
+//                 int week = (int) result[1];
+//                 int count = ((Number) result[2]).intValue(); // Sử dụng intValue() thay vì longValue()
+//                 customerCountByWeek.put("Year " + year + " Week " + week, count);
+//             }
 
-            // Fetch monthly customer count data
-            java.util.List<Object[]> customersMonth = orderRepository.countCustomerOrderByMonth(startDate, endDate);
-            for (Object[] result : customersMonth) {
-                int year = (Integer) result[0];
-                int month = (Integer) result[1];
-                int count = ((Number) result[2]).intValue(); // Sử dụng intValue() thay vì longValue()
-                customerCountByMonth.put("Year " + year + " Month " + month, count);
-            }
+//             // Fetch monthly customer count data
+//             java.util.List<Object[]> customersMonth = orderRepository.countCustomerOrderByMonth(startDate, endDate);
+//             for (Object[] result : customersMonth) {
+//                 int year = (Integer) result[0];
+//                 int month = (Integer) result[1];
+//                 int count = ((Number) result[2]).intValue(); // Sử dụng intValue() thay vì longValue()
+//                 customerCountByMonth.put("Year " + year + " Month " + month, count);
+//             }
 
-            // Fetch yearly customer count data
-            java.util.List<Object[]> customersYear = orderRepository.countCustomerOrderByYear(startDate, endDate);
-            for (Object[] result : customersYear) {
-                int year = (Integer) result[0];
-                int count = ((Number) result[1]).intValue(); // Sử dụng intValue() thay vì longValue()
-                customerCountByYear.put("Year " + year, count);
-            }
+//             // Fetch yearly customer count data
+//             java.util.List<Object[]> customersYear = orderRepository.countCustomerOrderByYear(startDate, endDate);
+//             for (Object[] result : customersYear) {
+//                 int year = (Integer) result[0];
+//                 int count = ((Number) result[1]).intValue(); // Sử dụng intValue() thay vì longValue()
+//                 customerCountByYear.put("Year " + year, count);
+//             }
 
-        } catch (Exception e) {
-            e.printStackTrace(); // In ra lỗi để dễ dàng gỡ lỗi
-            throw new RuntimeException("An error occurred while generating the report", e);
-        }
+//         } catch (Exception e) {
+//             e.printStackTrace(); // In ra lỗi để dễ dàng gỡ lỗi
+//             throw new RuntimeException("An error occurred while generating the report", e);
+//         }
 
-        return new OrderReportResponse(totalOrders, totalRevenue, averageOrderValue, customerCountByWeek,
-                customerCountByMonth, customerCountByYear);
-    }
+//         return new OrderReportResponse(totalOrders, totalRevenue, averageOrderValue, customerCountByWeek,
+//                 customerCountByMonth, customerCountByYear);
+//     }
 
     public long getTotalOrders() {
         return orderRepository.count();
