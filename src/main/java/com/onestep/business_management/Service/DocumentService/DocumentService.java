@@ -10,10 +10,15 @@ import com.onestep.business_management.DTO.InventoryDTO.InventoryRequest;
 import com.onestep.business_management.Entity.Document;
 import com.onestep.business_management.Entity.DocumentDetail;
 import com.onestep.business_management.Entity.Product;
+import com.onestep.business_management.Entity.Store;
+import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Repository.DocumentRepository;
 import com.onestep.business_management.Repository.ProductRepository;
+import com.onestep.business_management.Repository.StoreRepository;
 import com.onestep.business_management.Service.InventoryService.InventoryService;
 
+import com.onestep.business_management.Service.StoreService.StoreService;
+import com.onestep.business_management.Utils.MapperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,11 +41,22 @@ public class DocumentService {
     @Autowired
     private InventoryService inventoryService;
 
+    @Autowired
+    private StoreRepository storeRepository;
+
+    @Autowired
+    private MapperService mapperService;
+
     @Transactional
     public DocumentResponse createDocument(DocumentRequest documentRequest) {
+
+        Store store = storeRepository.findById(documentRequest.getStoreId()).orElseThrow(
+                () -> new ResourceNotFoundException("store with storeId: "+documentRequest.getStoreId()+" not found!")
+        );
         // Convert DocumentRequest to Document entity
         Document document = DocumentMapper.INSTANCE.toEntity(documentRequest);
         document.setCreatedDate(new Date());
+        document.setStore(store);
 
         // Set DocumentDetails
         List<DocumentDetail> documentDetails = documentRequest.getDocumentDetails().stream().map(detailRequest -> {
@@ -63,45 +79,24 @@ public class DocumentService {
     });
 
         Document savedDocument = documentRepository.save(document);
-        return DocumentMapper.INSTANCE.toResponse(savedDocument);
+        return DocumentMapper.INSTANCE.toResponse(savedDocument, mapperService);
     }
 
-    // @Transactional
-    // public DocumentResponse updateDocument(UUID docId, DocumentRequest documentRequest) {
-    //     Document document = documentRepository.findById(docId)
-    //             .orElseThrow(() -> new RuntimeException("Document not found"));
-
-    //     // Update fields of Document entity
-    //     DocumentMapper.INSTANCE.toEntity(documentRequest, document);
-    //     document.setUpdatedDate(new Date());
-
-    //     // Update DocumentDetails
-    //     List<DocumentDetail> updatedDetails = documentRequest.getDocumentDetails().stream().map(detailRequest -> {
-    //         DocumentDetail detail = DocumentMapper.INSTANCE.toEntity(detailRequest);
-    //         Product product = productRepository.findById(detailRequest.getBarcode())
-    //                 .orElseThrow(() -> new RuntimeException("Product not found"));
-    //         detail.setProduct(product);
-    //         detail.setDocument(document);
-    //         return detail;
-    //     }).collect(Collectors.toList());
-
-    //     document.setDocumentDetails(updatedDetails);
-
-    //     Document updatedDocument = documentRepository.save(document);
-    //     return DocumentMapper.INSTANCE.toResponse(updatedDocument);
-    // }
 
     public DocumentResponse getDocumentById(UUID docId) {
-        return documentRepository.findById(docId)
-                .map(DocumentMapper.INSTANCE::toResponse)
-                .orElseThrow(() -> new RuntimeException("Document not found"));
+        Document savedDocument = documentRepository.findById(docId)
+                .orElseThrow(() -> new ResourceNotFoundException("Document not found"));
+
+        return DocumentMapper.INSTANCE.toResponse(savedDocument, mapperService);
     }
 
-    public List<DocumentResponse> getAllDocuments() {
-        return documentRepository.findAll().stream()
-                .map(DocumentMapper.INSTANCE::toResponse)
+
+    public List<DocumentResponse> getAllDocumentsByStore(UUID storeId) {
+        return documentRepository.findAllByStore(storeId).stream()
+                .map(document -> DocumentMapper.INSTANCE.toResponse(document, mapperService))
                 .collect(Collectors.toList());
     }
+
 
     @Transactional
     public boolean deleteDocument(UUID docId) {

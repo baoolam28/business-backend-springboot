@@ -50,9 +50,9 @@ public class DocumentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<DocumentResponse>> getAllDocuments() {
+    public ResponseEntity<List<DocumentResponse>> getAllDocuments(UUID storeId) {
         try {
-            List<DocumentResponse> response = documentService.getAllDocuments();
+            List<DocumentResponse> response = documentService.getAllDocumentsByStore(storeId);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

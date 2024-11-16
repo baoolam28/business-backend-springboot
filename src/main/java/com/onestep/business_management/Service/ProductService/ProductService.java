@@ -6,25 +6,19 @@ import com.onestep.business_management.DTO.ProductDTO.ProductOnlineResponse;
 import com.onestep.business_management.DTO.ProductDTO.ProductCategoryReponse;
 import com.onestep.business_management.DTO.ProductDTO.ProductRequest;
 import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
-import com.onestep.business_management.Entity.Product;
-import com.onestep.business_management.Entity.Review;
-import com.onestep.business_management.Entity.Store;
-import com.onestep.business_management.Entity.User;
+import com.onestep.business_management.Entity.*;
 import com.onestep.business_management.Exeption.ResourceAlreadyExistsException;
 import com.onestep.business_management.Exeption.ResourceNotFoundException;
-import com.onestep.business_management.Repository.ProductRepository;
-import com.onestep.business_management.Repository.ReviewRepository;
-import com.onestep.business_management.Repository.StoreRepository;
-import com.onestep.business_management.Repository.UserRepository;
+import com.onestep.business_management.Repository.*;
 
+import com.onestep.business_management.Service.ImageService.ImageService;
+import com.onestep.business_management.Service.InventoryService.InventoryService;
 import com.onestep.business_management.Utils.MapperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,19 +39,41 @@ public class ProductService {
     @Autowired
     ReviewRepository reviewRepository;
 
+    @Autowired
+    private InventoryRepository inventoryRepository;
+
+    @Autowired
+    private ImageService imageService;
+
     public ProductResponse createProduct(ProductRequest productRequest) {
 
+        // Kiểm tra sản phẩm đã tồn tại trong kho
         List<Product> products = productRepository.findProductInStore(
                 productRequest.getStoreId(), productRequest.getBarcode());
 
         if (!products.isEmpty()) {
-            throw new ResourceAlreadyExistsException("Product already exist in store :" + productRequest.getStoreId());
+            throw new ResourceAlreadyExistsException("Product already exists in store: " + productRequest.getStoreId());
         }
 
+        // Ánh xạ yêu cầu sản phẩm thành thực thể
         Product newProduct = ProductMapper.INSTANCE.prodRequestToEntity(productRequest, mapperService);
-        Product response = productRepository.save(newProduct);
-        return ProductMapper.INSTANCE.productToResponse(response);
+
+        // Tạo và thiết lập thông tin hàng tồn kho
+        Inventory inventory = new Inventory();
+        inventory.setStore(newProduct.getStore());
+        inventory.setProduct(newProduct);
+        inventory.setQuantityInStock(0);
+        inventory.setBarcode(newProduct.getBarcode());
+        inventory.setLastUpdated(new Date());
+
+        // Thiết lập hàng tồn kho cho sản phẩm
+        newProduct.setInventories(Collections.singletonList(inventory));
+
+        // Lưu sản phẩm mới và trả về phản hồi
+        Product savedProduct = productRepository.save(newProduct);
+        return ProductMapper.INSTANCE.productToResponse(savedProduct);
     }
+
 
 
     public ProductOnlineResponse createProductOnline(ProductOnlineRequest request){
@@ -88,10 +104,10 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public List<ProductResponse> getAllProductOnline() {
+    public List<ProductOnlineResponse> getAllProductOnline() {
         List<Product> products = productRepository.findAllOnline();
         return products.stream()
-                .map(ProductMapper.INSTANCE::productToResponse)
+                .map(ProductMapper.INSTANCE::productToOnlineResponse)
                 .collect(Collectors.toList());
     }
 
@@ -102,10 +118,10 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public List<ProductResponse> getAllOnlineByStore(UUID storeId) {
+    public List<ProductOnlineResponse> getAllOnlineByStore(UUID storeId) {
         List<Product> products = productRepository.findProductOnlineByStore(storeId);
         return products.stream()
-                .map(ProductMapper.INSTANCE::productToResponse)
+                .map(ProductMapper.INSTANCE::productToOnlineResponse)
                 .collect(Collectors.toList());
     }
 
@@ -190,20 +206,55 @@ public class ProductService {
 
     public ProductResponse updateProduct(ProductRequest productRequest) {
         Product existingProduct = productRepository.findByBarcode(productRequest.getBarcode()).orElse(null);
+
+
         if (existingProduct != null) {
+
+            if(productRequest.getImages() != null ){
+                List<Image> images = existingProduct.getImages();
+                if (images != null && !images.isEmpty()) {
+                    System.out.println("delete images: ");
+                    imageService.deleteImages(images);
+                    images.clear();
+                    productRepository.save(existingProduct);  // Save to update image associations
+                }
+            }
+
             Product updatedProduct = ProductMapper.INSTANCE.prodRequestToEntity(productRequest, mapperService);
+            updatedProduct.setProductId(existingProduct.getProductId());
+            if(productRequest.getImages() == null ){
+                updatedProduct.setImages(existingProduct.getImages());
+            }
             Product savedProduct = productRepository.save(updatedProduct);
             return ProductMapper.INSTANCE.productToResponse(savedProduct);
         }
         return null;
     }
 
-    public ProductResponse deleteProduct(String barcode) {
-        Product deleteProduct = productRepository.findByBarcode(barcode).orElse(null);
-        if (deleteProduct != null) {
-            productRepository.delete(deleteProduct);
-            return ProductMapper.INSTANCE.productToResponse(deleteProduct);
+    public ProductResponse deleteProductOffline(Integer productId) {
+        Product product = productRepository.findById(productId).orElse(null);
+        boolean isDelete = false;
+        if (product == null) {
+            throw new ResourceNotFoundException("Product not found with id: " + productId);
         }
+
+        boolean hasOrderOfflineDetails = !product.getOrderDetails().isEmpty();
+        boolean hasProductDetails = !product.getProductDetails().isEmpty();
+
+        if (hasOrderOfflineDetails || hasProductDetails) {
+            // Nếu có phụ thuộc trong `OrderOfflineDetail` hoặc `ProductDetail`, chỉ set `disabled = true`
+            product.setDisabled(true);
+            productRepository.save(product);
+            isDelete = true;
+        } else {
+            productRepository.delete(product);
+            isDelete = true;
+        }
+
+        if (isDelete){
+            return ProductMapper.INSTANCE.productToResponse(product);
+        }
+
         return null;
     }
 

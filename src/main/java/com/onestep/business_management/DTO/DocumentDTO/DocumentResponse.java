@@ -24,10 +24,10 @@ public class DocumentResponse {
     private Float paymentPercentage;
     private boolean paymentStatus;
     private Date createdDate;
-    private int createdBy;
+    private String createdBy;
     private Date updatedDate;
-    private int updatedBy;
+    private UUID updatedBy;
     private Date deletedDate;
-    private int deletedBy;
+    private UUID deletedBy;
     private List<DocumentDetailResponse> documentDetails;
 }
