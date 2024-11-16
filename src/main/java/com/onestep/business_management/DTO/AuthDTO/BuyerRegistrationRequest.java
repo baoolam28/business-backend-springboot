@@ -15,5 +15,6 @@ public class BuyerRegistrationRequest {
     private String password;
     private String phoneNumber;
     private String fullName;
+    private String email;
     private Set<Role> role;
 }

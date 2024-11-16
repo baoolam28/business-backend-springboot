@@ -13,5 +13,6 @@ public class BuyerRegistrationResponse {
     private String username;
     private String phoneNumber;
     private String fullName;
+    private String email;
     private Set<String> roles;
 }
