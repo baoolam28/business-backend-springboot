@@ -44,6 +44,15 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
         "GROUP BY p.productId, p.productName, p.price, s.storeName, s.pickupAddress, c.categoryName")
  List<Object[]> findProductsWithStoreCategoryAndReviewInfo(@Param("categoryId") Integer categoryId);
 
+    @Query("SELECT p FROM Product p WHERE p.store.storeId = :storeId")
+    List<Product> findByStore(@Param("storeId") UUID storeId);
+
+    @Query("SELECT p FROM Product p WHERE p.store.storeId = :storeId AND p.isOnline = true")
+    List<Product> findProductOnlineByStore(@Param("storeId") UUID storeId);
+
     @Query("SELECT p FROM Product p WHERE p.store.storeId = :storeId AND p.isOnline = false")
-    List<Product> findOfflineProductsByStore(@Param("storeId") UUID storeId);
+    List<Product> findProductOfflineByStore(@Param("storeId") UUID storeId);
+
+    @Query("SELECT p FROM Product p WHERE p.isOnline = true")
+    List<Product> findAllOnline();
 }

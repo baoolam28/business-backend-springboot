@@ -68,7 +68,7 @@ public class ProductService {
         return ProductMapper.INSTANCE.productToOnlineResponse(response);
     }
 
-    public ProductOnlineResponse findProductOnline(Integer prodId){
+    public ProductOnlineResponse getProductOnlineByStore(Integer prodId){
         return ProductMapper.INSTANCE.productToOnlineResponse(productRepository.findById(prodId).orElseThrow(
                 () -> new ResourceNotFoundException("Product with id: "+prodId+" not found!")
         ));
@@ -88,11 +88,39 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public List<ProductResponse> getOfflineProductsByStore(UUID storeId) {
-        List<Product> products = productRepository.findOfflineProductsByStore(storeId);
+    public List<ProductResponse> getAllProductOnline() {
+        List<Product> products = productRepository.findAllOnline();
         return products.stream()
                 .map(ProductMapper.INSTANCE::productToResponse)
                 .collect(Collectors.toList());
+    }
+
+    public List<ProductResponse> getAllByStore(UUID storeId) {
+        List<Product> products = productRepository.findByStore(storeId);
+        return products.stream()
+                .map(ProductMapper.INSTANCE::productToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProductResponse> getAllOnlineByStore(UUID storeId) {
+        List<Product> products = productRepository.findProductOnlineByStore(storeId);
+        return products.stream()
+                .map(ProductMapper.INSTANCE::productToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProductResponse> getAllOfflineByStore(UUID storeId) {
+        List<Product> products = productRepository.findProductOfflineByStore(storeId);
+        return products.stream()
+                .map(ProductMapper.INSTANCE::productToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public ProductOnlineResponse getProductDetailOnlineById(Integer productId) {
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ResourceNotFoundException("Product with id = "+productId+" not found!")
+        );
+        return ProductMapper.INSTANCE.productToOnlineResponse(product);
     }
 
     public ProductResponse getByBarcode(String barcode) {

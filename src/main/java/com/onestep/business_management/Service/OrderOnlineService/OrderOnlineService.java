@@ -33,93 +33,78 @@ public class OrderOnlineService {
 
     @Transactional
     public List<OrderOnlineResponse> createMultipleOrders(OrderOnlineRequest orderRequest) {
-        try {
-            List<OrderOnlineResponse> responses = new ArrayList<>();
+        List<OrderOnlineResponse> responses = new ArrayList<>();
 
-            // Group the products by storeId
-            Map<UUID, List<OrderOnlineDetailRequest>> storeGroupedDetails = orderRequest.getOrderOnlineDetailRequests()
-                    .stream()
-                    .collect(Collectors.groupingBy(OrderOnlineDetailRequest::getStoreId));
+        // Group the products by storeId
+        Map<UUID, List<OrderOnlineDetailRequest>> storeGroupedDetails = orderRequest.getOrderOnlineDetailRequests()
+                .stream()
+                .collect(Collectors.groupingBy(OrderOnlineDetailRequest::getStoreId));
 
-            // Create orders and shipments for each store
-            for (Map.Entry<UUID, List<OrderOnlineDetailRequest>> entry : storeGroupedDetails.entrySet()) {
-                UUID storeId = entry.getKey();
-                List<OrderOnlineDetailRequest> details = entry.getValue();
+        // Create orders and shipments for each store
+        for (Map.Entry<UUID, List<OrderOnlineDetailRequest>> entry : storeGroupedDetails.entrySet()) {
+            UUID storeId = entry.getKey();
+            List<OrderOnlineDetailRequest> details = entry.getValue();
 
-                // Create an order for the store
-                OrderOnline order = new OrderOnline();
-                order.setOrderDate(new Date());
-                order.setStatus(OrderOnline.Status.CHO_XAC_NHAN);
-                order.setPaymentStatus(false); // Initial payment status
-                order.setPaymentMethod(orderRequest.getPaymentMethod());
-                order.setUser(mapperService.findUserById(orderRequest.getUserId()));
-                order.setStore(mapperService.findStoreById(storeId));
+            // Create an order for the store
+            OrderOnline order = new OrderOnline();
+            order.setOrderDate(new Date());
+            order.setStatus(OrderOnline.Status.CHO_XAC_NHAN);
+            order.setPaymentStatus(false); // Initial payment status
+            order.setPaymentMethod(orderRequest.getPaymentMethod());
+            order.setUser(mapperService.findUserById(orderRequest.getUserId()));
+            order.setStore(mapperService.findStoreById(storeId));
 
-                // Save the order to the database first
-                OrderOnline savedOrder = orderOnlineRepository.save(order);
-                logger.info("Saved OrderOnline: {}", savedOrder.getOrderOnlineId());
-
-                // Process each order detail and add them to the order
-                List<OrderOnlineDetail> orderDetails = details.stream()
-                        .map(detailRequest -> {
-                            OrderOnlineDetail detail = new OrderOnlineDetail();
-                            detail.setQuantity(detailRequest.getQuantity());
-                            ProductDetail productDetail = mapperService.findProductDetailById(detailRequest.getProductDetailId());
-                            detail.setPrice(productDetail.getPrice());
-                            detail.setProductDetail(productDetail);
-                            detail.setOrderOnline(savedOrder); // Set the order reference
-                            return detail;
-                        })
-                        .collect(Collectors.toList());
-
-                // Set the order details to the order
-                savedOrder.setOrderDetails(orderDetails);
-                orderOnlineRepository.save(savedOrder); // Save the order again to persist order details
-
-                // Create or update the shipment for the order associated with the store
-                ShippingAddress address = mapperService.findShippingAddressById(orderRequest.getAddressId());
-                Shipment shipment = createOrUpdateShipment(orderRequest, savedOrder, address);
-                logger.info("Processed Shipment for OrderOnline ID: {}", savedOrder.getOrderOnlineId());
-
-                // Convert the saved order to response format
-                OrderOnlineResponse response = OrderOnlineMapper.INSTANCE.toResponse(savedOrder);
-                System.out.println("response: "+response.toString());
-                responses.add(response);
+            // Process each order detail and add them to the order
+            List<OrderOnlineDetail> orderDetails = new ArrayList<>();
+            for (OrderOnlineDetailRequest detailRequest : details) {
+                OrderOnlineDetail detail = new OrderOnlineDetail();
+                detail.setQuantity(detailRequest.getQuantity());
+                ProductDetail productDetail = mapperService.findProductDetailById(detailRequest.getProductDetailId());
+                detail.setPrice(productDetail.getPrice());
+                detail.setProductDetail(productDetail);
+                detail.setOrderOnline(order); // Set the order reference
+                orderDetails.add(detail); // Add detail to list
             }
 
-            return responses;
-        }catch (Exception e){
-            System.out.println(e.getMessage());
+            order.setOrderDetails(orderDetails);
+
+            // Save the OrderOnline first
+            OrderOnline savedOrder = orderOnlineRepository.save(order); // Save the order first
+
+            // Create and save shipments
+            ShippingAddress address = mapperService.findShippingAddressById(orderRequest.getAddressId());
+            List<Shipment> shipments = createShipments(orderRequest, savedOrder, address); // Create multiple shipments
+
+            // Set the shipments to the saved order
+            savedOrder.setShipments(shipments); // Assuming you have a setShipments method
+
+            // Save the order again to persist the shipments
+            orderOnlineRepository.save(savedOrder); // Ensure the order with shipments is saved
+
+            // Convert the saved order to response format
+            OrderOnlineResponse response = OrderOnlineMapper.INSTANCE.toResponse(savedOrder);
+            responses.add(response);
         }
-        return null;
+
+        return responses;
     }
 
-    private Shipment createOrUpdateShipment(OrderOnlineRequest orderRequest, OrderOnline savedOrder, ShippingAddress address) {
-        Shipment shipment;
-        Optional<Shipment> existingShipmentOpt = shipmentRepository.findByOrderOnline(savedOrder);
+    private List<Shipment> createShipments(OrderOnlineRequest orderRequest, OrderOnline savedOrder, ShippingAddress address) {
+        List<Shipment> shipments = new ArrayList<>();
 
-        if (existingShipmentOpt.isPresent()) {
-            // If it exists, update the existing shipment with new details
-            shipment = existingShipmentOpt.get();
-            shipment.setShippingFee(orderRequest.getShippingFee());
-            shipment.setShippingMethod(orderRequest.getShippingMethod());
-            shipment.setExpectedDeliverDate(orderRequest.getExpectedDeliverDate());
-            shipment.setShippingAddress(address); // Update address if needed
-            logger.info("Updated Shipment for OrderOnline ID: {}", savedOrder.getOrderOnlineId());
-        } else {
-            // If it doesn't exist, create a new shipment
-            shipment = new Shipment();
-            shipment.setCreateAt(new Date());
-            shipment.setShippingAddress(address);
-            shipment.setShippingFee(orderRequest.getShippingFee());
-            shipment.setShippingMethod(orderRequest.getShippingMethod());
-            shipment.setExpectedDeliverDate(orderRequest.getExpectedDeliverDate());
-            shipment.setShippingStatus(Shipment.ShippingStatus.CHO_XAC_NHAN);
-            shipment.setOrderOnline(savedOrder); // Link shipment to the order
-            logger.info("Created new Shipment for OrderOnline ID: {}", savedOrder.getOrderOnlineId());
-        }
+        // Create a shipment (or multiple if needed)
+        Shipment shipment = new Shipment();
+        shipment.setCreateAt(new Date());
+        shipment.setShippingAddress(address);
+        shipment.setShippingFee(orderRequest.getShippingFee());
+        shipment.setShippingMethod(orderRequest.getShippingMethod());
+        shipment.setExpectedDeliverDate(orderRequest.getExpectedDeliverDate());
+        shipment.setShippingStatus(Shipment.ShippingStatus.CHO_XAC_NHAN);
+        shipment.setOrderOnline(savedOrder); // Set the reference to the saved order
 
-        return shipmentRepository.save(shipment); // Save the shipment (either new or updated)
+        shipments.add(shipmentRepository.save(shipment)); // Save the shipment to the database
+
+        return shipments; // Return the list of shipments
     }
 
     public List<OrderOnlineResponse> getOrdersOnlineByUser(UUID userId) {

@@ -1,9 +1,11 @@
 package com.onestep.business_management.Service.OrderService;
 
 import com.onestep.business_management.Entity.*;
+import com.onestep.business_management.DTO.OrderDTO.OrderOnlineDetailResponse;
 import com.itextpdf.text.List;
 import com.onestep.business_management.DTO.OrderDTO.OrderDetailRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderDetailResponse;
+
 import com.onestep.business_management.DTO.OrderDTO.OrderReportResponse;
 import com.onestep.business_management.DTO.OrderDTO.OrderRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderResponse;
@@ -72,24 +74,30 @@ public class OrderService {
          return null;
      }
 
-@Transactional
-    public OrderResponse updateOrderPayment(UUID orderId, String paymentMethod, boolean paymentStatus) {
-        OrderOffline order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        // Update payment details
+    public OrderResponse updateOrderPayment(UUID orderId, String paymentMethod, boolean paymentStatus) {
+        // Tìm kiếm đơn hàng theo ID
+        OrderOffline order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+
+        // Cập nhật thông tin thanh toán
         order.setPaymentMethod(paymentMethod);
         order.setPaymentStatus(paymentStatus);
-        order.setStatus("COMPLETED"); // Update order status as needed
 
+        // Cập nhật trạng thái đơn hàng nếu cần
+        if (paymentStatus) {
+            order.setStatus("COMPLETED"); // Cập nhật trạng thái thành "COMPLETED" nếu đã thanh toán
+        }
+
+        // Lưu lại đơn hàng đã cập nhật
         OrderOffline updatedOrder = orderRepository.save(order);
-        return OrderMapper.INSTANCE.toResponse(updatedOrder);
+        return OrderMapper.INSTANCE.toResponse(updatedOrder); // Trả về phản hồi
     }
 
     public OrderResponse getOrderById(UUID orderId) {
         return orderRepository.findById(orderId)
                 .map(OrderMapper.INSTANCE::toResponse)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found")); // Sử dụng ngoại lệ cụ thể hơn
     }
 
     public java.util.List<OrderResponse> getAllOrders() {
@@ -142,56 +150,56 @@ public class OrderService {
         return false;
     }
 
-public OrderReportResponse getOrderReports(LocalDate startDate, LocalDate endDate) {
-        long totalOrders = 0;
-        double totalRevenue = 0;
-        double averageOrderValue = 0;
-        Map<String, Integer> customerCountByWeek = new HashMap<>();
-        Map<String, Integer> customerCountByMonth = new LinkedHashMap<>();
-        Map<String, Integer> customerCountByYear = new LinkedHashMap<>();
 
-        try {
-            // Fetch total orders, revenue, and average order value
-            totalOrders = getTotalOrders();
-            totalRevenue = getTotalRevenue();
-            averageOrderValue = getAverageOrderValue();
+// public OrderReportResponse getOrderReports(LocalDate startDate, LocalDate endDate) {
+//         long totalOrders = 0;
+//         double totalRevenue = 0;
+//         double averageOrderValue = 0;
 
-            // Fetch weekly customer count data
-            java.util.List<Object[]> customersWeek = orderRepository.countCustomerOrderByWeek(startDate, endDate);
-            for (Object[] result : customersWeek) {
-                int year = (int) result[0];
-                int week = (int) result[1];
-                int count = ((Number) result[2]).intValue(); // Use intValue() instead of longValue()
-                customerCountByWeek.put("Year " + year + " Week " + week, count);
-            }
+//         Map<String, Integer> customerCountByWeek = new HashMap<>();
+//         Map<String, Integer> customerCountByMonth = new LinkedHashMap<>();
+//         Map<String, Integer> customerCountByYear = new LinkedHashMap<>();
 
-            // Fetch monthly customer count data
-            java.util.List<Object[]> customersMonth = orderRepository.countCustomerOrderByMonth(startDate, endDate);
-            for (Object[] result : customersMonth) {
-                int year = (Integer) result[0];
-                int month = (Integer) result[1];
-                int count = ((Number) result[2]).intValue(); // Use intValue() instead of longValue()
-                customerCountByMonth.put("Year " + year + " Month " + month, count);
-            }
+//         try {
+//             // Fetch total orders, revenue, and average order value
+//             totalOrders = getTotalOrders(); // Đảm bảo phương thức này tồn tại và hoạt động đúng
+//             totalRevenue = getTotalRevenue(); // Đảm bảo phương thức này tồn tại và hoạt động đúng
+//             averageOrderValue = getAverageOrderValue(); // Đảm bảo phương thức này tồn tại và hoạt động đúng
 
-            // Fetch yearly customer count data
-            java.util.List<Object[]> customersYear = orderRepository.countCustomerOrderByYear(startDate, endDate);
-            for (Object[] result : customersYear) {
-                int year = (Integer) result[0];
-                int count = ((Number) result[1]).intValue(); // Use intValue() instead of longValue()
-                customerCountByYear.put("Year " + year, count);
-            }
+//             // Fetch weekly customer count data
+//             java.util.List<Object[]> customersWeek = orderRepository.countCustomerOrderByWeek(startDate, endDate);
+//             for (Object[] result : customersWeek) {
+//                 int year = (int) result[0];
+//                 int week = (int) result[1];
+//                 int count = ((Number) result[2]).intValue(); // Sử dụng intValue() thay vì longValue()
+//                 customerCountByWeek.put("Year " + year + " Week " + week, count);
+//             }
 
-        } catch (Exception e) {
-            // Log the exception
-            e.printStackTrace();
-            // Handle the exception as needed
-            throw new RuntimeException("An error occurred while generating the report", e);
-        }
+//             // Fetch monthly customer count data
+//             java.util.List<Object[]> customersMonth = orderRepository.countCustomerOrderByMonth(startDate, endDate);
+//             for (Object[] result : customersMonth) {
+//                 int year = (Integer) result[0];
+//                 int month = (Integer) result[1];
+//                 int count = ((Number) result[2]).intValue(); // Sử dụng intValue() thay vì longValue()
+//                 customerCountByMonth.put("Year " + year + " Month " + month, count);
+//             }
 
-        return new OrderReportResponse(totalOrders, totalRevenue, averageOrderValue, customerCountByWeek,
-                customerCountByMonth, customerCountByYear);
-    }
+//             // Fetch yearly customer count data
+//             java.util.List<Object[]> customersYear = orderRepository.countCustomerOrderByYear(startDate, endDate);
+//             for (Object[] result : customersYear) {
+//                 int year = (Integer) result[0];
+//                 int count = ((Number) result[1]).intValue(); // Sử dụng intValue() thay vì longValue()
+//                 customerCountByYear.put("Year " + year, count);
+//             }
+
+//         } catch (Exception e) {
+//             e.printStackTrace(); // In ra lỗi để dễ dàng gỡ lỗi
+//             throw new RuntimeException("An error occurred while generating the report", e);
+//         }
+
+//         return new OrderReportResponse(totalOrders, totalRevenue, averageOrderValue, customerCountByWeek,
+//                 customerCountByMonth, customerCountByYear);
+//     }
 
     public long getTotalOrders() {
         return orderRepository.count();
@@ -212,8 +220,10 @@ public OrderReportResponse getOrderReports(LocalDate startDate, LocalDate endDat
         return totalRevenue / totalOrders;
     }
 
+
     public java.util.List<OrderResponse> getAllOrdersByStoreId(UUID storeId) {
         java.util.List<OrderOffline> orders = orderRepository.findBystore(storeId);
+
 
         if (orders.isEmpty()) {
             throw new ResourceNotFoundException("No orders found for Store ID: " + storeId);

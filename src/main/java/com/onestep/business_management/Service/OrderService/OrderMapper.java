@@ -30,6 +30,7 @@ public interface OrderMapper {
     @Mapping(target = "customerEmail", source = "customer.email")
     @Mapping(target = "customerPhone", source = "customer.phone")
     @Mapping(target = "customerAddress", source = "customer.address")
+    @Mapping(target = "storeId" , source = "store.storeId")
     OrderResponse toResponse(OrderOffline order);
 
     // Custom method to map List<OrderOfflineDetail> to List<OrderDetailResponse>

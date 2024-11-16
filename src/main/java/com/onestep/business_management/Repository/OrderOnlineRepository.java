@@ -1,7 +1,7 @@
 package com.onestep.business_management.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +16,5 @@ public interface OrderOnlineRepository extends JpaRepository<OrderOnline, UUID> 
 
     @Query("SELECT o FROM OrderOnline o WHERE o.user.userId = :userId")
     List<OrderOnline> findByUser(@Param("userId") UUID userId);
+
 }
