@@ -3,7 +3,7 @@ package com.onestep.business_management.Service.ProductService;
 
 import com.onestep.business_management.DTO.ProductDTO.ProductOnlineRequest;
 import com.onestep.business_management.DTO.ProductDTO.ProductOnlineResponse;
-import com.onestep.business_management.DTO.ProductDTO.ProductCategoryReponse;
+import com.onestep.business_management.DTO.ProductDTO.ProdOnlineResponse;
 import com.onestep.business_management.DTO.ProductDTO.ProductRequest;
 import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
 import com.onestep.business_management.Entity.*;
@@ -12,12 +12,10 @@ import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Repository.*;
 
 import com.onestep.business_management.Service.ImageService.ImageService;
-import com.onestep.business_management.Service.InventoryService.InventoryService;
 import com.onestep.business_management.Utils.MapperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -165,7 +163,7 @@ public class ProductService {
         return null;
     }
 
-    public List<ProductCategoryReponse> findByCategoryId(int categoryId) {
+    public List<ProdOnlineResponse> findByCategoryId(int categoryId) {
         // Lấy danh sách sản phẩm theo categoryId
         List<Product> products = productRepository.findByCategoryCategoryId(categoryId);
 
@@ -256,6 +254,20 @@ public class ProductService {
         }
 
         return null;
+    }
+
+    public List<ProdOnlineResponse> getProductsWithReviews(){
+        List<Product> products = productRepository.findAllOnline();
+
+        return products.stream()
+                .map(product -> {
+                    // Lấy danh sách review cho mỗi sản phẩm
+                    List<Review> reviews = reviewRepository.findByProductProductId(product.getProductId());
+
+                    // Sử dụng mapper để chuyển đổi product và reviews sang ProductCategoryResponse
+                    return ProductMapper.INSTANCE.productToCategoryResponse(product, reviews);
+                })
+                .collect(Collectors.toList());
     }
 
 }

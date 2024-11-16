@@ -14,15 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import com.onestep.business_management.Utils.StringToMapConverter;
-import com.onestep.business_management.DTO.ProductDTO.ProductCategoryReponse;
+import com.onestep.business_management.DTO.ProductDTO.ProdOnlineResponse;
 import com.onestep.business_management.DTO.ProductDTO.ProductRequest;
 import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
 import com.onestep.business_management.Entity.Product;
 import com.onestep.business_management.Entity.Review;
-import com.onestep.business_management.Utils.MapperService;
-import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
-import java.util.List;
 
 @Mapper
 public interface ProductMapper {
@@ -111,16 +107,17 @@ public interface ProductMapper {
         return productResponse;
     }
 
-    default ProductCategoryReponse productToCategoryResponse(Product product, List<Review> reviews) {
+    default ProdOnlineResponse productToCategoryResponse(Product product, List<Review> reviews) {
         if (product == null) {
             return null;
         }
 
-        ProductCategoryReponse response = new ProductCategoryReponse();
+        ProdOnlineResponse response = new ProdOnlineResponse();
         response.setProductId(product.getProductId());
         response.setCategoryId(product.getCategory().getCategoryId());
         response.setProductName(product.getProductName());
         response.setPrice(product.getPrice());
+        response.setDescription(product.getDescription());
 
         // Tính trung bình rating
         if (reviews != null && !reviews.isEmpty()) {
@@ -137,14 +134,27 @@ public interface ProductMapper {
 
         // Thông tin cửa hàng
         if (product.getStore() != null) {
-            response.setStoreName(product.getStore().getStoreName());
-            response.setPickupAddress(product.getStore().getPickupAddress());
+            Store store = product.getStore();
+            response.setStoreName(store.getStoreName());
+            response.setPickupAddress(store.getPickupAddress());
+            response.setDistrict(store.getDistrict());
+            response.setStoreId(store.getStoreId());
         }
 
         // Thông tin danh mục
         if (product.getCategory() != null) {
             response.setCategoryName(product.getCategory().getCategoryName());
         }
+
+        List<Image> images = product.getImages();
+        List<String> imgsRes = new ArrayList<>();
+        if(images.size() > 0){
+            images.stream().map(
+                    image -> imgsRes.add(image.getFileName())
+            );
+            response.setImages(imgsRes);
+        }
+
 
         return response;
     }
