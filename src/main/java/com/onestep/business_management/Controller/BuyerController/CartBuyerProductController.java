@@ -36,7 +36,7 @@ public class CartBuyerProductController {
                     response,
                     LocalDateTime.now()
             );
-            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+            return new ResponseEntity<>(apiResponse , HttpStatus.OK);
         } catch (Exception e) {
             System.out.println("Error retrieving products: " + e.getMessage());
             ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
