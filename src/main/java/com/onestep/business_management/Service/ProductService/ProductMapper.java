@@ -14,15 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import com.onestep.business_management.Utils.StringToMapConverter;
-import com.onestep.business_management.DTO.ProductDTO.ProductCategoryReponse;
+import com.onestep.business_management.DTO.ProductDTO.ProdOnlineResponse;
 import com.onestep.business_management.DTO.ProductDTO.ProductRequest;
 import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
 import com.onestep.business_management.Entity.Product;
 import com.onestep.business_management.Entity.Review;
-import com.onestep.business_management.Utils.MapperService;
-import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
-import java.util.List;
 
 @Mapper
 public interface ProductMapper {
@@ -36,14 +32,20 @@ public interface ProductMapper {
 
         Product product = new Product();
         product.setBarcode(productRequest.getBarcode());
-        product.setImages(mapperService.uploadImages(productRequest.getImages()));
+        if (productRequest.getImages() != null) {
+            List<Image> images = mapperService.uploadImages(productRequest.getImages());
+            for (Image image : images) {
+                image.setProduct(product);
+            }
+            product.setImages(images);
+        }
         product.setProductName(productRequest.getProductName());
         product.setAbbreviations(productRequest.getAbbreviations());
         product.setUnit(productRequest.getUnit());
         product.setPrice(productRequest.getPrice());
         product.setCreatedDate(new Date());
         product.setCreatedBy(productRequest.getCreatedBy());
-
+        product.setOnline(false);
         product.setStore(mapperService.findStoreById(productRequest.getStoreId()));
         product.setCategory(mapperService.findCategoryById(productRequest.getCategoryId()));
         product.setSupplier(mapperService.findSupplierById(productRequest.getSupplierId()));
@@ -71,6 +73,7 @@ public interface ProductMapper {
         productResponse.setProductName(product.getProductName());
         productResponse.setAbbreviations(product.getAbbreviations());
         productResponse.setUnit(product.getUnit());
+        productResponse.setCreatedBy(product.getCreatedBy());
 
         if (product.getPrice() != null) {
             productResponse.setPrice(product.getPrice());
@@ -105,16 +108,17 @@ public interface ProductMapper {
         return productResponse;
     }
 
-    default ProductCategoryReponse productToCategoryResponse(Product product, List<Review> reviews) {
+    default ProdOnlineResponse productToCategoryResponse(Product product, List<Review> reviews) {
         if (product == null) {
             return null;
         }
 
-        ProductCategoryReponse response = new ProductCategoryReponse();
+        ProdOnlineResponse response = new ProdOnlineResponse();
         response.setProductId(product.getProductId());
         response.setCategoryId(product.getCategory().getCategoryId());
         response.setProductName(product.getProductName());
         response.setPrice(product.getPrice());
+        response.setDescription(product.getDescription());
 
         // Tính trung bình rating
         if (reviews != null && !reviews.isEmpty()) {
@@ -131,13 +135,24 @@ public interface ProductMapper {
 
         // Thông tin cửa hàng
         if (product.getStore() != null) {
-            response.setStoreName(product.getStore().getStoreName());
-            response.setPickupAddress(product.getStore().getPickupAddress());
+            Store store = product.getStore();
+            response.setStoreName(store.getStoreName());
+            response.setPickupAddress(store.getPickupAddress());
+            response.setDistrict(store.getDistrict());
+            response.setStoreId(store.getStoreId());
         }
 
         // Thông tin danh mục
         if (product.getCategory() != null) {
             response.setCategoryName(product.getCategory().getCategoryName());
+        }
+
+        List<Image> images = product.getImages();
+        List<String> imgsRes = new ArrayList<>();
+        if (images.size() > 0) {
+            images.stream().map(
+                    image -> imgsRes.add(image.getFileName()));
+            response.setImages(imgsRes);
         }
 
         return response;
@@ -175,9 +190,9 @@ public interface ProductMapper {
                         Image image = mapperService.uploadImage(detailRequest.getImage());
                         productDetail.setImage(image.getFileName());
                         productDetail.setHeight(detailRequest.getHeight());
-                        productDetail.setLength(productDetail.getLength());
-                        productDetail.setWidth(productDetail.getWidth());
-                        productDetail.setWeight(productDetail.getWeight());
+                        productDetail.setLength(detailRequest.getLength());
+                        productDetail.setWidth(detailRequest.getWidth());
+                        productDetail.setWeight(detailRequest.getWeight());
 
                         productDetail.setProduct(product);
                         Map<String, String> attributes = detailRequest.getAttributes();
@@ -185,7 +200,6 @@ public interface ProductMapper {
                         try {
                             attributesJson = objectMapper.writeValueAsString(attributes);
                         } catch (JsonProcessingException e) {
-                            System.out.println("Lõi chet con di me may");
                             throw new RuntimeException(e);
                         }
                         productDetail.setAttributes(attributesJson);

@@ -76,7 +76,7 @@ public class Product {
     @JsonIgnore
     private List<Image> images = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Inventory> inventories = new ArrayList<>();
 

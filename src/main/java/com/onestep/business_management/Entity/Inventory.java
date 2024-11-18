@@ -1,5 +1,6 @@
 package com.onestep.business_management.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,7 @@ public class Inventory {
 
     @ManyToOne
     @JoinColumn(name = "productId", nullable = false)
+    @JsonIgnore
     private Product product;
 
     @Column(name = "barcode", length = 100, nullable = false) // Cập nhật chiều dài và nullable

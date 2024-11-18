@@ -230,11 +230,51 @@ public class OrderSellerController {
         }
     }
 
-    @GetMapping("/online/stores/{storeId}")
-    public ResponseEntity<?> getAllOrdersByStoreId(@PathVariable String storeId) {
+    @GetMapping("/offline/{storeId}")
+    public ResponseEntity<?> getAllOrdersOfflineByStoreId(@PathVariable String storeId) {
         try {
             UUID uuid = UUID.fromString(storeId);
-            List<OrderOnlineResponse> orders = orderOnlineService.getAllOrdersByStoreId(uuid);
+            List<OrderResponse> orders = orderService.getAllOrdersByStoreId(uuid);
+            ApiResponse<List<OrderResponse>> phanHoiApi = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Đã lấy tất cả đơn hàng của cửa hàng thành công",
+                    orders,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(phanHoiApi, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            // Xử lý UUID không hợp lệ
+            System.out.println("UUID cửa hàng không hợp lệ: " + e.getMessage());
+            ApiResponse<String> phanHoiLoi = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "UUID cửa hàng không hợp lệ: " + e.getMessage(),
+                    null,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(phanHoiLoi, HttpStatus.BAD_REQUEST);
+        } catch (ResourceNotFoundException e) {
+            // Xử lý trường hợp không tìm thấy đơn hàng cho cửa hàng
+            System.out.println("Không tìm thấy đơn hàng cho cửa hàng: " + e.getMessage());
+            ApiResponse<String> phanHoiLoi = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    e.getMessage(),
+                    null,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(phanHoiLoi, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            // Xử lý các lỗi khác
+            System.out.println("Lỗi khi lấy đơn hàng của cửa hàng: " + e.getMessage());
+            ApiResponse<String> phanHoiLoi = new ApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Đã xảy ra lỗi khi lấy đơn hàng của cửa hàng: " + e.getMessage(),
+                    null,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(phanHoiLoi, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/online/{storeId}")
+    public ResponseEntity<?> getAllOrdersOnlineByStoreId(@PathVariable UUID storeId) {
+        try {
+            List<OrderOnlineResponse> orders = orderOnlineService.getAllOrdersByStoreId(storeId);
 
             ApiResponse<List<OrderOnlineResponse>> response = new ApiResponse<>(
                     HttpStatus.OK.value(),
@@ -274,9 +314,11 @@ public class OrderSellerController {
     }
 
     @PutMapping("/online/{orderId}/status")
-    public ResponseEntity<?> updateOrderStatus(@PathVariable String orderId,
+    public ResponseEntity<?> updateOrderOnlineStatus(@PathVariable String orderId,
             @RequestBody OrderStatusRequest orderStatusRequest) {
         try {
+
+            System.out.println("update status request: " + orderStatusRequest.toString());
             // Gọi service để cập nhật trạng thái đơn hàng
             OrderOnlineResponse response = orderOnlineService.updateOrderStatus(orderId, orderStatusRequest);
 
@@ -316,7 +358,7 @@ public class OrderSellerController {
     }
 
     @PutMapping("/online/stores/{storeId}/status")
-    public ResponseEntity<?> updateOrderStatusByStoreId(
+    public ResponseEntity<?> updateOrderOnlineStatusByStoreId(
             @PathVariable String storeId,
             @RequestBody OrderStatusRequest orderStatusRequest) {
         try {

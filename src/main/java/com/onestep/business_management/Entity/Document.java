@@ -51,21 +51,21 @@ public class Document {
     private Date createdDate;
 
     @Column(name = "createdBy")
-    private int createdBy;
+    private UUID createdBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updatedDate")
     private Date updatedDate;
 
     @Column(name = "updatedBy")
-    private int updatedBy;
+    private UUID updatedBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "deletedDate")
     private Date deletedDate;
 
     @Column(name = "deletedBy")
-    private int deletedBy;
+    private UUID deletedBy;
 
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<DocumentDetail> documentDetails;

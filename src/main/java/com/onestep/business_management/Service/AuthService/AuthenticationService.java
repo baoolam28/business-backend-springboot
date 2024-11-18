@@ -1,6 +1,9 @@
 package com.onestep.business_management.Service.AuthService;
 
 import com.onestep.business_management.DTO.AuthDTO.*;
+import com.onestep.business_management.DTO.ForgotPasswordDTO.ResetPasswordWithEmailRequest;
+import com.onestep.business_management.DTO.ForgotPasswordDTO.ResetPasswordWithPhoneNumberRequest;
+import com.onestep.business_management.DTO.ForgotPasswordDTO.ResetPasswordResponse;
 import com.onestep.business_management.Entity.Image;
 import com.onestep.business_management.Entity.Role;
 import com.onestep.business_management.Entity.User;
@@ -9,6 +12,10 @@ import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Repository.RoleRepository;
 import com.onestep.business_management.Repository.UserRepository;
 import com.onestep.business_management.Scurity.JWTService;
+import com.onestep.business_management.Service.OTPService.OtpService;
+import com.onestep.business_management.Service.StoreService.StoreMapper;
+import com.onestep.business_management.Utils.EmailUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -99,6 +106,7 @@ public class AuthenticationService {
         // Setting other fields
         newUser.setFullName(request.getFullName());
         newUser.setPhoneNumber(request.getPhoneNumber());
+        newUser.setEmail(request.getEmail());
 
         System.out.println("new User: " + newUser.toString());
         try {
@@ -234,7 +242,7 @@ public class AuthenticationService {
             user.setPassword(newPassword);
             userRepository.save(user);
         } else {
-            throw new RuntimeException("Mật khẩu cũ không đúng");
+            throw new RuntimeException("Mật khẩu cũ không đúng"); 
         }
         return UserMapper.INSTANCE.userToBuyerInfoRespont(user);
     }

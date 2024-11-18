@@ -83,4 +83,12 @@ public class ImageService {
             System.err.println("Delete image failed: " + e.getMessage());
         }
     }
+
+    public void deleteImages(List<Image> images) {
+        for (Image image : images) {
+            // Khởi tạo CompletableFuture cho từng hình ảnh
+            CompletableFuture.runAsync(() -> deleteImage(image));
+        }
+    }
+
 }

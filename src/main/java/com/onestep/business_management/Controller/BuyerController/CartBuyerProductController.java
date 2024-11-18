@@ -1,5 +1,6 @@
 package com.onestep.business_management.Controller.BuyerController;
 
+import com.onestep.business_management.DTO.CartItemDTO.CartUpdateRequest;
 import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -62,27 +63,10 @@ public class CartBuyerProductController {
         }
     }
 
-    @DeleteMapping("/delete-product")
-    public ResponseEntity<?> deleteProductFromCart(@RequestBody CartRequest cartRequest){
-        try {
-            CartResponse response = cartService.deleteProductFromCart(cartRequest);
-            ApiResponse<CartResponse> apiResponse = new ApiResponse<>(
-                    HttpStatus.OK.value(),
-                    "Product deleted from cart successfully",
-                    response,
-                    LocalDateTime.now()
-            );
-            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-        } catch (Exception e) {
-           System.out.println("Error retrieving cart: " + e.getMessage());
-           ApiResponse errorResponse = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
-           return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
 
-    @PutMapping("/update-cart")
-    public ResponseEntity<?> updateCart(@RequestBody CartRequest cartRequest) {
+    @PutMapping
+    public ResponseEntity<?> updateCartItems(@RequestBody CartUpdateRequest cartRequest) {
         try {
             // Gọi service để cập nhật giỏ hàng
             CartResponse response = cartService.updateCart(cartRequest);
@@ -97,23 +81,16 @@ public class CartBuyerProductController {
 
             // Trả về kết quả thành công
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-        } catch (ResourceNotFoundException e) {
+        } catch (Exception e) {
             // Xử lý trường hợp không tìm thấy tài nguyên
             ApiResponse<String> errorResponse = new ApiResponse<>(
-                    HttpStatus.NOT_FOUND.value(),
-                    e.getMessage()
-            );
-            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            // Xử lý các ngoại lệ khác
-            System.out.println("Error updating cart: " + e.getMessage());
-            ApiResponse<String> errorResponse = new ApiResponse<>(
                     HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                    "An error occurred while updating the cart"
+                    e.getMessage()
             );
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
 
