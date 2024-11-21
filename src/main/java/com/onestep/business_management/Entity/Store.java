@@ -76,6 +76,8 @@ public class Store {
     @JsonIgnore
     private User storeManager;
 
+    private String managerName;
+
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Customer> customers = new ArrayList<>();
@@ -104,5 +106,7 @@ public class Store {
     @JsonManagedReference
     private List<Supplier> suppliers = new ArrayList<>();
 
+    @Column(name = "is_active", nullable = true)
+    private boolean isAcctive;
 
 }

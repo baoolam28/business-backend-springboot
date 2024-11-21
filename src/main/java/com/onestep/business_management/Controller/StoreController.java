@@ -1,5 +1,6 @@
 package com.onestep.business_management.Controller;
 
+import com.onestep.business_management.DTO.API.ApiResponse;
 import com.onestep.business_management.DTO.StoreDTO.StoreRequest;
 import com.onestep.business_management.DTO.StoreDTO.StoreResponse;
 import com.onestep.business_management.Service.StoreService.StoreService;
@@ -10,19 +11,27 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-
+import java.time.LocalDateTime;
 @RestController
-@RequestMapping("/api/stores")
+@RequestMapping("/api/buyer/stores")
 public class StoreController {
 
     @Autowired
     private StoreService storeService;
 
     @PostMapping
-    public ResponseEntity<StoreResponse> createOrUpdateStore(@RequestBody StoreRequest storeRequest) {
-        StoreResponse storeResponse = storeService.saveStore(storeRequest);
-        return new ResponseEntity<>(storeResponse, HttpStatus.CREATED);
-    }
+public ResponseEntity<?> createOrUpdateStore(@RequestBody StoreRequest storeRequest) {
+    System.out.println("store request: " + storeRequest);
+    StoreResponse storeResponse = storeService.saveStore(storeRequest);
+    ApiResponse<StoreResponse> apiResponse = new ApiResponse<>(
+            HttpStatus.OK.value(),  // Mã trạng thái 200
+            "Store created or updated by ",
+            storeResponse,
+            LocalDateTime.now()  // Ngày giờ hiện tại
+    );
+    return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+}
+
 
     @GetMapping("/{id}")
     public ResponseEntity<StoreResponse> getStoreById(@PathVariable String id) {
@@ -34,11 +43,11 @@ public class StoreController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping
-    public ResponseEntity<List<StoreResponse>> getAllStores() {
-        List<StoreResponse> stores = storeService.getAllStores();
-        return new ResponseEntity<>(stores, HttpStatus.OK);
-    }
+    // @GetMapping
+    // public ResponseEntity<List<StoreResponse>> getAllStores() {
+    //     List<StoreResponse> stores = storeService.getAllStores();
+    //     return new ResponseEntity<>(stores, HttpStatus.OK);
+    // }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStoreById(@PathVariable Integer id) {
