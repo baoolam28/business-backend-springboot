@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.UUID;
 
+import com.onestep.business_management.DTO.ReviewDTO.ReviewResponse;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,4 +24,5 @@ public class ProductOnlineResponse {
     private String district;
     private List<Variants> variants;
     private List<String> images;
+    private List<ReviewResponse> reviews;
 }

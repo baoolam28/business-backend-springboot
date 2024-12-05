@@ -1,6 +1,7 @@
 package com.onestep.business_management.Entity;
 
 import java.util.Date;
+import java.util.List;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,10 @@ public class Review {
     private Product product;
 
     @ManyToOne
+    @JoinColumn(name = "productDetailId", nullable = false)
+    private ProductDetail productDetail;
+
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -30,11 +35,20 @@ public class Review {
 
     @Column(name = "comment", length = 255, nullable = true, columnDefinition = "NVARCHAR(255)")
     private String comment;
-
-    private Date reviewDate;
-
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "reviewDate", nullable = false, updatable = false)
+    private Date reviewDate;
+
+    @ElementCollection
+    private List<String> imageUrls;  
+
+    private String videoUrl;
+
+    @Column(name = "like_count", nullable = true)
+    private Integer likeCount = 0;
+
+   
     @PrePersist
     protected void onCreate() {
         this.reviewDate = new Date();

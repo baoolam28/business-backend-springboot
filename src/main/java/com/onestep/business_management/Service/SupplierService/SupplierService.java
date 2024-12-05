@@ -98,7 +98,7 @@ public class SupplierService {
             Supplier updatedSupplier = supplierRepository.save(supplier);
             return SupplierMapper.INSTANCE.toResponse(updatedSupplier);
         }
-        return null;
+        return null;    
     }
 
     public List<SupplierResponse> getAllByStore(UUID storeId) {
