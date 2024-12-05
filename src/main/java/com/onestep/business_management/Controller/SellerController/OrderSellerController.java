@@ -272,7 +272,7 @@ public class OrderSellerController {
     }
 
     @GetMapping("/online/{storeId}")
-    public ResponseEntity<?> getAllOrdersByStoreId(@PathVariable UUID storeId) {
+    public ResponseEntity<?> getAllOrdersOnlineByStoreId(@PathVariable UUID storeId) {
         try {
             List<OrderOnlineResponse> orders = orderOnlineService.getAllOrdersByStoreId(storeId);
 
@@ -314,11 +314,11 @@ public class OrderSellerController {
     }
 
     @PutMapping("/online/{orderId}/status")
-    public ResponseEntity<?> updateOrderStatus(@PathVariable String orderId,
+    public ResponseEntity<?> updateOrderOnlineStatus(@PathVariable String orderId,
             @RequestBody OrderStatusRequest orderStatusRequest) {
         try {
 
-            System.out.println("update status request: "+orderStatusRequest.toString());
+            System.out.println("update status request: " + orderStatusRequest.toString());
             // Gọi service để cập nhật trạng thái đơn hàng
             OrderOnlineResponse response = orderOnlineService.updateOrderStatus(orderId, orderStatusRequest);
 
@@ -357,8 +357,8 @@ public class OrderSellerController {
         }
     }
 
-    @PutMapping("/online/{storeId}/status")
-    public ResponseEntity<?> updateOrderStatusByStoreId(
+    @PutMapping("/online/stores/{storeId}/status")
+    public ResponseEntity<?> updateOrderOnlineStatusByStoreId(
             @PathVariable String storeId,
             @RequestBody OrderStatusRequest orderStatusRequest) {
         try {

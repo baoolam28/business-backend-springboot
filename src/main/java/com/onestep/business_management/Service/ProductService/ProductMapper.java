@@ -22,6 +22,7 @@ import com.onestep.business_management.Utils.StringToMapConverter;
 public interface ProductMapper {
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
     ObjectMapper objectMapper = new ObjectMapper();
+
     default Product prodRequestToEntity(ProductRequest productRequest, @Context MapperService mapperService) {
         if (productRequest == null) {
             return null;
@@ -29,9 +30,9 @@ public interface ProductMapper {
 
         Product product = new Product();
         product.setBarcode(productRequest.getBarcode());
-        if(productRequest.getImages() != null){
+        if (productRequest.getImages() != null) {
             List<Image> images = mapperService.uploadImages(productRequest.getImages());
-            for(Image image : images){
+            for (Image image : images) {
                 image.setProduct(product);
             }
             product.setImages(images);
@@ -63,8 +64,8 @@ public interface ProductMapper {
         productResponse.setBarcode(product.getBarcode());
         List<Image> productImage = product.getImages();
         List<String> images = new ArrayList();
-        for(Image image : productImage){ 
-            images.add(image.getFileName()) ; 
+        for (Image image : productImage) {
+            images.add(image.getFileName());
         }
         productResponse.setImages(images);
         productResponse.setProductName(product.getProductName());
@@ -146,19 +147,16 @@ public interface ProductMapper {
 
         List<Image> images = product.getImages();
         List<String> imgsRes = new ArrayList<>();
-        if(images.size() > 0){
+        if (images.size() > 0) {
             images.stream().map(
-                    image -> imgsRes.add(image.getFileName())
-            );
+                    image -> imgsRes.add(image.getFileName()));
             response.setImages(imgsRes);
         }
-
 
         return response;
     }
 
-
-    default Product ProdOnlineToEntity(ProductOnlineRequest prodRequest, @Context MapperService mapperService){
+    default Product ProdOnlineToEntity(ProductOnlineRequest prodRequest, @Context MapperService mapperService) {
 
         if (prodRequest == null) {
             return null;
@@ -174,7 +172,8 @@ public interface ProductMapper {
             product.setCategory(category);
             Store store = mapperService.findStoreById(prodRequest.getStoreId());
             product.setStore(store);
-            List<Image> images = mapperService.uploadImages(prodRequest.getImages()); // Upload hình ảnh và nhận danh sách hình ảnh
+            List<Image> images = mapperService.uploadImages(prodRequest.getImages()); // Upload hình ảnh và nhận danh
+                                                                                      // sách hình ảnh
             for (Image image : images) {
                 image.setProduct(product);
             }
@@ -186,8 +185,8 @@ public interface ProductMapper {
                         productDetail.setPrice(detailRequest.getPrice());
                         productDetail.setSku(detailRequest.getSku());
                         productDetail.setQuantityInStock(detailRequest.getQuantityInStock());
-                         Image image = mapperService.uploadImage(detailRequest.getImage());
-                         productDetail.setImage(image.getFileName());
+                        Image image = mapperService.uploadImage(detailRequest.getImage());
+                        productDetail.setImage(image.getFileName());
                         productDetail.setHeight(detailRequest.getHeight());
                         productDetail.setLength(detailRequest.getLength());
                         productDetail.setWidth(detailRequest.getWidth());
@@ -199,7 +198,6 @@ public interface ProductMapper {
                         try {
                             attributesJson = objectMapper.writeValueAsString(attributes);
                         } catch (JsonProcessingException e) {
-                            System.out.println("Lõi chet con di me may");
                             throw new RuntimeException(e);
                         }
                         productDetail.setAttributes(attributesJson);
@@ -212,7 +210,7 @@ public interface ProductMapper {
             product.setProductDetails(productDetails);
 
             return product;
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
@@ -240,7 +238,7 @@ public interface ProductMapper {
 
     }
 
-    default ProductOnlineResponse productToOnlineResponse(Product product){
+    default ProductOnlineResponse productToOnlineResponse(Product product) {
         if (product == null) {
             return null;
         }
@@ -269,10 +267,5 @@ public interface ProductMapper {
 
         return response;
     }
-
-
-
-
-
 
 }
