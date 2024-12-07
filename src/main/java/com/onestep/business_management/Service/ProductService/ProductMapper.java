@@ -8,10 +8,7 @@ import com.onestep.business_management.Utils.MapperService;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import com.onestep.business_management.Utils.StringToMapConverter;
 import com.onestep.business_management.DTO.ProductDTO.ProdOnlineResponse;
@@ -148,12 +145,16 @@ public interface ProductMapper {
 
         List<Image> images = product.getImages();
         List<String> imgsRes = new ArrayList<>();
-        if(images.size() > 0){
-            images.stream().map(
-                    image -> imgsRes.add(image.getFileName())
-            );
+
+        if (images != null && !images.isEmpty()) {
+            imgsRes = images.stream()
+                    .map(Image::getFileName)
+                    .collect(Collectors.toList());
             response.setImages(imgsRes);
+        } else {
+            response.setImages(Collections.emptyList()); // Đảm bảo gán danh sách rỗng nếu không có ảnh
         }
+
 
 
         return response;

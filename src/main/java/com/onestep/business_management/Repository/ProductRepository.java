@@ -30,8 +30,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
         @Query("SELECT p FROM Product p WHERE p.store.storeId = :storeId AND p.barcode = :barcode")
         List<Product> findProductInStore(@Param("storeId") UUID storeId, @Param("barcode") String barcode);
 
-        List<Product> findByCategoryCategoryId(Integer categoryId);
-
         List<Product> findBySupplierSupplierId(Integer supplierId);
 
         List<Product> findByOriginOriginId(Integer originId);
@@ -63,4 +61,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             " OrderOfflineDetail od ON o.orderOfflineId = od.orderDetailId" +
             " WHERE o.store.storeId = :storeId AND o.orderDate BETWEEN :startDate AND :endDate")
     List<OrderOffline> getOrderByDate(UUID storeId, Date startDate, Date endDate);
+
+    @Query("SELECT p FROM Product p WHERE p.isOnline = true AND p.category.categoryId = :id ")
+    List<Product> findByCategoryOnline(Integer id);
 }

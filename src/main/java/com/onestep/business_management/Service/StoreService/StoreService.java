@@ -2,6 +2,7 @@ package com.onestep.business_management.Service.StoreService;
 
 import com.onestep.business_management.DTO.StoreDTO.StoreRequest;
 import com.onestep.business_management.DTO.StoreDTO.StoreResponse;
+import com.onestep.business_management.Entity.Role;
 import com.onestep.business_management.Entity.Store;
 import com.onestep.business_management.Entity.User;
 import com.onestep.business_management.Exeption.ResourceNotFoundException;
@@ -16,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -70,16 +72,38 @@ public class StoreService {
     }
 
     public StoreResponse getStoreByUser(UUID userId){
-        User storeManager = userRepository.findById(userId).orElseThrow(() ->
+        Store result =  new Store();
+        User exitsUser = userRepository.findById(userId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId + " not found.")
         );
 
-        List<Store> store = storeRepository.findByStoreManager(storeManager);
+        Set<Role> roleTaken = exitsUser.getRoles();
+        Role curentRole = new Role();
 
-        if(store.isEmpty()){
-            throw new ResourceNotFoundException("Store not found!");
+        if(roleTaken.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Role with id " + userId + " not found.");
         }
-        return StoreMapper.INSTANCE.toResponse(store.get(0));
+
+        curentRole = roleTaken.iterator().next();
+
+        if (curentRole.getRoleName().equals("ROLE_SELLER")){
+            List<Store> stores = storeRepository.findByStoreManager(exitsUser);
+            if(stores.isEmpty()){
+                throw new ResourceNotFoundException("Store not found!");
+            }
+            result = stores.get(0);
+        }
+
+        if(curentRole.getRoleName().equals("ROLE_STAFF")){
+            UUID storeId = exitsUser.getStore().getStoreId();
+
+            result = storeRepository.findById(storeId).orElseThrow(
+                    () -> new ResourceNotFoundException("Store not found!")
+            );
+        }
+
+
+        return StoreMapper.INSTANCE.toResponse(result);
     }
 
     // Delete Store by ID

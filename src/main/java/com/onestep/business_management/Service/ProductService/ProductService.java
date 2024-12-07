@@ -102,11 +102,15 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public List<ProductOnlineResponse> getAllProductOnline() {
+    public List<ProdOnlineResponse> getAllProductOnline() {
         List<Product> products = productRepository.findAllOnline();
-        return products.stream()
-                .map(ProductMapper.INSTANCE::productToOnlineResponse)
-                .collect(Collectors.toList());
+        List<ProdOnlineResponse> result = new ArrayList<>();
+        for(Product product : products){
+            List<Review> reviews = reviewRepository.findByProductProductId(product.getProductId());
+            ProdOnlineResponse item = ProductMapper.INSTANCE.productToCategoryResponse(product, reviews);
+            result.add(item);
+        }
+        return result;
     }
 
     public List<ProductResponse> getAllByStore(UUID storeId) {
@@ -165,7 +169,7 @@ public class ProductService {
 
     public List<ProdOnlineResponse> findByCategoryId(int categoryId) {
         // Lấy danh sách sản phẩm theo categoryId
-        List<Product> products = productRepository.findByCategoryCategoryId(categoryId);
+        List<Product> products = productRepository.findByCategoryOnline(categoryId);
 
         // Kiểm tra xem có sản phẩm nào không
         if (products.isEmpty()) {

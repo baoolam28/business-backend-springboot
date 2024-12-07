@@ -14,6 +14,5 @@ public interface StoreMapper {
     @Mapping(target = "storeManager.userId", source = "storeManagerId")
     Store toEntity(StoreRequest storeRequest);
 
-    @Mapping(target = "storeManagerId", source = "storeManager.userId")
     StoreResponse toResponse(Store store);
 }

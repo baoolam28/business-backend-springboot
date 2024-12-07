@@ -15,8 +15,4 @@ public class StoreResponse {
     private String storeName;
     private String storeLocation;
     private String storeDescription;
-    private UUID storeManagerId;
-    private String storeManagerName;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

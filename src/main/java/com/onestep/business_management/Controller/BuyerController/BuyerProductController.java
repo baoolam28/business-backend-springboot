@@ -47,8 +47,8 @@ public class BuyerProductController {
     @GetMapping("/online")
     public ResponseEntity<?> getProductsOnline() {
         try {
-            List<ProductOnlineResponse> response = productService.getAllProductOnline();
-            ApiResponse<List<ProductOnlineResponse>> apiResponse = new ApiResponse<>(
+            List<ProdOnlineResponse> response = productService.getAllProductOnline();
+            ApiResponse<List<ProdOnlineResponse>> apiResponse = new ApiResponse<>(
                     HttpStatus.OK.value(),
                     "Products retrieved successfully",
                     response,
