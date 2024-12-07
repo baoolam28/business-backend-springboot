@@ -1,6 +1,8 @@
 package com.onestep.business_management.Controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,78 +14,146 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.onestep.business_management.DTO.RiviewDTO.ReviewRequest;
-import com.onestep.business_management.DTO.RiviewDTO.ReviewResponse;
+import com.onestep.business_management.DTO.API.ApiResponse;
+import com.onestep.business_management.DTO.ProductDTO.ProductDetailResponse;
+import com.onestep.business_management.DTO.ProductDTO.ProductOnlineResponse;
+import com.onestep.business_management.DTO.ReviewDTO.ProductReviewRequest;
+import com.onestep.business_management.DTO.ReviewDTO.ProductReviewResponse;
+import com.onestep.business_management.DTO.ReviewDTO.ReviewRequest;
+import com.onestep.business_management.DTO.ReviewDTO.ReviewResponse;
+import com.onestep.business_management.Service.ProductService.ProductService;
 import com.onestep.business_management.Service.ReviewSevice.ReviewService;
 
 @RestController
-@RequestMapping("/api/reviews")
+@RequestMapping("/api/buyer/reviews")
 public class ReviewController {
     
     @Autowired
     private ReviewService reviewService;
 
-    // @GetMapping
-    // public ResponseEntity<List<ReviewResponse>> getAllReviews(){
+    @Autowired
+    private ProductService productService;
+
+    @GetMapping("/allReviews/{productId}")
+    public ResponseEntity<?> getAllReviewProduct(@PathVariable Integer productId){
+        try {
+            ProductReviewResponse response = reviewService.getAllReviewByProductId(productId);
+            ApiResponse<ProductReviewResponse> apiResponse = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Get all review product successfully",
+                response,
+                LocalDateTime.now());
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error retrieving review: " + e.getMessage());
+            ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // @GetMapping("/products/{productId}")
+    // public ResponseEntity<?> getAllReviews(@PathVariable Integer productId, @RequestParam Integer rating){
     //     try {
-    //         List<ReviewResponse> response = reviewService.getAllReviews();
-    //         return new ResponseEntity<>(response, HttpStatus.OK);
+    //         ProductReviewResponse response = reviewService.getAllReviewByRating(productId, rating);
+    //         ApiResponse<ProductReviewResponse> apiResponse = new ApiResponse<>(
+    //                 HttpStatus.OK.value(),
+    //                 "Get all review by rating successfully",
+    //                 response,
+    //                 LocalDateTime.now());
+    //         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     //     } catch (Exception e) {
-    //         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    //         System.out.println("Error retrieving review: " + e.getMessage());
+    //         ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+    //         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     //     }
     // }
 
-    // @GetMapping("/{id}")
-    // public ResponseEntity<ReviewResponse> getReviewById(@PathVariable("id") Integer reviewId){
-    //     try {
-    //         ReviewResponse response = reviewService.getReviewById(reviewId);
-    //         if(response != null){
-    //             return new ResponseEntity<>(response, HttpStatus.OK);
-    //         }else{
-    //             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    //         }
-    //     } catch (Exception e) {
-    //         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    //     }
-    // }
+    @GetMapping("/{productDetailId}")
+    public ResponseEntity<?> getProductDetail(@PathVariable Integer productDetailId){
+        try {
+            ProductDetailResponse response = productService.findProductDetailById(productDetailId);
+            ApiResponse<ProductDetailResponse> apiResponse = new ApiResponse<>( 
+                HttpStatus.OK.value(),
+                "Retrieve product detail successfully",
+                response,
+                LocalDateTime.now());
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error retrieving review: " + e.getMessage());
+            ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-    // @PostMapping("/newReview")
-    // public ResponseEntity<ReviewResponse> createReview(@RequestBody ReviewRequest reviewRequest){
-    //     try {
-    //         ReviewResponse response = reviewService.createReview(reviewRequest);
-    //         return new ResponseEntity<>(response, HttpStatus.CREATED);
-    //     } catch (Exception e) {
-    //         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    //     }
-    // }
+    @GetMapping("/review")
+    public ResponseEntity<?> getReviewByProductDetailId(@RequestParam Integer productDetailId, @RequestParam UUID userId){
+        try {
+            ReviewResponse response = reviewService.getReviewByProductDetailId(productDetailId, userId);
+            ApiResponse<ReviewResponse> apiResponse = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Retrieve Review successfully",
+                response,
+                LocalDateTime.now());
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error retrieving review: " + e.getMessage());
+            ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-    // @PutMapping("/{id}")
-    // public ResponseEntity<ReviewResponse> updateReview(@PathVariable("id") Integer reviewId, @RequestBody ReviewRequest reviewRequest){
-    //     try {
-    //         ReviewResponse response = reviewService.updateReview(reviewId, reviewRequest);
-    //         if(response != null){
-    //             return new ResponseEntity<>(response, HttpStatus.OK);
-    //         }else{
-    //             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    //         }
-    //     } catch (Exception e) {
-    //         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    //     }
-    // }
+    @PostMapping("/newReview/{productDetailId}")
+    public ResponseEntity<?> createNewReview(@PathVariable Integer productDetailId, @RequestBody ReviewRequest reviewRequest){
+        try {
+            ReviewResponse response = reviewService.createNewReview(productDetailId ,reviewRequest);
+            ApiResponse<ReviewResponse> apiResponse = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Create Review successfully",
+                response,
+                LocalDateTime.now());
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error retrieving review: " + e.getMessage());
+            ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-    // @DeleteMapping("/{id}")
-    // public ResponseEntity<Void> deleteReview(@PathVariable("id") Integer reviewId){
-    //     try {
-    //         boolean isDeleted = reviewService.deleteReview(reviewId);
-    //         if(isDeleted){
-    //             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    //         }else{
-    //             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    //         }
-    //     } catch (Exception e) {
-    //         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    //     }
-    // }
+    @PutMapping("/update-review/{reviewId}")
+    public ResponseEntity<?> updateReview(@RequestBody ReviewRequest reviewRequest, @PathVariable Integer reviewId){
+        try {
+            // Integer reviewId = reviewRequest.getReviewId();
+            ReviewResponse response = reviewService.updateReviewByReviewId(reviewRequest, reviewId);
+            ApiResponse<ReviewResponse> apiResponse = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Update Review successfully",
+                response,
+                LocalDateTime.now());
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error retrieving review: " + e.getMessage());
+            ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<?> deleteReview(@PathVariable Integer reviewId){
+        try {
+            ReviewResponse response = reviewService.deleteReviewByReviewId(reviewId);
+            ApiResponse<ReviewResponse> apiResponse = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Dalete Review successfully",
+                response,
+                LocalDateTime.now());
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error retrieving review: " + e.getMessage());
+            ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
