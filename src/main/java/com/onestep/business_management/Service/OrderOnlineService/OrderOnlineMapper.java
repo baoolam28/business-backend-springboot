@@ -19,13 +19,14 @@ import java.util.UUID;
 public interface OrderOnlineMapper {
     OrderOnlineMapper INSTANCE = Mappers.getMapper(OrderOnlineMapper.class);
 
-    // Mapping from OrderOnline entity to OrderOnlineResponse DTO
     @Mapping(target = "orderId", source = "orderOnlineId")
     @Mapping(target = "orderDetails", source = "orderDetails", qualifiedByName = "mapDetailsToResponses")
     @Mapping(target = "userId", source = "user.userId")
+    @Mapping(target = "userName", source = "user.username")
+    @Mapping(target = "phone", source = "user.phoneNumber")
     @Mapping(target = "storeId", source = "store.storeId")
     @Mapping(target = "storeName", source = "store.storeName")
-    OrderOnlineResponse toResponse(OrderOnline order);
+    OrderOnlineResponse toResponse(OrderOnline orderOnline);
 
     // Custom method to map List<OrderOnlineDetailRequest> to
     // List<OrderOnlineDetail>

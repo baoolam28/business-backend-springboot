@@ -4,15 +4,20 @@ package com.onestep.business_management.Service.ProductService;
 import com.onestep.business_management.DTO.ProductDTO.ProductOnlineRequest;
 import com.onestep.business_management.DTO.ProductDTO.ProductOnlineResponse;
 import com.onestep.business_management.DTO.ProductDTO.ProdOnlineResponse;
+import com.onestep.business_management.DTO.ProductDTO.ProductDetailResponse;
 import com.onestep.business_management.DTO.ProductDTO.ProductRequest;
 import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
+import com.onestep.business_management.DTO.ReviewDTO.ReviewResponse;
 import com.onestep.business_management.Entity.*;
 import com.onestep.business_management.Exeption.ResourceAlreadyExistsException;
 import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Repository.*;
 
 import com.onestep.business_management.Service.ImageService.ImageService;
+import com.onestep.business_management.Service.ReviewSevice.ReviewService;
 import com.onestep.business_management.Utils.MapperService;
+import com.onestep.business_management.Utils.StringToMapConverter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +29,9 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private ProductDetailRepository productDetailRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -42,6 +50,9 @@ public class ProductService {
 
     @Autowired
     private ImageService imageService;
+
+    @Autowired
+    private ReviewService reviewService;
 
     public ProductResponse createProduct(ProductRequest productRequest) {
 
@@ -138,7 +149,14 @@ public class ProductService {
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ResourceNotFoundException("Product with id = "+productId+" not found!")
         );
-        return ProductMapper.INSTANCE.productToOnlineResponse(product);
+        ProductOnlineResponse response = ProductMapper.INSTANCE.productToOnlineResponse(product);
+
+        // List<ReviewResponse> reviews = reviewService.getAllReviewByProductId(productId);
+
+        // response.setReviews(reviews);
+
+        // return ProductMapper.INSTANCE.productToOnlineResponse(product);
+        return response;
     }
 
     public ProductResponse getByBarcode(String barcode) {
@@ -165,6 +183,29 @@ public class ProductService {
             return ProductMapper.INSTANCE.productToResponse(product);
         }
         return null;
+    }
+
+    public ProductDetailResponse findProductDetailById(Integer productDetailId){
+        ProductDetail productDetail = productDetailRepository.findById(productDetailId).orElseThrow(
+            () -> new ResourceNotFoundException("Not found product detail by Id: " + productDetailId)
+        );
+
+        // Tạo một ProductDetailResponse và chuyển đổi thông tin từ ProductDetail
+        ProductDetailResponse response = new ProductDetailResponse();
+
+        // Lấy thông tin từ đối tượng ProductDetail và liên kết với các đối tượng khác
+        response.setProductName(productDetail.getProduct().getProductName()); // Lấy tên sản phẩm từ Product
+        response.setPrice(productDetail.getPrice()); // Lấy giá từ ProductDetail
+        response.setImage(productDetail.getImage()); // Lấy hình ảnh từ ProductDetail
+
+        // Chuyển đổi attributes từ chuỗi JSON thành Map
+        if (productDetail.getAttributes() != null) {
+            // Sử dụng StringToMapConverter để chuyển đổi chuỗi JSON thành Map
+            Map<String, String> attributes = StringToMapConverter.convertStringToMap(productDetail.getAttributes());
+            response.setAttributes(attributes);
+        }
+
+        return response;
     }
 
     public List<ProdOnlineResponse> findByCategoryId(int categoryId) {

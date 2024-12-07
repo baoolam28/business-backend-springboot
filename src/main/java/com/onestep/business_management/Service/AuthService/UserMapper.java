@@ -2,6 +2,9 @@ package com.onestep.business_management.Service.AuthService;
 
 import com.onestep.business_management.DTO.AuthDTO.BuyerRegistrationRequest;
 import com.onestep.business_management.DTO.AuthDTO.BuyerRegistrationResponse;
+import com.onestep.business_management.DTO.AuthDTO.UserBuyerInfoRequest;
+import com.onestep.business_management.DTO.AuthDTO.UserBuyerInfoRespont;
+import com.onestep.business_management.DTO.AuthDTO.UserchangesPassRequest;
 import com.onestep.business_management.Entity.Role;
 import com.onestep.business_management.Entity.User;
 import org.mapstruct.Mapper;
@@ -21,11 +24,39 @@ public interface UserMapper {
     @Mapping(target = "roles", source = "roles")
     BuyerRegistrationResponse buyerToResponse(User user);
 
+    default UserBuyerInfoRespont userToBuyerInfoRespont(User user) {
+        if (user == null) {
+            return null;
+        }
+
+        UserBuyerInfoRespont response = new UserBuyerInfoRespont();
+
+        // Set basic user fields
+        response.setUserId(user.getUserId());
+        response.setUsername(user.getUsername());
+        response.setFullName(user.getFullName());
+        response.setPhoneNumber(user.getPhoneNumber());
+        response.setEmail(user.getEmail());
+
+        // Set image name if image is not null
+        if (user.getImage() != null) {
+            response.setImageName(user.getImage().getFileName());
+        }
+
+        return response;    
+    }
+
     default Set<String> map(Set<Role> roles) {
-        if (roles == null) return null;
+        if (roles == null)
+            return null;
         return roles.stream()
                 .map(Role::getRoleName) // Assuming Role has a getRoleName method
                 .collect(Collectors.toSet());
     }
+
+    @Mapping(target = "fullName", source = "fullName")
+    @Mapping(target = "email", source = "email")
+    @Mapping(target = "phoneNumber", source = "phoneNumber")
+    User buyerInfoRequestToEntity(UserBuyerInfoRequest userBuyerInfoRequest);
 
 }
