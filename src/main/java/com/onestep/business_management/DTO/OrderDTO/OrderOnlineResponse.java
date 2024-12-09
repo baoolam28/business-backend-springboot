@@ -14,19 +14,12 @@ import java.util.UUID;
 @NoArgsConstructor
 public class OrderOnlineResponse {
     private UUID orderId;
-    private UUID userId;
-    private String userName; 
-    private String imageName ; 
+    private String fullName;
     private String phone ;
-    private String address ; 
-    private String receiver ; 
-    private String district ;
-    private String province ; 
+    private String address ;
     private Date orderDate;
     private String status;
     private boolean paymentStatus;
     private String paymentMethod;
-    private UUID storeId;
-    private String storeName;
     private List<OrderOnlineDetailResponse> orderDetails;
 }   
