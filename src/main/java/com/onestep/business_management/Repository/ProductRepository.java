@@ -33,16 +33,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
         List<Product> findBySupplierSupplierId(Integer supplierId);
 
         List<Product> findByOriginOriginId(Integer originId);
-        
-        @Query("SELECT p.productId, p.productName, p.price, s.storeName, s.pickupAddress, c.categoryName, " +
-        "AVG(r.rating) AS averageRating, COUNT(r.rating) AS totalReviews " +
-        "FROM Product p " +
-        "JOIN p.store s " +
-        "JOIN p.category c " +
-        "LEFT JOIN Review r ON p.productId = r.product.productId " +
-        "WHERE c.categoryId = :categoryId " +
-        "GROUP BY p.productId, p.productName, p.price, s.storeName, s.pickupAddress, c.categoryName")
- List<Object[]> findProductsWithStoreCategoryAndReviewInfo(@Param("categoryId") Integer categoryId);
 
     @Query("SELECT p FROM Product p WHERE p.store.storeId = :storeId")
     List<Product> findByStore(@Param("storeId") UUID storeId);
@@ -55,12 +45,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query("SELECT p FROM Product p WHERE p.isOnline = true AND p.disabled = false")
     List<Product> findAllOnline();
-
-
-    @Query("SELECT SUM(od.price * od.quantity) FROM OrderOffline o JOIN " +
-            " OrderOfflineDetail od ON o.orderOfflineId = od.orderDetailId" +
-            " WHERE o.store.storeId = :storeId AND o.orderDate BETWEEN :startDate AND :endDate")
-    List<OrderOffline> getOrderByDate(UUID storeId, Date startDate, Date endDate);
 
     @Query("SELECT p FROM Product p WHERE p.isOnline = true AND p.category.categoryId = :id ")
     List<Product> findByCategoryOnline(Integer id);

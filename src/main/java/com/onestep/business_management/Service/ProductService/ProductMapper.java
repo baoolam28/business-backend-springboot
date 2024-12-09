@@ -143,28 +143,20 @@ public interface ProductMapper {
         }
 
         List<Image> images = product.getImages();
-        List<String> imgsRes = new ArrayList<>();
+        List<String> imgsRes;
 
-
-        if (images != null && !images.isEmpty()) {
+        if (!images.isEmpty()) { // Kiểm tra danh sách có phần tử
             imgsRes = images.stream()
-                    .map(Image::getFileName)
-                    .collect(Collectors.toList());
-
-        if (images.size() > 0) {
-            images.stream().map(
-                    image -> imgsRes.add(image.getFileName()));
-
+                    .map(Image::getFileName) // Chuyển đổi từng Image thành tên file
+                    .collect(Collectors.toList()); // Thu thập vào danh sách
             response.setImages(imgsRes);
         } else {
-            response.setImages(Collections.emptyList()); // Đảm bảo gán danh sách rỗng nếu không có ảnh
+            response.setImages(Collections.emptyList()); // Gán danh sách rỗng nếu không có ảnh
         }
 
 
-
-
-
         return response;
+
     }
 
     default Product ProdOnlineToEntity(ProductOnlineRequest prodRequest, @Context MapperService mapperService) {

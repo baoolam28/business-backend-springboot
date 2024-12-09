@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StoreResponse {
     private UUID storeId;
+    private UUID storeManagerId;
     private String storeName;
     private String storeLocation;
     private String storeDescription;

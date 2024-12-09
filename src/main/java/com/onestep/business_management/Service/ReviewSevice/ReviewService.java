@@ -41,7 +41,9 @@ public class ReviewService {
 
 
     public ProductReviewResponse getAllReviewByProductId(Integer productId){
-        List<Review> reviews = reviewRepository.findByProductProductId(productId);
+        List<Review> reviews = reviewRepository.findByAllReviewByProductDetailId(productId).orElseThrow(
+                () -> new ResourceNotFoundException("Review not found!")
+        );
 
         ProductReviewResponse response = new ProductReviewResponse();
        response.setTotalReview(reviews.size());
@@ -86,7 +88,7 @@ public class ReviewService {
         User user = mapperService.findUserById(reviewRequest.getUserId());
 
         Review newReview = ReviewMapper.INSTANCE.toEntity(reviewRequest);
-        newReview.setProduct(product);
+        newReview.setProductDetail(productDetail);
         newReview.setProductDetail(productDetail);
         newReview.setUser(user);
         Review saveReview = reviewRepository.save(newReview);

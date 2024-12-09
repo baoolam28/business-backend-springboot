@@ -12,11 +12,10 @@ import java.util.UUID;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
-   List<Review> findByProductProductId(Integer productId);
+   @Query("SELECT r FROM Review r WHERE r.productDetail.productDetailId = :productDetailId")
+   Optional<List<Review>> findByAllReviewByProductDetailId(@Param("productDetailId") Integer productDetailId);
 
    @Query("SELECT r FROM Review r WHERE r.productDetail.productDetailId = :productDetailId AND r.user.userId = :userId")
    Optional<Review> findReviewByProductDetailId(@Param("productDetailId") Integer productDetailId, @Param("userId") UUID userId);
 
-   @Query("SELECT r FROM Review r WHERE r.product.productId = :productId AND r.rating = :rating")
-   List<Review> findReviewByRating(@Param("productId") Integer productId, @Param("rating") Integer rating);
 }

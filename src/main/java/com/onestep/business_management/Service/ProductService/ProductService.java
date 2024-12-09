@@ -113,16 +113,6 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public List<ProdOnlineResponse> getAllProductOnline() {
-        List<Product> products = productRepository.findAllOnline();
-        List<ProdOnlineResponse> result = new ArrayList<>();
-        for(Product product : products){
-            List<Review> reviews = reviewRepository.findByProductProductId(product.getProductId());
-            ProdOnlineResponse item = ProductMapper.INSTANCE.productToCategoryResponse(product, reviews);
-            result.add(item);
-        }
-        return result;
-    }
 
     public List<ProductResponse> getAllByStore(UUID storeId) {
         List<Product> products = productRepository.findByStore(storeId);
@@ -221,8 +211,7 @@ public class ProductService {
         return products.stream()
                 .map(product -> {
                     // Lấy danh sách review cho mỗi sản phẩm
-                    List<Review> reviews = reviewRepository.findByProductProductId(product.getProductId());
-
+                    List<Review> reviews = reviewRepository.findByAllReviewByProductDetailId(product.getProductId()).orElse(null);
                     // Sử dụng mapper để chuyển đổi product và reviews sang ProductCategoryResponse
                     return ProductMapper.INSTANCE.productToCategoryResponse(product, reviews);
                 })
@@ -306,11 +295,14 @@ public class ProductService {
 
         return products.stream()
                 .map(product -> {
-                    // Lấy danh sách review cho mỗi sản phẩm
-                    List<Review> reviews = reviewRepository.findByProductProductId(product.getProductId());
+                    List<ProductDetail> prodDetais = product.getProductDetails();
+                    List<Review> reviews = new ArrayList<>();
+                    for(ProductDetail detail : prodDetais){
+                        reviews = reviewRepository.findByAllReviewByProductDetailId(detail.getProductDetailId()).orElse(null);
 
-                    // Sử dụng mapper để chuyển đổi product và reviews sang ProductCategoryResponse
+                    }
                     return ProductMapper.INSTANCE.productToCategoryResponse(product, reviews);
+
                 })
                 .collect(Collectors.toList());
     }
