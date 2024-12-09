@@ -2,9 +2,14 @@ package com.onestep.business_management.Service.AuthService;
 
 import com.onestep.business_management.DTO.AuthDTO.BuyerRegistrationRequest;
 import com.onestep.business_management.DTO.AuthDTO.BuyerRegistrationResponse;
+
+import com.onestep.business_management.DTO.AuthDTO.StaffRegistrationRequest;
+import com.onestep.business_management.DTO.AuthDTO.StaffResgitrationResponse;
+
 import com.onestep.business_management.DTO.AuthDTO.UserBuyerInfoRequest;
 import com.onestep.business_management.DTO.AuthDTO.UserBuyerInfoRespont;
 import com.onestep.business_management.DTO.AuthDTO.UserchangesPassRequest;
+
 import com.onestep.business_management.Entity.Role;
 import com.onestep.business_management.Entity.User;
 import org.mapstruct.Mapper;
@@ -53,6 +58,10 @@ public interface UserMapper {
                 .map(Role::getRoleName) // Assuming Role has a getRoleName method
                 .collect(Collectors.toSet());
     }
+    User staffToEntity(StaffRegistrationRequest staffRequest);
+
+    @Mapping(target = "roles", source = "roles")
+    StaffResgitrationResponse staffToResponse(User user);
 
     @Mapping(target = "fullName", source = "fullName")
     @Mapping(target = "email", source = "email")
