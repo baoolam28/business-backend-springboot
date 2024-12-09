@@ -27,4 +27,5 @@ public class ReviewResponse{
     private List<String> imageUrls; 
     private String videoUrl;   
     private Integer likeCount;
+    private Boolean isReviewed;
 }

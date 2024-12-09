@@ -54,22 +54,6 @@ public class ReviewService {
         return response;
     }
 
-    // public ProductReviewResponse getAllReviewByRating(Integer productId, Integer rating){
-    //     List<Review> reviews = reviewRepository.findReviewByRating(productId, rating);
-    //     if (reviews.isEmpty()) {
-    //         return new ProductReviewResponse(0, List.of());
-    //     }
-    //    ProductReviewResponse response = new ProductReviewResponse();
-    //    response.setTotalReview(reviews.size());
-    //    List<ReviewResponse> reviewResponse = new ArrayList<>();
-    //    for(Review review : reviews){
-    //     reviewResponse.add(ReviewMapper.INSTANCE.toResponse(review));
-    //    }
-    //    response.setReview(reviewResponse);
-       
-    //     return response;
-    // }
-
     public ReviewResponse getReviewByProductDetailId(Integer productDetailId, UUID userId){
         Review review = reviewRepository.findReviewByProductDetailId(productDetailId, userId).orElseThrow(
             () -> new ResourceNotFoundException("Review not found for productDetailId: " + productDetailId + " and userId: " + userId)
@@ -89,8 +73,16 @@ public class ReviewService {
         newReview.setProduct(product);
         newReview.setProductDetail(productDetail);
         newReview.setUser(user);
+        newReview.setIsReviewed(true);
         Review saveReview = reviewRepository.save(newReview);
         return ReviewMapper.INSTANCE.toResponse(saveReview);
+    }
+
+    public boolean checkIfReviewed(Integer productDetailId, UUID userId){
+        if (productDetailId == null || userId == null) {
+            throw new IllegalArgumentException("productDetailId and userId must not be null");
+        }
+        return reviewRepository.findReviewByProductDetailId(productDetailId, userId).isPresent();
     }
 
     private boolean canEditReview(Date reviewDate){
@@ -128,4 +120,6 @@ public class ReviewService {
         reviewRepository.delete(review);
         return response;
     }
+
+    
 }
