@@ -7,7 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -43,6 +45,9 @@ public class ProductDetail {
     @ToString.Exclude
     @JoinColumn(name = "productId")
     private Product product;
+
+    @OneToMany(mappedBy = "productDetail", fetch = FetchType.LAZY)
+    private List<Review> reviews = new ArrayList<>();
 
 
 

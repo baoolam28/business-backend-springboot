@@ -3,22 +3,17 @@ package com.onestep.business_management.Service.ProductService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onestep.business_management.DTO.ProductDTO.*;
+import com.onestep.business_management.DTO.ReviewDTO.ReviewResponse;
 import com.onestep.business_management.Entity.*;
+import com.onestep.business_management.Service.ReviewSevice.ReviewService;
 import com.onestep.business_management.Utils.MapperService;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import com.onestep.business_management.Utils.StringToMapConverter;
-import com.onestep.business_management.DTO.ProductDTO.ProdOnlineResponse;
-import com.onestep.business_management.DTO.ProductDTO.ProductRequest;
-import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
-import com.onestep.business_management.Entity.Product;
-import com.onestep.business_management.Entity.Review;
 
 @Mapper
 public interface ProductMapper {
@@ -148,14 +143,20 @@ public interface ProductMapper {
         }
 
         List<Image> images = product.getImages();
-        List<String> imgsRes = new ArrayList<>();
-        if (images.size() > 0) {
-            images.stream().map(
-                    image -> imgsRes.add(image.getFileName()));
+        List<String> imgsRes;
+
+        if (!images.isEmpty()) { // Kiểm tra danh sách có phần tử
+            imgsRes = images.stream()
+                    .map(Image::getFileName) // Chuyển đổi từng Image thành tên file
+                    .collect(Collectors.toList()); // Thu thập vào danh sách
             response.setImages(imgsRes);
+        } else {
+            response.setImages(Collections.emptyList()); // Gán danh sách rỗng nếu không có ảnh
         }
 
+
         return response;
+
     }
 
     default Product ProdOnlineToEntity(ProductOnlineRequest prodRequest, @Context MapperService mapperService) {

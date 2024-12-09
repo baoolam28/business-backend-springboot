@@ -32,6 +32,12 @@ public class OrderOnlineService {
     @Autowired
     private ShipmentRepository shipmentRepository;
 
+    public OrderOnline getOrderOnlineById(UUID orderId){
+        return orderOnlineRepository.findById(orderId).orElseThrow(
+                () -> new ResourceNotFoundException("Order with id: "+orderId+" not found!")
+        );
+    }
+
     @Transactional
     public List<OrderOnlineResponse> createMultipleOrders(OrderOnlineRequest orderRequest) {
         List<OrderOnlineResponse> responses = new ArrayList<>();

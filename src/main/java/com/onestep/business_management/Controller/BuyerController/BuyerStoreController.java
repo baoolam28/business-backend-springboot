@@ -37,4 +37,21 @@ public class BuyerStoreController {
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/{storeId}")
+    public ResponseEntity<?> getStoreByStoreId(@PathVariable UUID storeId) {
+        try {
+            StoreResponse response = storeService.getStoreById(storeId);
+            ApiResponse<StoreResponse> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Store retrieved successfully",
+                    response,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error retrieving Store: " + e.getMessage());
+            ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
