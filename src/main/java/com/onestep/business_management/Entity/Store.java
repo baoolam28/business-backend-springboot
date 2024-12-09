@@ -94,6 +94,10 @@ public class Store {
 
     private LocalDateTime updatedAt;
 
+    private boolean disabled ;
+
+    private boolean isActive ; 
+
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Inventory> inventories = new ArrayList<>();

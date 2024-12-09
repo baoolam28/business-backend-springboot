@@ -1,5 +1,6 @@
 package com.onestep.business_management.Service.StoreService;
 
+import com.onestep.business_management.DTO.StoreDTO.StoreIsActiveRequest;
 import com.onestep.business_management.DTO.StoreDTO.StoreRequest;
 import com.onestep.business_management.DTO.StoreDTO.StoreResponse;
 import com.onestep.business_management.Entity.Role;
@@ -33,9 +34,8 @@ public class StoreService {
     // Create or Update Store
     public StoreResponse saveStore(StoreRequest storeRequest) {
         UUID managerId = storeRequest.getStoreManagerId();
-        User storeManager = userRepository.findById(managerId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + managerId + " not found.")
-        );
+        User storeManager = userRepository.findById(managerId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + managerId + " not found."));
 
         List<Store> checkStoreCreated = storeRepository.findByStoreManager(storeManager);
 
@@ -60,7 +60,7 @@ public class StoreService {
     // Get Store by ID
     public StoreResponse getStoreById(UUID storeId) {
         Optional<Store> store = storeRepository.findById(storeId);
-        return store.map(StoreMapper.INSTANCE::toResponse).orElse(null);    
+        return store.map(StoreMapper.INSTANCE::toResponse).orElse(null);
     }
 
     // Get All Stores
@@ -108,10 +108,23 @@ public class StoreService {
 
     // Delete Store by ID
     public void deleteStoreById(Integer id) {
-        // do something 
+        // do something
     }
 
+    // Update Store Status (isActive)
+    public StoreResponse updateStoreStatus(StoreIsActiveRequest storeIsActiveRequest) {
+        UUID storeId = storeIsActiveRequest.getStoreId();
+        boolean isActive = storeIsActiveRequest.isActive();
 
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Store with id " + storeId + " not found."));
 
+        // Cập nhật trạng thái isActive
+        store.setActive(isActive);
+        store.setUpdatedAt(LocalDateTime.now());
+
+        Store updatedStore = storeRepository.save(store);
+        return StoreMapper.INSTANCE.toResponse(updatedStore);
+    }
 
 }

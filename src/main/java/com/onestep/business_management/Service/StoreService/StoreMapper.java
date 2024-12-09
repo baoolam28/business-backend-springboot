@@ -1,5 +1,6 @@
 package com.onestep.business_management.Service.StoreService;
 
+import com.onestep.business_management.DTO.StoreDTO.StoreIsActiveRequest;
 import com.onestep.business_management.DTO.StoreDTO.StoreRequest;
 import com.onestep.business_management.DTO.StoreDTO.StoreResponse;
 import com.onestep.business_management.Entity.Store;
@@ -15,5 +16,9 @@ public interface StoreMapper {
     Store toEntity(StoreRequest storeRequest);
 
     @Mapping(target = "storeManagerId", source = "storeManager.userId")
+    @Mapping(target = "storeManagerName" , source = "storeManager.username")
+    @Mapping(target = "storeManagerPhone" , source = "storeManager.phoneNumber")
     StoreResponse toResponse(Store store);
+    
+    Store isActiveToEntity(StoreIsActiveRequest storeIsActiveRequest);
 }
