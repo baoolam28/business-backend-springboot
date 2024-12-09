@@ -1,6 +1,5 @@
 package com.onestep.business_management.DTO.ProductDTO;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,21 +7,21 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.UUID;
 
-import com.onestep.business_management.DTO.ReviewDTO.ReviewResponse;
-
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class ProductOnlineResponse {
+@AllArgsConstructor
+public class ProdOnlineResponse {
     private Integer productId;
+    private Integer categoryId;
+    private String categoryName;
     private String productName;
     private Double price;
-    private String description;
-    private String categoryName;
-    private UUID storeId;
     private String storeName;
-    private String district;
-    private List<Variants> variants;
+    private String pickupAddress;
+    private Double rating;
+    private Integer totalReviews;
     private List<String> images;
-    private List<ReviewResponse> reviews;
+    private String description;
+    private UUID storeId;
+    private String district;
 }

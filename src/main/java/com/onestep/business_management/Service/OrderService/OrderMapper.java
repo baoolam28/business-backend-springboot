@@ -10,6 +10,7 @@ import com.onestep.business_management.Utils.MapperService;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,6 +46,13 @@ public interface OrderMapper {
             response.setBarcode(detail.getBarcode());
             Product product = detail.getProduct();
             response.setProductId(product.getProductId());
+            List<Image> images = product.getImages();
+            List<String> imageUrls = new ArrayList<>();
+            if(!images.isEmpty()){
+                images.stream().map(image ->
+                        imageUrls.add(image.getFileName()));
+            }
+            response.setImages(imageUrls);
             return response;
         }).toList();
     }

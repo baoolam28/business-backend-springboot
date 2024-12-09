@@ -1,7 +1,9 @@
 package com.onestep.business_management.Service.StoreService;
 
+import com.onestep.business_management.DTO.StoreDTO.StoreIsActiveRequest;
 import com.onestep.business_management.DTO.StoreDTO.StoreRequest;
 import com.onestep.business_management.DTO.StoreDTO.StoreResponse;
+import com.onestep.business_management.Entity.Role;
 import com.onestep.business_management.Entity.Store;
 import com.onestep.business_management.Entity.User;
 import com.onestep.business_management.Exeption.ResourceNotFoundException;
@@ -16,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -31,9 +34,8 @@ public class StoreService {
     // Create or Update Store
     public StoreResponse saveStore(StoreRequest storeRequest) {
         UUID managerId = storeRequest.getStoreManagerId();
-        User storeManager = userRepository.findById(managerId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + managerId + " not found.")
-        );
+        User storeManager = userRepository.findById(managerId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + managerId + " not found."));
 
         List<Store> checkStoreCreated = storeRepository.findByStoreManager(storeManager);
 
@@ -58,7 +60,7 @@ public class StoreService {
     // Get Store by ID
     public StoreResponse getStoreById(UUID storeId) {
         Optional<Store> store = storeRepository.findById(storeId);
-        return store.map(StoreMapper.INSTANCE::toResponse).orElse(null);    
+        return store.map(StoreMapper.INSTANCE::toResponse).orElse(null);
     }
 
     // Get All Stores
@@ -70,24 +72,59 @@ public class StoreService {
     }
 
     public StoreResponse getStoreByUser(UUID userId){
-        User storeManager = userRepository.findById(userId).orElseThrow(() ->
+        Store result =  new Store();
+        User exitsUser = userRepository.findById(userId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + userId + " not found.")
         );
 
-        List<Store> store = storeRepository.findByStoreManager(storeManager);
+        Set<Role> roleTaken = exitsUser.getRoles();
+        Role curentRole = new Role();
 
-        if(store.isEmpty()){
-            throw new ResourceNotFoundException("Store not found!");
+        if(roleTaken.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Role with id " + userId + " not found.");
         }
-        return StoreMapper.INSTANCE.toResponse(store.get(0));
+
+        curentRole = roleTaken.iterator().next();
+
+        if (curentRole.getRoleName().equals("ROLE_SELLER")){
+            List<Store> stores = storeRepository.findByStoreManager(exitsUser);
+            if(stores.isEmpty()){
+                throw new ResourceNotFoundException("Store not found!");
+            }
+            result = stores.get(0);
+        }
+
+        if(curentRole.getRoleName().equals("ROLE_STAFF")){
+            UUID storeId = exitsUser.getStore().getStoreId();
+
+            result = storeRepository.findById(storeId).orElseThrow(
+                    () -> new ResourceNotFoundException("Store not found!")
+            );
+        }
+
+
+        return StoreMapper.INSTANCE.toResponse(result);
     }
 
     // Delete Store by ID
     public void deleteStoreById(Integer id) {
-        // do something 
+        // do something
     }
 
+    // Update Store Status (isActive)
+    public StoreResponse updateStoreStatus(StoreIsActiveRequest storeIsActiveRequest) {
+        UUID storeId = storeIsActiveRequest.getStoreId();
+        boolean isActive = storeIsActiveRequest.isActive();
 
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Store with id " + storeId + " not found."));
 
+        // Cập nhật trạng thái isActive
+        store.setActive(isActive);
+        store.setUpdatedAt(LocalDateTime.now());
+
+        Store updatedStore = storeRepository.save(store);
+        return StoreMapper.INSTANCE.toResponse(updatedStore);
+    }
 
 }

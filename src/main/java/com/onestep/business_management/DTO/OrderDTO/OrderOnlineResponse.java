@@ -15,6 +15,13 @@ import java.util.UUID;
 public class OrderOnlineResponse {
     private UUID orderId;
     private UUID userId;
+    private String userName; 
+    private String imageName ; 
+    private String phone ;
+    private String address ; 
+    private String receiver ; 
+    private String district ;
+    private String province ; 
     private Date orderDate;
     private String status;
     private boolean paymentStatus;

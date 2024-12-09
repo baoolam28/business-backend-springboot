@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -42,6 +43,7 @@ public class Store {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "imageId", nullable = true)
+    @JsonIgnore
     private Image storeAvatar;
 
     @Column(name = "storeLocation", length = 255, nullable = true, columnDefinition = "NVARCHAR(255)")
@@ -91,6 +93,10 @@ public class Store {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    private boolean disabled ;
+
+    private boolean isActive ; 
 
     @OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
     @JsonIgnore
