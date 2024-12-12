@@ -155,6 +155,7 @@ public class AuthenticationService {
         userInfo.setRole(roleName);
         userInfo.setFullName(fullName);
         Image image = user.getImage();
+        System.out.println("image: "+ image.getFileName());
         if (image != null) {
             userInfo.setImage(image.getFileName());
         }

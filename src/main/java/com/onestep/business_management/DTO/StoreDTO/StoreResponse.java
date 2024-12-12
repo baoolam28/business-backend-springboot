@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class StoreResponse {
     private UUID storeId;
     private UUID storeManagerId;
+    private String storeImage;
     private String storeName;
     private String storeLocation;
     private String storeDescription;

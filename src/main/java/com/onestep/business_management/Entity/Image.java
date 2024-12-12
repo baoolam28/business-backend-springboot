@@ -18,12 +18,16 @@ public class Image {
 
     private String fileName;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "productId", nullable = true)
     private Product product;
 
-    @OneToOne()
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "userId", nullable = true)
     private User user;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "storeAvatar", nullable = true)
+    private Store store;
 
 }
