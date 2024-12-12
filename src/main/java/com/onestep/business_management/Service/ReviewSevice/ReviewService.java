@@ -18,14 +18,17 @@ import com.onestep.business_management.DTO.ReviewDTO.ProductReviewRequest;
 import com.onestep.business_management.DTO.ReviewDTO.ProductReviewResponse;
 import com.onestep.business_management.DTO.ReviewDTO.ReviewRequest;
 import com.onestep.business_management.DTO.ReviewDTO.ReviewResponse;
+import com.onestep.business_management.Entity.Image;
 import com.onestep.business_management.Entity.Product;
 import com.onestep.business_management.Entity.ProductDetail;
 import com.onestep.business_management.Entity.Review;
 import com.onestep.business_management.Entity.User;
 import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Repository.ProductDetailRepository;
+import com.onestep.business_management.Repository.ProductRepository;
 import com.onestep.business_management.Repository.ReviewRepository;
 import com.onestep.business_management.Utils.MapperService;
+import com.onestep.business_management.Utils.StringToMapConverter;
 
 @Service
 public class ReviewService {
@@ -38,61 +41,111 @@ public class ReviewService {
     @Autowired
     private ProductDetailRepository productDetailRepository;
 
+    @Autowired
+    private ProductRepository productRepository;
+
 
 
     public ProductReviewResponse getAllReviewByProductId(Integer productId){
-        List<Review> reviews = reviewRepository.findByAllReviewByProductDetailId(productId).orElseThrow(
-                () -> new ResourceNotFoundException("Review not found!")
+        Product product = productRepository.findById(productId).orElseThrow(
+            () -> new ResourceNotFoundException("not found product by productId " + productId)
         );
-
         ProductReviewResponse response = new ProductReviewResponse();
-       response.setTotalReview(reviews.size());
-       List<ReviewResponse> reviewResponse = new ArrayList<>();
-       for(Review review : reviews){
-        reviewResponse.add(ReviewMapper.INSTANCE.toResponse(review));
-       }
-       response.setReview(reviewResponse);
-       
+        List<Integer> productDetailIds = product.getProductDetails()
+            .stream()
+            .map(ProductDetail::getProductDetailId)
+            .collect(Collectors.toList());
+        
+        if(productDetailIds == null){
+            return new ProductReviewResponse(0, new ArrayList<>());
+        }
+
+        List<Review> reviews = reviewRepository.findAllReviewsByProductDetailIds(productDetailIds).orElse(null);
+        if(reviews != null){
+            List<ReviewResponse> reviewResponseList = reviews.stream()
+            .map(review -> {
+                ReviewResponse reviewResponse = ReviewMapper.INSTANCE.toResponse(review);
+                reviewResponse.setImages(review.getImageUrls());
+                return reviewResponse;
+            })
+            .collect(Collectors.toList());
+        
+            response.setTotalReview(reviewResponseList.size());
+            response.setReview(reviewResponseList);
+        }
         return response;
     }
-
-    // public ProductReviewResponse getAllReviewByRating(Integer productId, Integer rating){
-    //     List<Review> reviews = reviewRepository.findReviewByRating(productId, rating);
-    //     if (reviews.isEmpty()) {
-    //         return new ProductReviewResponse(0, List.of());
-    //     }
-    //    ProductReviewResponse response = new ProductReviewResponse();
-    //    response.setTotalReview(reviews.size());
-    //    List<ReviewResponse> reviewResponse = new ArrayList<>();
-    //    for(Review review : reviews){
-    //     reviewResponse.add(ReviewMapper.INSTANCE.toResponse(review));
-    //    }
-    //    response.setReview(reviewResponse);
-       
-    //     return response;
-    // }
 
     public ReviewResponse getReviewByProductDetailId(Integer productDetailId, UUID userId){
         Review review = reviewRepository.findReviewByProductDetailId(productDetailId, userId).orElseThrow(
             () -> new ResourceNotFoundException("Review not found for productDetailId: " + productDetailId + " and userId: " + userId)
         );
-        return ReviewMapper.INSTANCE.toResponse(review);
+        ReviewResponse response = ReviewMapper.INSTANCE.toResponse(review);
+        if(review.getImageUrls() != null){
+            response.setImages(review.getImageUrls());
+        }
+        return response;
     }
     
-    public ReviewResponse createNewReview(Integer productDetailId, ReviewRequest reviewRequest){
+    public ReviewResponse createNewReview(ReviewRequest reviewRequest){
+        try {
+            ReviewResponse response = new ReviewResponse();
 
-        ProductDetail productDetail = productDetailRepository.findById(productDetailId).orElseThrow(
+        ProductDetail productDetail = productDetailRepository.findById(reviewRequest.getProductDetailId()).orElseThrow(
             () -> new ResourceNotFoundException("ProductDetail not found")
         );
         Product product = productDetail.getProduct();
         User user = mapperService.findUserById(reviewRequest.getUserId());
-
         Review newReview = ReviewMapper.INSTANCE.toEntity(reviewRequest);
-        newReview.setProductDetail(productDetail);
+        if(reviewRequest.getImages() != null){
+            List<Image> imagesUploaded = mapperService.uploadImages(reviewRequest.getImages());
+            if(imagesUploaded.size() > 0 && imagesUploaded != null){
+                List<String> imagesRes = new ArrayList<>();
+                for(Image image : imagesUploaded){
+                    imagesRes.add(image.getFileName());
+                    response.setImages(imagesRes);
+                    newReview.setImageUrls(imagesRes);
+                }
+            }
+        }
+
         newReview.setProductDetail(productDetail);
         newReview.setUser(user);
+        newReview.setIsReviewed(true);
+        newReview.setReviewDate(new Date());
         Review saveReview = reviewRepository.save(newReview);
-        return ReviewMapper.INSTANCE.toResponse(saveReview);
+        response.setReviewId(saveReview.getReviewId());
+        response.setUsername(user.getUsername());
+        response.setReviewDate(saveReview.getReviewDate());
+        response.setRating(saveReview.getRating());
+        response.setProductName(product.getProductName());
+        response.setProductDetailId(reviewRequest.getProductDetailId());
+        response.setIsReviewed(saveReview.getIsReviewed());
+        Image avatar = user.getImage();
+        if(avatar != null) {
+            response.setImageUser(avatar.getFileName());
+        }
+        List<Image> productImages = product.getImages();
+        
+        if(productImages.size() > 0 && productImages != null){
+            Image productImage = productImages.get(0);
+            response.setProductImage(productImage.getFileName());
+        }
+        response.setComment(saveReview.getComment());
+        response.setAttributes(StringToMapConverter.convertStringToMap(productDetail.getAttributes()));
+        return response;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+        
+    }
+
+    public boolean checkIfReviewed(Integer productDetailId, UUID userId){
+        if (productDetailId == null || userId == null) {
+            throw new IllegalArgumentException("productDetailId and userId must not be null");
+        }
+        return reviewRepository.findReviewByProductDetailId(productDetailId, userId).isPresent();
     }
 
     private boolean canEditReview(Date reviewDate){
@@ -113,8 +166,6 @@ public class ReviewService {
 
         review.setComment(reviewRequest.getComment());
         review.setRating(reviewRequest.getRating());
-        review.setImageUrls(reviewRequest.getImageUrls());
-        review.setVideoUrl(reviewRequest.getVideoUrl());
         
         Review updatedReview = reviewRepository.save(review);
 
@@ -130,4 +181,6 @@ public class ReviewService {
         reviewRepository.delete(review);
         return response;
     }
+
+    
 }

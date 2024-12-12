@@ -62,25 +62,25 @@ public class ShippingAddressController {
         }
     }
 
-    // @GetMapping("/address/{addressId}")
-    // public ResponseEntity<?> getShippingAddressesById(
-    //         @PathVariable Integer addressId) {
-    //     try {
-    //         ShipmentAddressRespone addresses = shipmentAddressService.getAddressById(addressId);
-    //         ApiResponse<ShipmentAddressRespone> apiResponse = new ApiResponse<>(
-    //                 HttpStatus.OK.value(),
-    //                 "Shipping addresses retrieved successfully",
-    //                 addresses,
-    //                 LocalDateTime.now());
-    //         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    //     } catch (Exception e) {
-    //         System.out.println("Error retrieving shipping addresses: " + e.getMessage());
-    //         ApiResponse<?> errorResponse = new ApiResponse<>(
-    //                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-    //                 e.getMessage());
-    //         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    //     }
-    // }
+    @GetMapping("/address/{addressId}")
+    public ResponseEntity<?> getShippingAddressesById(
+            @PathVariable Integer addressId) {
+        try {
+            ShipmentAddressRespone addresses = shipmentAddressService.getAddressById(addressId);
+            ApiResponse<ShipmentAddressRespone> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Shipping addresses retrieved successfully",
+                    addresses,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error retrieving shipping addresses: " + e.getMessage());
+            ApiResponse<?> errorResponse = new ApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     // Xóa địa chỉ giao hàng theo ID
     @DeleteMapping("/{id}")

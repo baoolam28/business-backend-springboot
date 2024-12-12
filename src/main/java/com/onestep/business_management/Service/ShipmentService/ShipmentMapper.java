@@ -33,6 +33,7 @@ public interface ShipmentMapper {
     @Mapping(target = "userId", source = "orderOnline.user.userId")
     @Mapping(target = "addressId", source = "shippingAddress.addressId")
     @Mapping(target = "orderDate", source = "orderOnline.orderDate")
+    @Mapping(target = "paymentMethod", source = "orderOnline.paymentMethod")
     @Mapping(target = "storeId", source = "orderOnline.store.storeId")
     @Mapping(target = "storeName", source = "orderOnline.store.storeName")
     @Mapping(target = "shippingStatus", source = "shippingStatus")

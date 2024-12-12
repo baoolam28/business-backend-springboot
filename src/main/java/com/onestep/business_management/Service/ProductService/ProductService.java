@@ -51,8 +51,6 @@ public class ProductService {
     @Autowired
     private ImageService imageService;
 
-    @Autowired
-    private ReviewService reviewService;
 
     public ProductResponse createProduct(ProductRequest productRequest) {
 
