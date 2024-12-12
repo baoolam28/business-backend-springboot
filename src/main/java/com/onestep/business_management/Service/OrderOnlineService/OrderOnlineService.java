@@ -91,7 +91,7 @@ public class OrderOnlineService {
             orderOnlineRepository.save(savedOrder); // Ensure the order with shipments is saved
 
             // Convert the saved order to response format
-            OrderOnlineResponse response = OrderOnlineMapper.INSTANCE.toResponse(savedOrder);
+            OrderOnlineResponse response = OrderOnlineMapper.INSTANCE.toOrderResponse(savedOrder);
             responses.add(response);
         }
 
@@ -125,7 +125,7 @@ public class OrderOnlineService {
         }
 
         return orders.stream()
-                .map(OrderOnlineMapper.INSTANCE::toResponse)
+                .map(OrderOnlineMapper.INSTANCE::toOrderResponse)
                 .collect(Collectors.toList());
     }
 
@@ -141,7 +141,7 @@ public class OrderOnlineService {
 
             // Chuyển đổi các đơn hàng thành OrderOnlineResponse
             return orders.stream()
-                    .map(OrderOnlineMapper.INSTANCE::toResponse)
+                    .map(OrderOnlineMapper.INSTANCE::toOrderResponse)
                     .collect(Collectors.toList());
 
         } catch (Exception e) {
@@ -180,7 +180,7 @@ public class OrderOnlineService {
                     orderStatusRequest.getStatus());
 
             // Chuyển đổi đơn hàng đã cập nhật thành phản hồi
-            return OrderOnlineMapper.INSTANCE.toResponse(updatedOrder);
+            return OrderOnlineMapper.INSTANCE.toOrderResponse(updatedOrder);
 
         } catch (Exception e) {
             logger.error("Error updating order status for ID: {}", stringId, e);

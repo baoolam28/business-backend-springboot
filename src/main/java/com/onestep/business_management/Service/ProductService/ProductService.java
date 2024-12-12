@@ -138,6 +138,7 @@ public class ProductService {
                 () -> new ResourceNotFoundException("Product with id = "+productId+" not found!")
         );
         ProductOnlineResponse response = ProductMapper.INSTANCE.productToOnlineResponse(product);
+
         return response;
     }
 

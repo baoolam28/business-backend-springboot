@@ -18,6 +18,7 @@ public interface StoreMapper {
     @Mapping(target = "storeManagerId", source = "storeManager.userId")
     @Mapping(target = "storeManagerName" , source = "storeManager.username")
     @Mapping(target = "storeManagerPhone" , source = "storeManager.phoneNumber")
+    @Mapping(target = "storeImage", source = "storeAvatar.fileName")
     StoreResponse toResponse(Store store);
     
     Store isActiveToEntity(StoreIsActiveRequest storeIsActiveRequest);
