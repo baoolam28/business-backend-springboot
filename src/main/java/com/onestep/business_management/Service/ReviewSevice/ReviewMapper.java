@@ -24,9 +24,9 @@ public interface ReviewMapper {
 
     @Mapping(target = "productName", source = "productDetail.product.productName")
     @Mapping(target = "productDetailId", source = "productDetail.productDetailId")
-    @Mapping(target = "image", source = "productDetail.image")
+    @Mapping(target = "productImage", source = "productDetail.image")
     @Mapping(target = "username", source = "user.username")
-    @Mapping(target = "imageUser", source = "user.image")
+    @Mapping(target = "imageUser", source = "user.image.fileName")
     @Mapping(target = "attributes", source = "productDetail.attributes", qualifiedByName = "stringToMap")
     ReviewResponse toResponse(Review review);
 

@@ -5,6 +5,8 @@ import com.onestep.business_management.DTO.OrderDTO.OrderOnlineRequest;
 import com.onestep.business_management.DTO.OrderDTO.OrderOnlineResponse;
 import com.onestep.business_management.DTO.OrderDTO.OrderStatusRequest;
 import com.onestep.business_management.Entity.*;
+import com.onestep.business_management.Entity.OrderOnline.Status;
+import com.onestep.business_management.Entity.Shipment.ShippingStatus;
 import com.onestep.business_management.Exeption.ResourceNotFoundException;
 import com.onestep.business_management.Repository.OrderOnlineRepository;
 import com.onestep.business_management.Repository.ShipmentRepository;
@@ -31,6 +33,12 @@ public class OrderOnlineService {
 
     @Autowired
     private ShipmentRepository shipmentRepository;
+
+    public OrderOnline getOrderOnlineById(UUID orderId){
+        return orderOnlineRepository.findById(orderId).orElseThrow(
+                () -> new ResourceNotFoundException("Order with id: "+orderId+" not found!")
+        );
+    }
 
     @Transactional
     public List<OrderOnlineResponse> createMultipleOrders(OrderOnlineRequest orderRequest) {
@@ -143,15 +151,28 @@ public class OrderOnlineService {
     }
 
     @Transactional
-    public OrderOnlineResponse updateOrderStatus(String orderId, OrderStatusRequest orderStatusRequest) {
+    public OrderOnlineResponse updateOrderStatus(String stringId, OrderStatusRequest orderStatusRequest) {
         try {
             // Tìm đơn hàng theo orderId
-            OrderOnline order = orderOnlineRepository.findById(UUID.fromString(orderId))
+            UUID orderId = UUID.fromString(stringId);
+            OrderOnline order = orderOnlineRepository.findById(orderId)
                     .orElseThrow(() -> new ResourceNotFoundException(
                             "Order not found for ID: " + orderId));
 
+            
             // Cập nhật trạng thái cho đơn hàng
-            order.setStatus(orderStatusRequest.getStatus());
+            Status status = orderStatusRequest.getStatus();
+
+            order.setStatus(status);
+
+            if(status == Status.GIAO_HANG_THANH_CONG){
+                Shipment shipment = shipmentRepository.findShipmentByOrderOnlineId(orderId).orElse(null);
+                if(shipment != null){
+                    shipment.setShippingStatus(ShippingStatus.GIAO_HANG_THANH_CONG);
+                    shipmentRepository.save(shipment);
+                }
+            }
+            
 
             // Lưu thay đổi vào cơ sở dữ liệu
             OrderOnline updatedOrder = orderOnlineRepository.save(order);
@@ -162,7 +183,7 @@ public class OrderOnlineService {
             return OrderOnlineMapper.INSTANCE.toResponse(updatedOrder);
 
         } catch (Exception e) {
-            logger.error("Error updating order status for ID: {}", orderId, e);
+            logger.error("Error updating order status for ID: {}", stringId, e);
             throw e; // Ném lỗi để controller xử lý
         }
     }

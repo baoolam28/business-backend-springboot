@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -89,10 +90,11 @@ public class ReviewController {
         }
     }
 
-    @PostMapping("/newReview/{productDetailId}")
-    public ResponseEntity<?> createNewReview(@PathVariable Integer productDetailId, @RequestBody ReviewRequest reviewRequest){
+    @PostMapping(value = "/newReview", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> createNewReview(@ModelAttribute ReviewRequest reviewRequest){
         try {
-            ReviewResponse response = reviewService.createNewReview(productDetailId ,reviewRequest);
+            System.out.println("reviewRequest: "+reviewRequest);
+            ReviewResponse response = reviewService.createNewReview(reviewRequest);
             ApiResponse<ReviewResponse> apiResponse = new ApiResponse<>(
                 HttpStatus.OK.value(),
                 "Create Review successfully",
@@ -152,38 +154,4 @@ public class ReviewController {
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    // @PostMapping("/Save")
-    // public ResponseEntity<?> upLoadFile(@RequestParam("file") MultipartFile file){
-    //     try {
-    //         String fileUrl = fileService.saveFile(file);
-    //         ApiResponse<String> apiResponse = new ApiResponse<>(
-    //             HttpStatus.OK.value(),
-    //             "File uploaded successfully",
-    //             fileUrl,
-    //             LocalDateTime.now());
-    //         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    //     } catch (Exception e) {
-    //         System.out.println("Error uploading file: " + e.getMessage());
-    //         ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
-    //         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    //     }
-    // }
-
-    // @DeleteMapping("/Remove")
-    // public ResponseEntity<?> deleteFile(@RequestParam("filePath") String filePath){
-    //     try {
-    //         fileService.deleteFile(filePath);
-    //         ApiResponse<String> apiResponse = new ApiResponse<>(
-    //             HttpStatus.OK.value(),
-    //             "File deleted successfully",
-    //             null,
-    //             LocalDateTime.now());
-    //         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    //     } catch (Exception e) {
-    //         System.out.println("Error uploading file: " + e.getMessage());
-    //         ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
-    //         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    //     }
-    // }
 }

@@ -1,130 +1,113 @@
-package com.onestep.business_management.Controller.BuyerController;
+ package com.onestep.business_management.Controller.BuyerController;
 
-import java.time.LocalDateTime;
-import java.util.List;
+ import java.time.LocalDateTime;
+ import java.util.List;
 
-import com.onestep.business_management.DTO.API.ApiResponse;
-import com.onestep.business_management.DTO.ProductDTO.ProdOnlineResponse;
+ import com.onestep.business_management.DTO.API.ApiResponse;
+ import com.onestep.business_management.DTO.ProductDTO.ProdOnlineResponse;
 
-import com.onestep.business_management.DTO.ProductDTO.ProductOnlineResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+ import com.onestep.business_management.DTO.ProductDTO.ProductOnlineResponse;
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.http.HttpStatus;
+ import org.springframework.http.ResponseEntity;
+ import org.springframework.web.bind.annotation.*;
 
-import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
-import com.onestep.business_management.Exeption.ResourceNotFoundException;
-import com.onestep.business_management.Service.ProductService.ProductService;
-import com.onestep.business_management.Service.ReviewSevice.ReviewService;
+ import com.onestep.business_management.DTO.ProductDTO.ProductResponse;
+ import com.onestep.business_management.Exeption.ResourceNotFoundException;
+ import com.onestep.business_management.Service.ProductService.ProductService;
+ import com.onestep.business_management.Service.ReviewSevice.ReviewService;
 
-@RestController
-@RequestMapping("/api/buyer/products")
-public class BuyerProductController {
+ @RestController
+ @RequestMapping("/api/buyer/products")
+ public class BuyerProductController {
 
-    @Autowired
-    private ProductService productService;
+     @Autowired
+     private ProductService productService;
 
-    @Autowired
-    private ReviewService reviewService;
+     @Autowired
+     private ReviewService reviewService;
 
-    // @GetMapping("/online")
-    // public ResponseEntity<?> getAllProducts() {
-    //     try {
-    //         List<ProdOnlineResponse> response = productService.getProductsWithReviews();
-    //         ApiResponse<List<ProdOnlineResponse>> apiResponse = new ApiResponse<>(
-    //                 HttpStatus.OK.value(),
-    //                 "Products retrieved successfully",
-    //                 response,
-    //                 LocalDateTime.now());
-    //         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    //     } catch (Exception e) {
-    //         System.out.println("Error retrieving products: " + e.getMessage());
-    //         ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
-    //         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    //     }
-    // }
-
-    @GetMapping("/online")
-    public ResponseEntity<?> getProductsOnline() {
-        try {
-            List<ProductOnlineResponse> response = productService.getAllProductOnline();
-            ApiResponse<List<ProductOnlineResponse>> apiResponse = new ApiResponse<>(
-                    HttpStatus.OK.value(),
-                    "Products retrieved successfully",
-                    response,
-                    LocalDateTime.now());
-            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-        } catch (Exception e) {
-            System.out.println("Error retrieving products: " + e.getMessage());
-            ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+     @GetMapping("/online")
+     public ResponseEntity<?> getAllProducts() {
+         try {
+             List<ProdOnlineResponse> response = productService.getProductsWithReviews();
+             ApiResponse<List<ProdOnlineResponse>> apiResponse = new ApiResponse<>(
+                     HttpStatus.OK.value(),
+                     "Products retrieved successfully",
+                     response,
+                     LocalDateTime.now());
+             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+         } catch (Exception e) {
+             System.out.println("Error retrieving products: " + e.getMessage());
+             ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+         }
+     }
 
 
-    @GetMapping("/product-detail/{id}")
-    public ResponseEntity<?> getProductDetailByProduct(@PathVariable("id") Integer productId) {
-        try {
-            ProductOnlineResponse response = productService.getProductDetailOnlineById(productId);
-            ApiResponse<ProductOnlineResponse> apiResponse = new ApiResponse<>(
-                    HttpStatus.OK.value(),
-                    "Products retrieved successfully",
-                    response,
-                    LocalDateTime.now());
-            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-        } catch (Exception e) {
-            System.out.println("Error retrieving products: " + e.getMessage());
-            ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+     @GetMapping("/product-detail/{id}")
+     public ResponseEntity<?> getProductDetailByProduct(@PathVariable("id") Integer productId) {
+         try {
+             ProductOnlineResponse response = productService.getProductDetailOnlineById(productId);
+             ApiResponse<ProductOnlineResponse> apiResponse = new ApiResponse<>(
+                     HttpStatus.OK.value(),
+                     "Products retrieved successfully",
+                     response,
+                     LocalDateTime.now());
+             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+         } catch (Exception e) {
+             System.out.println("Error retrieving products: " + e.getMessage());
+             ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+         }
+     }
 
 
-    @GetMapping("/search")
-    public ResponseEntity<List<ProductResponse>> searchByKeyword(@RequestParam("keyword") String keyword) {
-        try {
-            List<ProductResponse> response = productService.searchByKeyword(keyword);
-            if (response != null && !response.isEmpty()) {
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            // Handle exceptions
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+     @GetMapping("/search")
+     public ResponseEntity<List<ProductResponse>> searchByKeyword(@RequestParam("keyword") String keyword) {
+         try {
+             List<ProductResponse> response = productService.searchByKeyword(keyword);
+             if (response != null && !response.isEmpty()) {
+                 return new ResponseEntity<>(response, HttpStatus.OK);
+             } else {
+                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+             }
+         } catch (Exception e) {
+             // Handle exceptions
+             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+         }
+     }
 
-    @GetMapping("/category/{categoryId}")
-    public ResponseEntity<ApiResponse<List<ProdOnlineResponse>>> findByCategory(
-            @PathVariable("categoryId") int categoryId) {
-        try {
-            List<ProdOnlineResponse> response = productService.findByCategoryId(categoryId);
-            // Nếu không có ngoại lệ, trả về danh sách sản phẩm
-            ApiResponse<List<ProdOnlineResponse>> apiResponse = new ApiResponse<>(
-                    HttpStatus.OK.value(),
-                    "Products retrieved successfully",
-                    response,
-                    LocalDateTime.now());
-            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-        } catch (ResourceNotFoundException e) {
-            // Trả về 404 nếu không tìm thấy sản phẩm
-            ApiResponse<List<ProdOnlineResponse>> apiResponse = new ApiResponse<>(
-                    HttpStatus.NOT_FOUND.value(),
-                    e.getMessage(),
-                    null,
-                    LocalDateTime.now());
-            return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            // Xử lý ngoại lệ khác
-            ApiResponse<List<ProdOnlineResponse>> apiResponse = new ApiResponse<>(
-                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                    "An error occurred: " + e.getMessage(),
-                    null,
-                    LocalDateTime.now());
-            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+     @GetMapping("/category/{categoryId}")
+     public ResponseEntity<ApiResponse<List<ProdOnlineResponse>>> findByCategory(
+             @PathVariable("categoryId") int categoryId) {
+         try {
+             List<ProdOnlineResponse> response = productService.findByCategoryId(categoryId);
+             // Nếu không có ngoại lệ, trả về danh sách sản phẩm
+             ApiResponse<List<ProdOnlineResponse>> apiResponse = new ApiResponse<>(
+                     HttpStatus.OK.value(),
+                     "Products retrieved successfully",
+                     response,
+                     LocalDateTime.now());
+             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+         } catch (ResourceNotFoundException e) {
+             // Trả về 404 nếu không tìm thấy sản phẩm
+             ApiResponse<List<ProdOnlineResponse>> apiResponse = new ApiResponse<>(
+                     HttpStatus.NOT_FOUND.value(),
+                     e.getMessage(),
+                     null,
+                     LocalDateTime.now());
+             return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+         } catch (Exception e) {
+             // Xử lý ngoại lệ khác
+             ApiResponse<List<ProdOnlineResponse>> apiResponse = new ApiResponse<>(
+                     HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                     "An error occurred: " + e.getMessage(),
+                     null,
+                     LocalDateTime.now());
+             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+         }
+     }
 
     
-}
+ }
