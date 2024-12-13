@@ -1,5 +1,6 @@
 package com.onestep.business_management.Service.AuthService;
 
+import com.onestep.business_management.DTO.AuthDTO.AdminRegisterRespone;
 import com.onestep.business_management.DTO.AuthDTO.BuyerRegistrationRequest;
 import com.onestep.business_management.DTO.AuthDTO.BuyerRegistrationResponse;
 
@@ -48,7 +49,7 @@ public interface UserMapper {
             response.setImageName(user.getImage().getFileName());
         }
 
-        return response;    
+        return response;
     }
 
     default Set<String> map(Set<Role> roles) {
@@ -58,10 +59,14 @@ public interface UserMapper {
                 .map(Role::getRoleName) // Assuming Role has a getRoleName method
                 .collect(Collectors.toSet());
     }
+
     User staffToEntity(StaffRegistrationRequest staffRequest);
 
     @Mapping(target = "roles", source = "roles")
     StaffResgitrationResponse staffToResponse(User user);
+
+    @Mapping(target = "roles", source = "roles")
+    AdminRegisterRespone adminToRegisterRespone(User user);
 
     @Mapping(target = "fullName", source = "fullName")
     @Mapping(target = "email", source = "email")
