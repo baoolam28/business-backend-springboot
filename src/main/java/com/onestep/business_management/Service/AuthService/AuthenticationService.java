@@ -65,12 +65,14 @@ public class AuthenticationService {
     @Autowired
     MapperService mapperService;
 
-    private Map<String, Integer> roleCode = new HashMap<>() {{
-        put("ROLE_ADMIN", 1);
-        put("ROLE_SELLER",  2);
-        put("ROLE_BUYER", 3);
-        put("ROLE_STAFF", 4);
-    }};
+    private Map<String, Integer> roleCode = new HashMap<>() {
+        {
+            put("ROLE_ADMIN", 1);
+            put("ROLE_SELLER", 2);
+            put("ROLE_BUYER", 3);
+            put("ROLE_STAFF", 4);
+        }
+    };
 
     public void create_account(User user) {
 
@@ -155,7 +157,11 @@ public class AuthenticationService {
         userInfo.setRole(roleName);
         userInfo.setFullName(fullName);
         Image image = user.getImage();
+<<<<<<< HEAD
 
+=======
+        System.out.println("image: " + image.getFileName());
+>>>>>>> cdc088c89eed50fca638ceaeadef090303d8ca65
         if (image != null) {
             userInfo.setImage(image.getFileName());
         }
@@ -250,7 +256,7 @@ public class AuthenticationService {
             user.setPassword(newPassword);
             userRepository.save(user);
         } else {
-            throw new RuntimeException("Mật khẩu cũ không đúng"); 
+            throw new RuntimeException("Mật khẩu cũ không đúng");
         }
         return UserMapper.INSTANCE.userToBuyerInfoRespont(user);
     }
@@ -270,7 +276,7 @@ public class AuthenticationService {
         String passwordEncode = passwordEncoder.encode((staffRegistrationRequest.getPassword()));
         staffUser.setPassword(passwordEncode);
         staffUser.setPhoneNumber(staffRegistrationRequest.getPhoneNumber());
-        
+
         int roleStaff = roleCode.get("ROLE_STAFF");
         Role newRole = roleRepository.findById(roleStaff).orElseThrow(
                 () -> new ResourceNotFoundException("Seller role not found!"));
@@ -284,9 +290,9 @@ public class AuthenticationService {
         if (store == null) {
             throw new ResourceNotFoundException("Store not found");
         } else {
-            if (store.getStaffMembers().size() >= 3)  {
+            if (store.getStaffMembers().size() >= 3) {
                 throw new IllegalArgumentException("Full staff");
-            }  
+            }
         }
         staffUser.setStore(store);
         User newStaffUser = userRepository.save(staffUser);
@@ -316,5 +322,66 @@ public class AuthenticationService {
                                 .map(role -> role.getRoleName()) // Lấy danh sách roleName
                                 .collect(Collectors.toSet())))
                 .collect(Collectors.toList());
+    }
+
+    public AdminRegisterRespone adminRegister(AdminRegisterRequest adminRegisterRequest) {
+        // Kiểm tra nếu tài khoản đã tồn tại
+        User existingUser = userRepository.findByUsername(adminRegisterRequest.getUsername()).orElse(null);
+        if (existingUser != null) {
+            throw new IllegalArgumentException("Account already exists");
+        }
+
+        // Tạo người dùng mới
+        User adminUser = new User();
+        adminUser.setUsername(adminRegisterRequest.getUsername());
+        adminUser.setFullName(adminRegisterRequest.getFullName());
+        adminUser.setEmail(adminRegisterRequest.getEmail());
+        adminUser.setPhoneNumber(adminRegisterRequest.getPhoneNumber());
+
+        // Mã hóa mật khẩu
+        String encodedPassword = passwordEncoder.encode(adminRegisterRequest.getPassword());
+        adminUser.setPassword(encodedPassword);
+
+        // Gán vai trò
+        int roleAdminId = roleCode.get("ROLE_ADMIN");
+        Role adminRole = roleRepository.findById(roleAdminId).orElseThrow(
+                () -> new ResourceNotFoundException("Admin role not found!"));
+
+        Set<Role> roles = new HashSet<>();
+        roles.add(adminRole);
+        adminUser.setRoles(roles);
+
+        // Lưu người dùng mới vào cơ sở dữ liệu
+        User newAdminUser = userRepository.save(adminUser);
+        return UserMapper.INSTANCE.adminToRegisterRespone(newAdminUser);
+    }
+
+    public List<AdminRegisterRespone> getAllAdminAccounts() {
+        // Lấy danh sách người dùng với vai trò Admin từ cơ sở dữ liệu
+        List<User> adminUsers = userRepository.findByRoles_RoleName("ROLE_ADMIN");
+
+        // Chuyển đổi danh sách User sang danh sách AdminRegisterRespone
+        return adminUsers.stream()
+                .map(user -> new AdminRegisterRespone(
+                        user.getUserId(),
+                        user.getUsername(),
+                        user.getPhoneNumber(),
+                        user.getFullName(),
+                        user.getEmail(),
+                        user.getRoles().stream()
+                                .map(roles -> roles.getRoleName()) // Lấy danh sách roleName
+                                .collect(Collectors.toSet())))
+                .collect(Collectors.toList());
+    }
+
+    public void deleteAdmin(UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("Admin with ID " + userId + " not found"));
+
+        if (user.getRoles().stream().noneMatch(role -> "ROLE_ADMIN".equals(role.getRoleName()))) {
+            throw new IllegalArgumentException("User is not a staff member");
+        }
+
+        userRepository.delete(user);
     }
 }
