@@ -20,6 +20,7 @@ public class ReviewResponse{
     private String productName;
     private String productImage;
     private String username;
+    private String fullName;
     private String imageUser;
     private Map<String, String> attributes;
     private Integer rating;
