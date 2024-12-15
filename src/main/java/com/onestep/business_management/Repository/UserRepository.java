@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface UserRepository extends JpaRepository<User,UUID> {
+public interface UserRepository extends JpaRepository<User, UUID> {
 
     Optional<User> findByUsername(String username);
 
@@ -22,5 +22,6 @@ public interface UserRepository extends JpaRepository<User,UUID> {
 
     List<User> findByStore_StoreIdAndRoles_RoleName(UUID storeId, String roleName);
 
+    List<User> findByRoles_RoleName(String roleName);
 
 }
