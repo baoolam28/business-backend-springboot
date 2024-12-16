@@ -18,6 +18,7 @@ import java.util.UUID;
 import com.onestep.business_management.Service.ReportService.*;
 import com.onestep.business_management.DTO.ReportDTO.*;
 import com.onestep.business_management.DTO.API.*;
+import com.onestep.business_management.DTO.OrderDTO.OrderOfflineDetailResponse;
 
 
 @RestController
@@ -67,42 +68,42 @@ public class ReportSellerController {
         }
     }
 
-    @GetMapping("/{storeId}/by-month")
-    public ResponseEntity<?> getOrderTotalValueByMonth(@PathVariable UUID storeId) {
-        try {
-            // Gọi service để lấy dữ liệu
-            List<Object[]> result = reportService.getOrderTotalValueByMonth(storeId);
+   @GetMapping("/{storeId}/by-month")
+public ResponseEntity<?> getOrderTotalValueByMonth(@PathVariable UUID storeId) {
+    try {
+        // Gọi service để lấy dữ liệu
+        List<Object[]> result = reportService.getOrderTotalValueByMonth(storeId);
 
-            if (result.isEmpty()) {
-                // Trả về response nếu không có dữ liệu
-                ApiResponse<List<Object[]>> apiResponse = new ApiResponse<>(
-                        HttpStatus.NO_CONTENT.value(),
-                        "No data found for the given store and month range.",
-                        null,
-                        LocalDateTime.now());
-                return new ResponseEntity<>(apiResponse, HttpStatus.NO_CONTENT);
-            }
-
-            // Trả về response nếu có dữ liệu
+        if (result.isEmpty()) {
+            // Trả về response nếu không có dữ liệu
             ApiResponse<List<Object[]>> apiResponse = new ApiResponse<>(
-                    HttpStatus.OK.value(),
-                    "Monthly data retrieved successfully",
-                    result,
-                    LocalDateTime.now());
-
-            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-
-        } catch (Exception e) {
-            // Log lỗi và trả về response lỗi
-            System.out.println("Error retrieving data by month: " + e.getMessage());
-            ApiResponse errorResponse = new ApiResponse(
-                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                    "Error retrieving data: " + e.getMessage(),
+                    HttpStatus.NO_CONTENT.value(),
+                    "No data found for the given store and month range.",
                     null,
                     LocalDateTime.now());
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(apiResponse, HttpStatus.NO_CONTENT);
         }
+
+        // Trả về response nếu có dữ liệu
+        ApiResponse<List<Object[]>> apiResponse = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Monthly data retrieved successfully",
+                result,
+                LocalDateTime.now());
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
+    } catch (Exception e) {
+        // Log lỗi và trả về response lỗi
+        System.out.println("Error retrieving data by month: " + e.getMessage());
+        ApiResponse errorResponse = new ApiResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Error retrieving data: " + e.getMessage(),
+                null,
+                LocalDateTime.now());
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+}
     // Endpoint để lấy tổng giá trị đơn hàng theo năm
     @GetMapping("/{storeId}/by-year")
     public ResponseEntity<?> getOrderTotalValueByYear(@PathVariable UUID storeId) {
@@ -259,4 +260,73 @@ public class ReportSellerController {
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/{storeId}/all-orders")
+    public ResponseEntity<?> getAllOrderByStoreId(@PathVariable UUID storeId) {
+        try {
+            // Lấy danh sách đơn hàng đã thanh toán trong ngày hôm nay theo storeId
+            List<Object[]> orders = reportService.getAllOrderByStoreId(storeId);
+
+            if (orders.isEmpty()) {
+                ApiResponse<List<Object[]>> apiResponse = new ApiResponse<>(
+                        HttpStatus.NO_CONTENT.value(),
+                        "Not found orders paid at the store",
+                        null,
+                        LocalDateTime.now());
+                return new ResponseEntity<>(apiResponse, HttpStatus.NO_CONTENT);
+            }
+
+            ApiResponse<List<Object[]>> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "List of orders paid at the store.",
+                    orders,
+                    LocalDateTime.now());
+
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            ApiResponse errorResponse = new ApiResponse(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Error: " + e.getMessage(),
+                    null,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/{storeId}/order-detail")
+    public ResponseEntity<?> getOrderDetailByStoreId(@PathVariable UUID storeId) {
+        try {
+            // Lấy danh sách đơn hàng từ service
+            List<OrderOfflineDetailResponse> orders = reportService.getOrdersByStoreId(storeId);
+
+            if (orders.isEmpty()) {
+                // Nếu không có đơn hàng
+                ApiResponse<List<OrderOfflineDetailResponse>> apiResponse = new ApiResponse<>(
+                        HttpStatus.NO_CONTENT.value(),
+                        "No orders found for the store",
+                        null,
+                        LocalDateTime.now());
+                return new ResponseEntity<>(apiResponse, HttpStatus.NO_CONTENT);
+            }
+
+            // Nếu có đơn hàng
+            ApiResponse<List<OrderOfflineDetailResponse>> apiResponse = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "List of orders for the store.",
+                    orders,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            // Trường hợp lỗi
+            ApiResponse errorResponse = new ApiResponse(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Error: " + e.getMessage(),
+                    null,
+                    LocalDateTime.now());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

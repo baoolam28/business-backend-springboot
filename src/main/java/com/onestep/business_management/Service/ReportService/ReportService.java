@@ -10,7 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import com.onestep.business_management.DTO.OrderDTO.OrderDetailResponse;
+import com.onestep.business_management.DTO.OrderDTO.OrderOfflineDetailResponse;
+import com.onestep.business_management.Entity.OrderOffline;
 import com.onestep.business_management.Repository.*;
 
 
@@ -63,6 +67,42 @@ public class ReportService {
     }
 
     public List<Object[]> getTotalOrderValueByToday(UUID storeId) {
-        return orderOfflineRepository.getTotalOrderValueByToday(storeId);
+        return orderOfflineRepository.getOrdersWithPriceByToday(storeId);
+    }
+
+    public List<Object[]> getAllOrderByStoreId(UUID storeId) {
+        return orderOfflineRepository.findAllOrdersByStoreId(storeId);
+    }
+
+    public List<OrderOfflineDetailResponse> getOrdersByStoreId(UUID storeId) {
+        List<OrderOffline> orders = orderOfflineRepository.findOrdersByStoreId(storeId);
+
+        return orders.stream().map(order -> {
+            OrderOfflineDetailResponse response = new OrderOfflineDetailResponse();
+            response.setOrderId(order.getOrderOfflineId());
+            response.setOrderDate(order.getOrderDate());
+            response.setStatus(order.getStatus());
+            response.setCustomerId(order.getCustomer().getCustomerId());
+            response.setCustomerName(order.getCustomer().getName());
+            response.setCustomerPhone(order.getCustomer().getPhone());
+            response.setPaymentMethod(order.getPaymentMethod());
+            response.setStoreId(order.getStore().getStoreId());
+
+            // Map OrderDetails to OrderDetailResponse
+            List<OrderDetailResponse> orderDetails = order.getOrderDetails().stream().map(orderDetail -> {
+                OrderDetailResponse detailResponse = new OrderDetailResponse();
+                detailResponse.setOrderDetailId(orderDetail.getOrderDetailId());
+                detailResponse.setProductId(orderDetail.getProduct().getProductId());
+                detailResponse.setName(orderDetail.getProduct().getProductName());
+                detailResponse.setBarcode(orderDetail.getProduct().getBarcode());
+                detailResponse.setQuantity(orderDetail.getQuantity());
+                detailResponse.setPrice(orderDetail.getPrice());
+                // Removed images mapping
+                return detailResponse;
+            }).collect(Collectors.toList());
+
+            response.setOrderDetails(orderDetails);
+            return response;
+        }).collect(Collectors.toList());
     }
 }
