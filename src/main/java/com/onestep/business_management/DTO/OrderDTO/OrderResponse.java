@@ -24,6 +24,8 @@ public class OrderResponse {
     private boolean paymentStatus;
     private String paymentMethod;
     private String storeId;
+    private String storeName;
+    private String logoStore;
     private List<OrderDetailResponse> orderDetails;
 }
 

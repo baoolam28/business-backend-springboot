@@ -1,5 +1,6 @@
 package com.onestep.business_management.Controller;
 
+
 import com.onestep.business_management.Utils.InvoicePDF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,7 @@ import java.util.UUID;
 import javax.print.PrintException;
 
 @RestController
-@RequestMapping("/api/invoices")
+@RequestMapping("/api/seller/invoices")
 public class InvoiceController {
 
     @Autowired
@@ -20,12 +21,12 @@ public class InvoiceController {
 
     @PostMapping("/print/{id}")
     public ResponseEntity<String> printInvoice(@PathVariable("id") String orderId) throws PrintException {
-        UUID uuid = UUID.fromString(orderId);
         try {
-            invoicePDF.printAndDeleteInvoicePDF(uuid);
+            UUID uuid = UUID.fromString(orderId);
+            invoicePDF.printOrder(uuid);
             return new ResponseEntity<>("Invoice printed and deleted successfully", HttpStatus.OK);
-        } catch (IOException e) {
-            return new ResponseEntity<>("Failed to print invoice: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }
