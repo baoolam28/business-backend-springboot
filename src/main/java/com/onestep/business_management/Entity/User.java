@@ -49,7 +49,7 @@ public class User implements UserDetails {
     @Column(name = "fullName", length = 50, nullable = true, columnDefinition = "NVARCHAR(50)")
     private String fullName;
 
-    @OneToOne()
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "imageId", nullable = true)
     @JsonIgnore
     private Image image;

@@ -51,8 +51,6 @@ public class ProductService {
     @Autowired
     private ImageService imageService;
 
-    @Autowired
-    private ReviewService reviewService;
 
     public ProductResponse createProduct(ProductRequest productRequest) {
 
@@ -141,11 +139,6 @@ public class ProductService {
         );
         ProductOnlineResponse response = ProductMapper.INSTANCE.productToOnlineResponse(product);
 
-        // List<ReviewResponse> reviews = reviewService.getAllReviewByProductId(productId);
-
-        // response.setReviews(reviews);
-
-        // return ProductMapper.INSTANCE.productToOnlineResponse(product);
         return response;
     }
 

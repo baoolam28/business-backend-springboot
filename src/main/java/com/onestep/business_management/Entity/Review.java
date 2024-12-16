@@ -44,7 +44,9 @@ public class Review {
     @Column(name = "like_count", nullable = true)
     private Integer likeCount = 0;
 
-   
+    @Column(name = "is_reviewed")
+    private Boolean isReviewed;
+
     @PrePersist
     protected void onCreate() {
         this.reviewDate = new Date();

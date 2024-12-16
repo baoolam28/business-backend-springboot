@@ -19,14 +19,35 @@ import java.util.UUID;
 public interface OrderOnlineMapper {
     OrderOnlineMapper INSTANCE = Mappers.getMapper(OrderOnlineMapper.class);
 
-    @Mapping(target = "orderId", source = "orderOnlineId")
-    @Mapping(target = "orderDetails", source = "orderDetails", qualifiedByName = "mapDetailsToResponses")
-    @Mapping(target = "userId", source = "user.userId")
-    @Mapping(target = "userName", source = "user.username")
-    @Mapping(target = "phone", source = "user.phoneNumber")
-    @Mapping(target = "storeId", source = "store.storeId")
-    @Mapping(target = "storeName", source = "store.storeName")
-    OrderOnlineResponse toResponse(OrderOnline orderOnline);
+
+
+    @Named("mapToOrderResponse")
+    default OrderOnlineResponse toOrderResponse(OrderOnline orderOnline){
+        if(orderOnline == null ){
+            return null;
+        }
+        OrderOnlineResponse response = new OrderOnlineResponse();
+        response.setOrderId(orderOnline.getOrderOnlineId());
+        response.setStatus(orderOnline.getStatus().toString());
+        response.setOrderDate(orderOnline.getOrderDate());
+        response.setPaymentStatus(orderOnline.isPaymentStatus());
+        response.setPaymentMethod(orderOnline.getPaymentMethod());
+        List<OrderOnlineDetail> orderDetails = orderOnline.getOrderDetails();
+        List<OrderOnlineDetailResponse> orderOnlineDetailResponses = mapDetailsToResponses(orderDetails);
+        response.setOrderDetails(orderOnlineDetailResponses);
+        List<Shipment> shipments = orderOnline.getShipments();
+        if(shipments.isEmpty()){
+            return null;
+        }
+        ShippingAddress shippingAddress = shipments.get(0).getShippingAddress();
+        response.setFullName(shippingAddress.getFullName());
+
+        response.setPhone(shippingAddress.getPhoneNumber());
+        response.setAddress(shippingAddress.getAddress());
+
+
+        return response;
+    };
 
     // Custom method to map List<OrderOnlineDetailRequest> to
     // List<OrderOnlineDetail>

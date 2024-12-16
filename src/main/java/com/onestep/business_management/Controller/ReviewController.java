@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.onestep.business_management.DTO.API.ApiResponse;
 import com.onestep.business_management.DTO.ProductDTO.ProductDetailResponse;
@@ -54,23 +56,6 @@ public class ReviewController {
         }
     }
 
-    // @GetMapping("/products/{productId}")
-    // public ResponseEntity<?> getAllReviews(@PathVariable Integer productId, @RequestParam Integer rating){
-    //     try {
-    //         ProductReviewResponse response = reviewService.getAllReviewByRating(productId, rating);
-    //         ApiResponse<ProductReviewResponse> apiResponse = new ApiResponse<>(
-    //                 HttpStatus.OK.value(),
-    //                 "Get all review by rating successfully",
-    //                 response,
-    //                 LocalDateTime.now());
-    //         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    //     } catch (Exception e) {
-    //         System.out.println("Error retrieving review: " + e.getMessage());
-    //         ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
-    //         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    //     }
-    // }
-
     @GetMapping("/{productDetailId}")
     public ResponseEntity<?> getProductDetail(@PathVariable Integer productDetailId){
         try {
@@ -105,16 +90,29 @@ public class ReviewController {
         }
     }
 
-    @PostMapping("/newReview/{productDetailId}")
-    public ResponseEntity<?> createNewReview(@PathVariable Integer productDetailId, @RequestBody ReviewRequest reviewRequest){
+    @PostMapping(value = "/newReview", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> createNewReview(@ModelAttribute ReviewRequest reviewRequest){
         try {
-            ReviewResponse response = reviewService.createNewReview(productDetailId ,reviewRequest);
+            System.out.println("reviewRequest: "+reviewRequest);
+            ReviewResponse response = reviewService.createNewReview(reviewRequest);
             ApiResponse<ReviewResponse> apiResponse = new ApiResponse<>(
                 HttpStatus.OK.value(),
                 "Create Review successfully",
                 response,
                 LocalDateTime.now());
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error retrieving review: " + e.getMessage());
+            ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/is-reviewed")
+    public ResponseEntity<?> isReviewed(@RequestParam(value = "productDetailId", required = false) Integer productDetailId, @RequestParam(value = "userId") UUID userId){
+        try {
+            boolean isReviewed = reviewService.checkIfReviewed(productDetailId, userId);
+            return ResponseEntity.ok(isReviewed);
         } catch (Exception e) {
             System.out.println("Error retrieving review: " + e.getMessage());
             ApiResponse errorResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());

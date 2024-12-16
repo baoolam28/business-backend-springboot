@@ -20,7 +20,7 @@ import com.onestep.business_management.Repository.*;
 
 @Service
 public class ReportService {
- 
+
     @Autowired
     private OrderOfflineRepository orderOfflineRepository;
 
@@ -59,7 +59,7 @@ public class ReportService {
     // lay top 3 san pham
     public List<Object[]> getTop3MostSoldProducts(UUID storeId) {
         return orderOfflineRepository.findTop3MostSoldProducts(storeId);
-    } 
+    }
 
     //lay order theo today
     public List<Object[]> getPaidOrdersMadeTodayByStoreId(UUID storeId) {

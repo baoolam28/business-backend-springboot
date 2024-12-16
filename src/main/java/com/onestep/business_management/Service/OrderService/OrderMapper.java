@@ -12,6 +12,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Mapper
@@ -48,11 +49,14 @@ public interface OrderMapper {
             response.setProductId(product.getProductId());
             List<Image> images = product.getImages();
             List<String> imageUrls = new ArrayList<>();
-            if(!images.isEmpty()){
-                images.stream().map(image ->
-                        imageUrls.add(image.getFileName()));
+            if (images != null && !images.isEmpty()) {
+                images.stream()
+                        .filter(Objects::nonNull)  // Ensure that no null images are processed
+                        .map(Image::getFileName)   // Get file name from each image
+                        .forEach(imageUrls::add);  // Add to imageUrls list
             }
             response.setImages(imageUrls);
+
             return response;
         }).toList();
     }

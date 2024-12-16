@@ -30,43 +30,43 @@ public class ReportSellerController {
 
     // Endpoint để lấy tổng giá trị đơn hàng theo ngày
     @GetMapping("/{storeId}/by-day")
-public ResponseEntity<?> getAllProducts(@PathVariable UUID storeId,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
-    try {
+    public ResponseEntity<?> getAllProducts(@PathVariable UUID storeId,
+                                            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+                                            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
+        try {
 
-        // Use Date values in the service call
-        List<Object[]> result = reportService.getOrderTotalValueByDate(storeId, startDate, endDate);
+            // Use Date values in the service call
+            List<Object[]> result = reportService.getOrderTotalValueByDate(storeId, startDate, endDate);
 
-        if (result.isEmpty()) {
+            if (result.isEmpty()) {
+                ApiResponse<List<Object[]>> apiResponse = new ApiResponse<>(
+                        HttpStatus.NO_CONTENT.value(),
+                        "No products found for the given store and date range.",
+                        null,
+                        LocalDateTime.now());
+                return new ResponseEntity<>(apiResponse, HttpStatus.NO_CONTENT);
+            }
+
             ApiResponse<List<Object[]>> apiResponse = new ApiResponse<>(
-                    HttpStatus.NO_CONTENT.value(),
-                    "No products found for the given store and date range.",
+                    HttpStatus.OK.value(),
+                    "Products retrieved successfully",
+                    result,
+                    LocalDateTime.now());
+
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            System.out.println("Error retrieving products: " + e.getMessage());
+
+            ApiResponse errorResponse = new ApiResponse(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Error retrieving products: " + e.getMessage(),
                     null,
                     LocalDateTime.now());
-            return new ResponseEntity<>(apiResponse, HttpStatus.NO_CONTENT);
+
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        ApiResponse<List<Object[]>> apiResponse = new ApiResponse<>(
-                HttpStatus.OK.value(),
-                "Products retrieved successfully",
-                result,
-                LocalDateTime.now());
-
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-
-    } catch (Exception e) {
-        System.out.println("Error retrieving products: " + e.getMessage());
-
-        ApiResponse errorResponse = new ApiResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Error retrieving products: " + e.getMessage(),
-                null,
-                LocalDateTime.now());
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-}
 
    @GetMapping("/{storeId}/by-month")
 public ResponseEntity<?> getOrderTotalValueByMonth(@PathVariable UUID storeId) {
@@ -215,7 +215,6 @@ public ResponseEntity<?> getOrderTotalValueByMonth(@PathVariable UUID storeId) {
                     "Top 3 most sold products retrieved successfully",
                     topProducts,
                     LocalDateTime.now());
-
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
         } catch (Exception e) {
